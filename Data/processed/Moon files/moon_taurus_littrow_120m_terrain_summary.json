@@ -1,0 +1,77 @@
+{
+  "site": "moon_taurus_littrow",
+  "body": "moon",
+  "scale_m": 120,
+  "generated_utc": "2026-11-14T15:09:27+00:00",
+  "provenance": {
+    "source_file": "raw\\moon\\moon_taurus_littrow_lola_window.tif",
+    "source_sha256": "67c2c0d2ebd1e2e9f44caaf587ad62fcd8a4ba2481ab54e3bce977e3794efbdd",
+    "dataset": "LRO LOLA global LDEM 118 m, Mar 2014 (USGS Astrogeology)",
+    "source_native_pixel_m": [
+      118.45,
+      118.45
+    ],
+    "scale_factor_applied": 0.5,
+    "resampling": "area average (rasterio Resampling.average) onto square metre grid",
+    "grid_crs": "local transverse Mercator on the source raster's own datum, metres",
+    "source_window_px": [
+      0,
+      0,
+      196,
+      170
+    ]
+  },
+  "grid": {
+    "width": 179,
+    "height": 165,
+    "cells": 29535,
+    "valid_cells": 29535,
+    "csv_rows": 29535,
+    "valid_fraction": 1.0,
+    "extent_km": [
+      21.48,
+      19.8
+    ]
+  },
+  "kernels_m": {
+    "slope": "3x3 central difference, baseline 2x120 m",
+    "roughness_std": "3x3 = 360 m",
+    "elev_variability_std": "5x5 = 600 m",
+    "tri": "3x3 Riley"
+  },
+  "elevation": {
+    "n": 29535,
+    "min": -2922.470292151775,
+    "max": -205.73451418145547,
+    "mean": -2105.4780073122124,
+    "std": 648.1631049941184
+  },
+  "slope_deg": {
+    "n": 28851,
+    "min": 0.02076486390741122,
+    "max": 37.77243462332147,
+    "mean": 10.418098306142802,
+    "std": 8.81621813143088
+  },
+  "roughness_std": {
+    "n": 28851,
+    "min": 0.2886576185074236,
+    "max": 75.04033838723717,
+    "mean": 18.61518271240427,
+    "std": 16.028672836012596
+  },
+  "elev_variability_std": {
+    "n": 28175,
+    "min": 0.8311294506345831,
+    "max": 116.88247437878518,
+    "mean": 31.870075876572894,
+    "std": 27.53616596338665
+  },
+  "tri": {
+    "n": 28851,
+    "min": 0.9573971109582089,
+    "max": 227.58201552468276,
+    "mean": 56.313591588280325,
+    "std": 47.966148393327764
+  }
+}

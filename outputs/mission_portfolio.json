@@ -1,0 +1,507 @@
+{
+ "generated_by": "scripts/run_intelligence.js",
+ "deterministic": true,
+ "portfolios": {
+  "mars": {
+   "options": {
+    "target": "mars",
+    "n": 5,
+    "minSepM": 2000,
+    "poolSize": 3000,
+    "minCompleteness": 0.7,
+    "weights": {
+     "score": 0.5,
+     "diversity": 0.3,
+     "completeness": 0.2
+    },
+    "diversityRefSD": 1
+   },
+   "objective": "Greedy maximisation of gain = w_score*score/100 + w_diversity*min(1, d_terrain/refSD) + w_completeness*completeness, subject to a hard minimum separation of 2000 m (local transverse-Mercator metres). d_terrain = Euclidean distance to the nearest already-selected site in log1p(slope, roughness, elevation variability, TRI) space scaled by each metric's SD over eligible Earth cells.",
+   "limitations": [
+    "Greedy selection is deterministic but not guaranteed globally optimal.",
+    "Only the four DEM-derived terrain metrics are used; geology, composition, regolith, illumination, temperature and gravity are not represented.",
+    "Search is limited to the Earth Western Desert window in the processed data and to the top 3000 scored cells.",
+    "Weights are expert-judgement defaults, not fitted. Neighbouring cells share smoothing kernels, so 2 km separation does not imply independent terrain.",
+    "No selected site is a confirmed planetary analog."
+   ],
+   "eligible_cells": 66856,
+   "items": [
+    {
+     "pick": 1,
+     "csv_row_index": 2821,
+     "lon_deg": 28.112981,
+     "lat_deg": 27.43807,
+     "x_m_localTM": -3660,
+     "y_m_localTM": 15300,
+     "score": 98.72,
+     "engine_cell_rank": 1,
+     "confidence": "medium",
+     "completeness": 1,
+     "features": {
+      "slope_deg": {
+       "value": 2.3189,
+       "score": 98.4,
+       "contribution": 29.53
+      },
+      "roughness_std": {
+       "value": 4.1214,
+       "score": 100,
+       "contribution": 19.99
+      },
+      "elev_variability_std": {
+       "value": 6.5774,
+       "score": 99.2,
+       "contribution": 29.75
+      },
+      "tri": {
+       "value": 13.8859,
+       "score": 97.2,
+       "contribution": 19.45
+      }
+     },
+     "elevation_m": 142.4243,
+     "nearest_selected_km": null,
+     "terrain_distance_to_selected": null,
+     "objective_gain": 0.9936,
+     "scale_consistency": "divergent",
+     "score_360m": 77.49,
+     "why_selected": "Anchor site: highest similarity score in the eligible pool. Engine cell rank 1 of 67896; weakest feature: tri. Its 360 m parent cell scores 77.5 (divergent across resolution).",
+     "status_label": "Terrain-metric similarity candidate. Not a confirmed analog."
+    },
+    {
+     "pick": 2,
+     "csv_row_index": 21385,
+     "lon_deg": 28.069345,
+     "lat_deg": 27.356831,
+     "x_m_localTM": -7980,
+     "y_m_localTM": 6300,
+     "score": 83.95,
+     "engine_cell_rank": 2548,
+     "confidence": "medium",
+     "completeness": 1,
+     "features": {
+      "slope_deg": {
+       "value": 2.0446,
+       "score": 90.8,
+       "contribution": 27.24
+      },
+      "roughness_std": {
+       "value": 4.2086,
+       "score": 98.1,
+       "contribution": 19.63
+      },
+      "elev_variability_std": {
+       "value": 6.4149,
+       "score": 97,
+       "contribution": 29.1
+      },
+      "tri": {
+       "value": 28.4477,
+       "score": 39.9,
+       "contribution": 7.99
+      }
+     },
+     "elevation_m": 72.259,
+     "nearest_selected_km": 9.98,
+     "terrain_distance_to_selected": 1.02,
+     "objective_gain": 0.9198,
+     "scale_consistency": "divergent",
+     "score_360m": 61.9,
+     "why_selected": "Added because it keeps a high score (84) while sitting 10 km from the nearest selected site with terrain-space distance 1.02 (1.0 = one SD of Earth terrain variation), so it adds a different terrain type rather than a neighbour of an earlier pick. Engine cell rank 2548 of 67896; weakest feature: tri. Its 360 m parent cell scores 61.9 (divergent across resolution).",
+     "status_label": "Terrain-metric similarity candidate. Not a confirmed analog."
+    },
+    {
+     "pick": 3,
+     "csv_row_index": 2869,
+     "lon_deg": 28.171241,
+     "lat_deg": 27.438073,
+     "x_m_localTM": 2100,
+     "y_m_localTM": 15300,
+     "score": 84.37,
+     "engine_cell_rank": 2375,
+     "confidence": "high",
+     "completeness": 1,
+     "features": {
+      "slope_deg": {
+       "value": 2.2288,
+       "score": 98.2,
+       "contribution": 29.45
+      },
+      "roughness_std": {
+       "value": 4.1888,
+       "score": 98.5,
+       "contribution": 19.71
+      },
+      "elev_variability_std": {
+       "value": 12.0361,
+       "score": 51.9,
+       "contribution": 15.57
+      },
+      "tri": {
+       "value": 13.1965,
+       "score": 98.2,
+       "contribution": 19.64
+      }
+     },
+     "elevation_m": 53.8802,
+     "nearest_selected_km": 5.76,
+     "terrain_distance_to_selected": 0.93,
+     "objective_gain": 0.9005,
+     "scale_consistency": "consistent",
+     "score_360m": 71.59,
+     "why_selected": "Added because it keeps a high score (84.4) while sitting 5.8 km from the nearest selected site with terrain-space distance 0.93 (1.0 = one SD of Earth terrain variation), so it adds a different terrain type rather than a neighbour of an earlier pick. Engine cell rank 2375 of 67896; weakest feature: elev_variability_std. Its 360 m parent cell scores 71.6 (consistent across resolution).",
+     "status_label": "Terrain-metric similarity candidate. Not a confirmed analog."
+    },
+    {
+     "pick": 4,
+     "csv_row_index": 53403,
+     "lon_deg": 28.100941,
+     "lat_deg": 27.217145,
+     "x_m_localTM": -4860,
+     "y_m_localTM": -9180,
+     "score": 83.01,
+     "engine_cell_rank": 2981,
+     "confidence": "medium",
+     "completeness": 1,
+     "features": {
+      "slope_deg": {
+       "value": 2.2691,
+       "score": 99.7,
+       "contribution": 29.91
+      },
+      "roughness_std": {
+       "value": 4.2105,
+       "score": 98.1,
+       "contribution": 19.62
+      },
+      "elev_variability_std": {
+       "value": 3.3926,
+       "score": 46.6,
+       "contribution": 13.98
+      },
+      "tri": {
+       "value": 13.0944,
+       "score": 97.5,
+       "contribution": 19.5
+      }
+     },
+     "elevation_m": 42.0386,
+     "nearest_selected_km": 15.79,
+     "terrain_distance_to_selected": 0.93,
+     "objective_gain": 0.8951,
+     "scale_consistency": "divergent",
+     "score_360m": 9.34,
+     "why_selected": "Added because it keeps a high score (83) while sitting 15.8 km from the nearest selected site with terrain-space distance 0.93 (1.0 = one SD of Earth terrain variation), so it adds a different terrain type rather than a neighbour of an earlier pick. Engine cell rank 2981 of 67896; weakest feature: elev_variability_std. Its 360 m parent cell scores 9.3 (divergent across resolution).",
+     "status_label": "Terrain-metric similarity candidate. Not a confirmed analog."
+    },
+    {
+     "pick": 5,
+     "csv_row_index": 26281,
+     "lon_deg": 28.292485,
+     "lat_deg": 27.336206,
+     "x_m_localTM": 14100,
+     "y_m_localTM": 4020,
+     "score": 83.95,
+     "engine_cell_rank": 2550,
+     "confidence": "medium",
+     "completeness": 1,
+     "features": {
+      "slope_deg": {
+       "value": 2.2809,
+       "score": 99.9,
+       "contribution": 29.96
+      },
+      "roughness_std": {
+       "value": 6.4196,
+       "score": 62.8,
+       "contribution": 12.56
+      },
+      "elev_variability_std": {
+       "value": 7.2512,
+       "score": 92.4,
+       "contribution": 27.73
+      },
+      "tri": {
+       "value": 19.293,
+       "score": 68.5,
+       "contribution": 13.71
+      }
+     },
+     "elevation_m": 22.2452,
+     "nearest_selected_km": 16.47,
+     "terrain_distance_to_selected": 0.82,
+     "objective_gain": 0.867,
+     "scale_consistency": "divergent",
+     "score_360m": 11,
+     "why_selected": "Added because it keeps a high score (84) while sitting 16.5 km from the nearest selected site with terrain-space distance 0.82 (1.0 = one SD of Earth terrain variation), so it adds a different terrain type rather than a neighbour of an earlier pick. Engine cell rank 2550 of 67896; weakest feature: roughness_std. Its 360 m parent cell scores 11 (divergent across resolution).",
+     "status_label": "Terrain-metric similarity candidate. Not a confirmed analog."
+    }
+   ],
+   "comparison_to_top_scores_only": {
+    "portfolio_mean_score": 86.8,
+    "portfolio_mean_pairwise_terrain_distance": 1.18,
+    "top_scores_mean_score": 98.33,
+    "top_scores_mean_pairwise_terrain_distance": 0.13,
+    "note": "Top-score-only picks are typically adjacent cells (same terrain); the portfolio trades a little score for diversity."
+   },
+   "model": {
+    "name": "FIELD//ZERO terrain analog similarity model",
+    "version": "1.0.0",
+    "label": "TERRAIN ANALOG MODEL: compares four DEM-derived surface-shape metrics only. It is not proof of complete environmental equivalence.",
+    "disclaimer": "Scores describe statistical closeness of terrain-shape metrics to the reference distribution of one Mars site (Jezero) or one Moon site (Taurus-Littrow). They do not describe geology, composition, regolith, gravity, atmosphere, temperature, pressure, radiation, illumination or any other environmental property. No location in this output is a confirmed planetary analog; ranked locations are candidates for further study."
+   },
+   "status_label": "Terrain-metric similarity candidate. Not a confirmed analog."
+  },
+  "moon": {
+   "options": {
+    "target": "moon",
+    "n": 5,
+    "minSepM": 2000,
+    "poolSize": 3000,
+    "minCompleteness": 0.7,
+    "weights": {
+     "score": 0.5,
+     "diversity": 0.3,
+     "completeness": 0.2
+    },
+    "diversityRefSD": 1
+   },
+   "objective": "Greedy maximisation of gain = w_score*score/100 + w_diversity*min(1, d_terrain/refSD) + w_completeness*completeness, subject to a hard minimum separation of 2000 m (local transverse-Mercator metres). d_terrain = Euclidean distance to the nearest already-selected site in log1p(slope, roughness, elevation variability, TRI) space scaled by each metric's SD over eligible Earth cells.",
+   "limitations": [
+    "Greedy selection is deterministic but not guaranteed globally optimal.",
+    "Only the four DEM-derived terrain metrics are used; geology, composition, regolith, illumination, temperature and gravity are not represented.",
+    "Search is limited to the Earth Western Desert window in the processed data and to the top 3000 scored cells.",
+    "Weights are expert-judgement defaults, not fitted. Neighbouring cells share smoothing kernels, so 2 km separation does not imply independent terrain.",
+    "No selected site is a confirmed planetary analog."
+   ],
+   "eligible_cells": 66856,
+   "items": [
+    {
+     "pick": 1,
+     "csv_row_index": 40695,
+     "lon_deg": 28.0282,
+     "lat_deg": 27.272332,
+     "x_m_localTM": -12060,
+     "y_m_localTM": -3060,
+     "score": 99.38,
+     "engine_cell_rank": 1,
+     "confidence": "high",
+     "completeness": 1,
+     "features": {
+      "slope_deg": {
+       "value": 8.1459,
+       "score": 100,
+       "contribution": 30
+      },
+      "roughness_std": {
+       "value": 13.9407,
+       "score": 98.7,
+       "contribution": 19.75
+      },
+      "elev_variability_std": {
+       "value": 24.3125,
+       "score": 99.6,
+       "contribution": 29.88
+      },
+      "tri": {
+       "value": 42.5505,
+       "score": 98.8,
+       "contribution": 19.76
+      }
+     },
+     "elevation_m": 147.4259,
+     "nearest_selected_km": null,
+     "terrain_distance_to_selected": null,
+     "objective_gain": 0.9969,
+     "scale_consistency": "consistent",
+     "score_360m": 88.71,
+     "why_selected": "Anchor site: highest similarity score in the eligible pool. Engine cell rank 1 of 67896; weakest feature: roughness_std. Its 360 m parent cell scores 88.7 (consistent across resolution).",
+     "status_label": "Terrain-metric similarity candidate. Not a confirmed analog."
+    },
+    {
+     "pick": 2,
+     "csv_row_index": 17425,
+     "lon_deg": 28.079037,
+     "lat_deg": 27.374164,
+     "x_m_localTM": -7020,
+     "y_m_localTM": 8220,
+     "score": 88.9,
+     "engine_cell_rank": 819,
+     "confidence": "medium",
+     "completeness": 1,
+     "features": {
+      "slope_deg": {
+       "value": 8.2397,
+       "score": 99.3,
+       "contribution": 29.78
+      },
+      "roughness_std": {
+       "value": 13.9928,
+       "score": 99,
+       "contribution": 19.8
+      },
+      "elev_variability_std": {
+       "value": 12.5161,
+       "score": 65.5,
+       "contribution": 19.65
+      },
+      "tri": {
+       "value": 42.2909,
+       "score": 98.4,
+       "contribution": 19.68
+      }
+     },
+     "elevation_m": 90.0052,
+     "nearest_selected_km": 12.35,
+     "terrain_distance_to_selected": 1.07,
+     "objective_gain": 0.9445,
+     "scale_consistency": "divergent",
+     "score_360m": 48.74,
+     "why_selected": "Added because it keeps a high score (88.9) while sitting 12.4 km from the nearest selected site with terrain-space distance 1.07 (1.0 = one SD of Earth terrain variation), so it adds a different terrain type rather than a neighbour of an earlier pick. Engine cell rank 819 of 67896; weakest feature: elev_variability_std. Its 360 m parent cell scores 48.7 (divergent across resolution).",
+     "status_label": "Terrain-metric similarity candidate. Not a confirmed analog."
+    },
+    {
+     "pick": 3,
+     "csv_row_index": 5826,
+     "lon_deg": 28.14818,
+     "lat_deg": 27.42508,
+     "x_m_localTM": -180,
+     "y_m_localTM": 13860,
+     "score": 86.78,
+     "engine_cell_rank": 1122,
+     "confidence": "medium",
+     "completeness": 1,
+     "features": {
+      "slope_deg": {
+       "value": 4.4134,
+       "score": 66.5,
+       "contribution": 19.94
+      },
+      "roughness_std": {
+       "value": 13.2166,
+       "score": 95.4,
+       "contribution": 19.08
+      },
+      "elev_variability_std": {
+       "value": 21.8364,
+       "score": 94,
+       "contribution": 28.19
+      },
+      "tri": {
+       "value": 44.7531,
+       "score": 97.9,
+       "contribution": 19.57
+      }
+     },
+     "elevation_m": 84.9054,
+     "nearest_selected_km": 8.87,
+     "terrain_distance_to_selected": 1.05,
+     "objective_gain": 0.9339,
+     "scale_consistency": "divergent",
+     "score_360m": 70.18,
+     "why_selected": "Added because it keeps a high score (86.8) while sitting 8.9 km from the nearest selected site with terrain-space distance 1.05 (1.0 = one SD of Earth terrain variation), so it adds a different terrain type rather than a neighbour of an earlier pick. Engine cell rank 1122 of 67896; weakest feature: slope_deg. Its 360 m parent cell scores 70.2 (divergent across resolution).",
+     "status_label": "Terrain-metric similarity candidate. Not a confirmed analog."
+    },
+    {
+     "pick": 4,
+     "csv_row_index": 14479,
+     "lon_deg": 28.115424,
+     "lat_deg": 27.387173,
+     "x_m_localTM": -3420,
+     "y_m_localTM": 9660,
+     "score": 85.51,
+     "engine_cell_rank": 1338,
+     "confidence": "medium",
+     "completeness": 1,
+     "features": {
+      "slope_deg": {
+       "value": 8.0141,
+       "score": 99,
+       "contribution": 29.69
+      },
+      "roughness_std": {
+       "value": 20.2943,
+       "score": 75.4,
+       "contribution": 15.07
+      },
+      "elev_variability_std": {
+       "value": 25.6348,
+       "score": 96.3,
+       "contribution": 28.89
+      },
+      "tri": {
+       "value": 75.8752,
+       "score": 59.3,
+       "contribution": 11.86
+      }
+     },
+     "elevation_m": 64.6559,
+     "nearest_selected_km": 3.88,
+     "terrain_distance_to_selected": 1.06,
+     "objective_gain": 0.9275,
+     "scale_consistency": "divergent",
+     "score_360m": 69.55,
+     "why_selected": "Added because it keeps a high score (85.5) while sitting 3.9 km from the nearest selected site with terrain-space distance 1.06 (1.0 = one SD of Earth terrain variation), so it adds a different terrain type rather than a neighbour of an earlier pick. Engine cell rank 1338 of 67896; weakest feature: tri. Its 360 m parent cell scores 69.5 (divergent across resolution).",
+     "status_label": "Terrain-metric similarity candidate. Not a confirmed analog."
+    },
+    {
+     "pick": 5,
+     "csv_row_index": 47379,
+     "lon_deg": 28.013692,
+     "lat_deg": 27.243078,
+     "x_m_localTM": -13500,
+     "y_m_localTM": -6300,
+     "score": 83.54,
+     "engine_cell_rank": 1638,
+     "confidence": "high",
+     "completeness": 1,
+     "features": {
+      "slope_deg": {
+       "value": 13.1111,
+       "score": 66.3,
+       "contribution": 19.89
+      },
+      "roughness_std": {
+       "value": 17.8353,
+       "score": 84.7,
+       "contribution": 16.93
+      },
+      "elev_variability_std": {
+       "value": 23.9726,
+       "score": 99.6,
+       "contribution": 29.87
+      },
+      "tri": {
+       "value": 54.4206,
+       "score": 84.3,
+       "contribution": 16.86
+      }
+     },
+     "elevation_m": 195.8813,
+     "nearest_selected_km": 3.55,
+     "terrain_distance_to_selected": 1.01,
+     "objective_gain": 0.9177,
+     "scale_consistency": "consistent",
+     "score_360m": 73.29,
+     "why_selected": "Added because it keeps a high score (83.5) while sitting 3.5 km from the nearest selected site with terrain-space distance 1.01 (1.0 = one SD of Earth terrain variation), so it adds a different terrain type rather than a neighbour of an earlier pick. Engine cell rank 1638 of 67896; weakest feature: slope_deg. Its 360 m parent cell scores 73.3 (consistent across resolution).",
+     "status_label": "Terrain-metric similarity candidate. Not a confirmed analog."
+    }
+   ],
+   "comparison_to_top_scores_only": {
+    "portfolio_mean_score": 88.82,
+    "portfolio_mean_pairwise_terrain_distance": 1.31,
+    "top_scores_mean_score": 99.11,
+    "top_scores_mean_pairwise_terrain_distance": 0.08,
+    "note": "Top-score-only picks are typically adjacent cells (same terrain); the portfolio trades a little score for diversity."
+   },
+   "model": {
+    "name": "FIELD//ZERO terrain analog similarity model",
+    "version": "1.0.0",
+    "label": "TERRAIN ANALOG MODEL: compares four DEM-derived surface-shape metrics only. It is not proof of complete environmental equivalence.",
+    "disclaimer": "Scores describe statistical closeness of terrain-shape metrics to the reference distribution of one Mars site (Jezero) or one Moon site (Taurus-Littrow). They do not describe geology, composition, regolith, gravity, atmosphere, temperature, pressure, radiation, illumination or any other environmental property. No location in this output is a confirmed planetary analog; ranked locations are candidates for further study."
+   },
+   "status_label": "Terrain-metric similarity candidate. Not a confirmed analog."
+  }
+ },
+ "note": "Terrain-metric candidates only. Not confirmed analogs."
+}

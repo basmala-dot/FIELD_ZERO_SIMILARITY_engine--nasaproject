@@ -1,0 +1,168 @@
+{
+  "body": "moon",
+  "generated_utc": "2026-11-14T15:09:42+00:00",
+  "code": [
+    [
+      "LOLA windowed read / full-file fallback",
+      "written; server range support UNTESTED"
+    ],
+    [
+      "0.5 scale factor applied at processing (once)",
+      "written; needs the selftest on your machine"
+    ],
+    [
+      "terrain processor at common metre scale",
+      "written; math unit-tested"
+    ],
+    [
+      "validator",
+      "written"
+    ]
+  ],
+  "not_implemented": [
+    "Diviner temperature / rock abundance - researched in DATASET_INVENTORY.md, no code",
+    "Moon has no atmosphere: no pressure/wind dataset exists; solar flux not verified"
+  ],
+  "datasets": [
+    {
+      "dataset": "LRO LOLA global LDEM 118 m, Mar 2014 (USGS Astrogeology)",
+      "file": "raw\\moon\\moon_taurus_littrow_lola_window.tif",
+      "checks": [
+        {
+          "check": "file size > 0",
+          "ok": true,
+          "severity": "error",
+          "detail": "52271 bytes"
+        },
+        {
+          "check": "size equals download log",
+          "ok": true,
+          "severity": "error",
+          "detail": "log 52271 vs disk 52271"
+        },
+        {
+          "check": "sha256 equals download log",
+          "ok": true,
+          "severity": "error",
+          "detail": "file unchanged since download"
+        },
+        {
+          "check": "TIFF header",
+          "ok": true,
+          "severity": "error",
+          "detail": "b'II*\\x00'"
+        },
+        {
+          "check": "has CRS",
+          "ok": true,
+          "severity": "error",
+          "detail": "PROJCS[\"SimpleCylindrical Moon\",GEOGCS[\"GCS_Moon\",DATUM[\"D_Moon\",SPHEROID[\"Moon\",1737400,0"
+        },
+        {
+          "check": "raster has pixels",
+          "ok": true,
+          "severity": "error",
+          "detail": "196 x 170"
+        },
+        {
+          "check": "geotransform valid",
+          "ok": true,
+          "severity": "error",
+          "detail": "| 118.45, 0.00, 921545.57|\n| 0.00,-118.45, 621865.58|\n| 0.00, 0.00, 1.00|"
+        },
+        {
+          "check": "pixel size matches expected resolution",
+          "ok": true,
+          "severity": "error",
+          "detail": "measured 118.5 x 118.5 m, expected ~118.4 m"
+        },
+        {
+          "check": "raster overlaps site bbox",
+          "ok": true,
+          "severity": "error",
+          "detail": "100.0 % of site bbox covered"
+        },
+        {
+          "check": "valid pixels >= 90%",
+          "ok": true,
+          "severity": "error",
+          "detail": "33,320 of 33,320 valid (100.00 %)"
+        },
+        {
+          "check": "elevations plausible for body (after scale)",
+          "ok": true,
+          "severity": "error",
+          "detail": "-2925.0..-205.5 m, allowed -9500.0..11000.0"
+        },
+        {
+          "check": "not a constant raster",
+          "ok": true,
+          "severity": "error",
+          "detail": "std 656.752 m"
+        }
+      ],
+      "metrics": {
+        "bytes": 52271,
+        "sha256": "67c2c0d2ebd1e2e9f44caaf587ad62fcd8a4ba2481ab54e3bce977e3794efbdd",
+        "width": 196,
+        "height": 170,
+        "count": 1,
+        "dtype": "int16",
+        "crs": "PROJCS[\"SimpleCylindrical Moon\",GEOGCS[\"GCS_Moon\",DATUM[\"D_Moon\",SPHEROID[\"Moon\",1737400,0]],PRIMEM[\"Reference_Meridian\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Equirectangular\"],PARAMETER[\"standard_parallel_1\",0],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+        "nodata": -32768.0,
+        "bounds": [
+          921545.5715279998,
+          601728.9850080002,
+          944761.8866975998,
+          621865.5849000001
+        ],
+        "crs_is_projected": true,
+        "native_pixel_m": [
+          118.451,
+          118.451
+        ],
+        "site_bbox_coverage_fraction": 1.0,
+        "n_pixels": 33320,
+        "n_valid": 33320,
+        "n_invalid": 0,
+        "valid_fraction": 1.0,
+        "elev_min_m": -2925.0,
+        "elev_max_m": -205.5,
+        "elev_std_m": 656.7523643514746,
+        "scale_applied": 0.5
+      },
+      "state": "VALIDATED",
+      "site": "moon_taurus_littrow",
+      "role": "elevation"
+    }
+  ],
+  "processed": [
+    {
+      "site": "moon_taurus_littrow",
+      "scale_m": 120,
+      "csv_rows": 29535,
+      "summary_csv_rows": 29535,
+      "valid_cells": 29535,
+      "source_sha256": "67c2c0d2ebd1e2e9f44caaf587ad62fcd8a4ba2481ab54e3bce977e3794efbdd",
+      "extent_km": [
+        21.48,
+        19.8
+      ],
+      "consistent": true
+    },
+    {
+      "site": "moon_taurus_littrow",
+      "scale_m": 360,
+      "csv_rows": 3416,
+      "summary_csv_rows": 3416,
+      "valid_cells": 3416,
+      "source_sha256": "67c2c0d2ebd1e2e9f44caaf587ad62fcd8a4ba2481ab54e3bce977e3794efbdd",
+      "extent_km": [
+        21.96,
+        20.16
+      ],
+      "consistent": true
+    }
+  ],
+  "headline": "1 of 1 dataset(s) are on disk AND validated."
+}

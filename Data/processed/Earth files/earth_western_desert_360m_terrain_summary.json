@@ -1,0 +1,77 @@
+{
+  "site": "earth_western_desert",
+  "body": "earth",
+  "scale_m": 360,
+  "generated_utc": "2026-11-14T15:09:17+00:00",
+  "provenance": {
+    "source_file": "raw\\earth\\earth_western_desert_nasadem_window.tif",
+    "source_sha256": "c5a50a52c8d02a9721c8ba6ca7e9317d541a1a45ea497ba6c68d4c93321bda70",
+    "dataset": "NASADEM_HGT v001 (NASA LP DAAC)",
+    "source_native_pixel_m": [
+      27.48,
+      30.92
+    ],
+    "scale_factor_applied": 1.0,
+    "resampling": "area average (rasterio Resampling.average) onto square metre grid",
+    "grid_crs": "local transverse Mercator on the source raster's own datum, metres",
+    "source_window_px": [
+      0,
+      0,
+      1080,
+      1080
+    ]
+  },
+  "grid": {
+    "width": 84,
+    "height": 94,
+    "cells": 7896,
+    "valid_cells": 7896,
+    "csv_rows": 7896,
+    "valid_fraction": 1.0,
+    "extent_km": [
+      30.24,
+      33.84
+    ]
+  },
+  "kernels_m": {
+    "slope": "3x3 central difference, baseline 2x360 m",
+    "roughness_std": "3x3 = 1080 m",
+    "elev_variability_std": "5x5 = 1800 m",
+    "tri": "3x3 Riley"
+  },
+  "elevation": {
+    "n": 7896,
+    "min": 4.8819834599757845,
+    "max": 287.99756152333475,
+    "mean": 55.62022911110628,
+    "std": 39.3880874814072
+  },
+  "slope_deg": {
+    "n": 7544,
+    "min": 0.006481223363072263,
+    "max": 10.061957259385386,
+    "mean": 0.8579488753045132,
+    "std": 1.2639549711882618
+  },
+  "roughness_std": {
+    "n": 7544,
+    "min": 0.28754365343548705,
+    "max": 49.618279367087155,
+    "mean": 4.759950941151504,
+    "std": 6.40837009942587
+  },
+  "elev_variability_std": {
+    "n": 7200,
+    "min": 0.6783374885430979,
+    "max": 60.88176215290276,
+    "mean": 7.045328616799376,
+    "std": 8.739744599401837
+  },
+  "tri": {
+    "n": 7544,
+    "min": 1.2354248896437667,
+    "max": 183.01405928379643,
+    "mean": 16.389925465448925,
+    "std": 21.63946923487303
+  }
+}

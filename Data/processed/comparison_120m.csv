@@ -1,0 +1,4 @@
+body,scale_m,site,valid_cells,elev_variability_std_mean,elev_variability_std_std,roughness_std_mean,roughness_std_std,slope_deg_mean,slope_deg_std,tri_mean,tri_std
+earth,120,earth_western_desert,68944,4.3144,5.0146,3.1228,3.5628,1.6403,2.1195,11.1818,12.0712
+mars,120,mars_jezero,96369,10.1592,11.7573,6.267,7.1859,3.52,4.1497,19.9612,21.842
+moon,120,moon_taurus_littrow,29535,31.8701,27.5362,18.6152,16.0287,10.4181,8.8162,56.3136,47.9661

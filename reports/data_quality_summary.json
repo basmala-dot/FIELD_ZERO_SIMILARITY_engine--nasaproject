@@ -1,0 +1,1174 @@
+{
+  "schema_version": "1.0",
+  "project": "FIELD//ZERO",
+  "audit_generated_utc": "2026-11-14",
+  "audited_package": "FIELD_ZERO_SIMILARITY.zip",
+  "audit_scope_note": "Statistics computed directly from delivered files. Raw rasters, raw POWER JSON and pipeline scripts are NOT in the package, so raw-level checks rely on reports/status_*.json and download_log.json (reported, not re-verified).",
+  "datasets": [
+    {
+      "dataset_name": "earth_western_desert_120m_terrain.csv",
+      "file_path": "Data/processed/Earth files/earth_western_desert_120m_terrain.csv",
+      "file_sha256": "f5557ebe107a448dc52c3e8fcea47c8cc48d9df0e73c829d8d816c4838d60a71",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "source": "NASADEM_HGT v001 (NASA LP DAAC), 1 arc-second; raw tile n27e028 cropped to bbox",
+      "row_count": 68944,
+      "columns": [
+        "site",
+        "scale_m",
+        "x_m_localTM",
+        "y_m_localTM",
+        "lon_deg",
+        "lat_deg",
+        "elevation",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_std",
+        "elev_variability_std",
+        "tri"
+      ],
+      "missing_value_counts": {
+        "site": 0,
+        "scale_m": 0,
+        "x_m_localTM": 0,
+        "y_m_localTM": 0,
+        "lon_deg": 0,
+        "lat_deg": 0,
+        "elevation": 0,
+        "slope_deg": 1048,
+        "aspect_deg": 1048,
+        "roughness_std": 1048,
+        "elev_variability_std": 2088,
+        "tri": 1048
+      },
+      "geographic_bounds": {
+        "lon_min": 28.000086,
+        "lon_max": 28.299914,
+        "lat_min": 27.14993,
+        "lat_max": 27.449987,
+        "basis": "cell centres from CSV",
+        "coordinate_system": "Source EPSG:4326 (WGS84 lon/lat). Terrain grid: local transverse Mercator, metres.",
+        "local_grid_extent_km_summary": [
+          29.76,
+          33.36
+        ],
+        "x_m_localTM": [
+          -14820.0,
+          14820.0
+        ],
+        "y_m_localTM": [
+          -16620.0,
+          16620.0
+        ]
+      },
+      "resolution": {
+        "grid_m": 120,
+        "native_source_pixel_m": "27.48 x 30.92 m (1 arc-second, EPSG:4326)",
+        "resampling": "area average (rasterio Resampling.average) onto square metre grid",
+        "kernels_m": {
+          "slope": "3x3 central difference, baseline 2x120 m",
+          "roughness_std": "3x3 = 360 m",
+          "elev_variability_std": "5x5 = 600 m",
+          "tri": "3x3 Riley"
+        }
+      },
+      "vertical_reference": "Vertical datum not recorded in any project file (assumed orthometric height per DATASET_INVENTORY, not verified).",
+      "value_ranges": {
+        "elevation": [
+          -2.4288,
+          290.4829
+        ],
+        "slope_deg": [
+          0.0029,
+          25.5005
+        ],
+        "aspect_deg": [
+          0.0015,
+          359.9985
+        ],
+        "roughness_std": [
+          0.2532,
+          41.6244
+        ],
+        "elev_variability_std": [
+          0.5228,
+          47.5404
+        ],
+        "tri": [
+          0.8654,
+          139.6656
+        ]
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "column schema consistent across files",
+          "no duplicate (x,y) cells",
+          "complete regular grid at stated spacing",
+          "no inf values",
+          "slope 0-90 and aspect 0-360 in range",
+          "row count equals summary csv_rows",
+          "summary n/min/max/mean/std match CSV within 4-decimal rounding",
+          "NaN pattern equals kernel border exactly"
+        ],
+        "not_verifiable": [
+          "raw-to-processed lineage (raw rasters absent)",
+          "vertical datum"
+        ]
+      },
+      "known_limitations": [
+        "Border cells have NaN slope/aspect/roughness/TRI (1-cell kernel edge) and NaN elev_variability_std (2-cell edge); this is expected, not data loss.",
+        "CSV columns carry no units; units (metres, degrees) are only stated in summaries/README.",
+        "Aspect is defined (non-NaN) on near-flat cells where it is physically meaningless.",
+        "Raw source rasters are not in the delivered ZIP, so source-to-processed values could not be re-derived in this audit.",
+        "Elevation is relative to a body-specific reference; absolute elevations are not comparable across Earth/Mars/Moon.",
+        "Earth min elevation in raw status report is -33.0 m but processed 120 m minimum is -2.4 m; raw tile not available to check whether this is a real pit or an artefact.",
+        "30 m source averaged by 4x (120 m) or 12x (360 m): smoothing differs from Moon (about 1x)."
+      ]
+    },
+    {
+      "dataset_name": "earth_western_desert_360m_terrain.csv",
+      "file_path": "Data/processed/Earth files/earth_western_desert_360m_terrain.csv",
+      "file_sha256": "fe4513c6a280cdd36331432cec0ca55681af1b053fb529b51fd74896411e4208",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "source": "NASADEM_HGT v001 (NASA LP DAAC), 1 arc-second; raw tile n27e028 cropped to bbox",
+      "row_count": 7896,
+      "columns": [
+        "site",
+        "scale_m",
+        "x_m_localTM",
+        "y_m_localTM",
+        "lon_deg",
+        "lat_deg",
+        "elevation",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_std",
+        "elev_variability_std",
+        "tri"
+      ],
+      "missing_value_counts": {
+        "site": 0,
+        "scale_m": 0,
+        "x_m_localTM": 0,
+        "y_m_localTM": 0,
+        "lon_deg": 0,
+        "lat_deg": 0,
+        "elevation": 0,
+        "slope_deg": 352,
+        "aspect_deg": 352,
+        "roughness_std": 352,
+        "elev_variability_std": 696,
+        "tri": 352
+      },
+      "geographic_bounds": {
+        "lon_min": 27.998871,
+        "lon_max": 28.301129,
+        "lat_min": 27.148846,
+        "lat_max": 27.45107,
+        "basis": "cell centres from CSV",
+        "coordinate_system": "Source EPSG:4326 (WGS84 lon/lat). Terrain grid: local transverse Mercator, metres.",
+        "local_grid_extent_km_summary": [
+          30.24,
+          33.84
+        ],
+        "x_m_localTM": [
+          -14940.0,
+          14940.0
+        ],
+        "y_m_localTM": [
+          -16740.0,
+          16740.0
+        ]
+      },
+      "resolution": {
+        "grid_m": 360,
+        "native_source_pixel_m": "27.48 x 30.92 m (1 arc-second, EPSG:4326)",
+        "resampling": "area average (rasterio Resampling.average) onto square metre grid",
+        "kernels_m": {
+          "slope": "3x3 central difference, baseline 2x360 m",
+          "roughness_std": "3x3 = 1080 m",
+          "elev_variability_std": "5x5 = 1800 m",
+          "tri": "3x3 Riley"
+        }
+      },
+      "vertical_reference": "Vertical datum not recorded in any project file (assumed orthometric height per DATASET_INVENTORY, not verified).",
+      "value_ranges": {
+        "elevation": [
+          4.882,
+          287.9976
+        ],
+        "slope_deg": [
+          0.0065,
+          10.062
+        ],
+        "aspect_deg": [
+          0.0223,
+          359.9674
+        ],
+        "roughness_std": [
+          0.2875,
+          49.6183
+        ],
+        "elev_variability_std": [
+          0.6783,
+          60.8818
+        ],
+        "tri": [
+          1.2354,
+          183.0141
+        ]
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "column schema consistent across files",
+          "no duplicate (x,y) cells",
+          "complete regular grid at stated spacing",
+          "no inf values",
+          "slope 0-90 and aspect 0-360 in range",
+          "row count equals summary csv_rows",
+          "summary n/min/max/mean/std match CSV within 4-decimal rounding",
+          "NaN pattern equals kernel border exactly"
+        ],
+        "not_verifiable": [
+          "raw-to-processed lineage (raw rasters absent)",
+          "vertical datum"
+        ]
+      },
+      "known_limitations": [
+        "Border cells have NaN slope/aspect/roughness/TRI (1-cell kernel edge) and NaN elev_variability_std (2-cell edge); this is expected, not data loss.",
+        "CSV columns carry no units; units (metres, degrees) are only stated in summaries/README.",
+        "Aspect is defined (non-NaN) on near-flat cells where it is physically meaningless.",
+        "Raw source rasters are not in the delivered ZIP, so source-to-processed values could not be re-derived in this audit.",
+        "Elevation is relative to a body-specific reference; absolute elevations are not comparable across Earth/Mars/Moon.",
+        "Earth min elevation in raw status report is -33.0 m but processed 120 m minimum is -2.4 m; raw tile not available to check whether this is a real pit or an artefact.",
+        "30 m source averaged by 4x (120 m) or 12x (360 m): smoothing differs from Moon (about 1x).",
+        "roughness/variability kernels are 1080 m / 1800 m at 360 m scale vs 360 m / 600 m at 120 m scale: values are NOT comparable between scales."
+      ]
+    },
+    {
+      "dataset_name": "earth_western_desert_120m_terrain.geojson",
+      "file_path": "Data/processed/Earth files/earth_western_desert_120m_terrain.geojson",
+      "file_sha256": "a3727035e399b3ae697b6d3d17e42aa227aed4ae3347b6e14cf04efeb0b7cf02",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "source": "Derived from earth_western_desert_120m_terrain.csv by point decimation (values identical to CSV rows, no averaging)",
+      "row_count": 2800,
+      "row_count_note": "2800 Point features = 4.1% of the 68944 CSV cells",
+      "columns": [
+        "elevation",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_std",
+        "elev_variability_std",
+        "tri"
+      ],
+      "missing_value_counts": {
+        "elevation": 0,
+        "slope_deg": 105,
+        "aspect_deg": 105,
+        "roughness_std": 105,
+        "elev_variability_std": 105,
+        "tri": 105
+      },
+      "geographic_bounds": {
+        "lon_min": 28.000086,
+        "lon_max": 28.297486,
+        "lat_min": 27.152096,
+        "lat_max": 27.449987,
+        "coordinate_system": "No crs member; RFC 7946 WGS84 is consistent with Earth source (EPSG:4326)"
+      },
+      "resolution": {
+        "grid_m": 120,
+        "decimation": "regular lattice subsample"
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "all features are Point with 2-element [lon,lat]",
+          "every feature matches a CSV cell, elevation diff = 0"
+        ]
+      },
+      "known_limitations": [
+        "Features have no site, scale_m, units or body properties.",
+        "Decimation ratio differs by file (4.1%), so aggregate statistics differ from the summary JSON and CSV.",
+        "Missing properties are JSON null."
+      ]
+    },
+    {
+      "dataset_name": "earth_western_desert_360m_terrain.geojson",
+      "file_path": "Data/processed/Earth files/earth_western_desert_360m_terrain.geojson",
+      "file_sha256": "4f549cfde27cbeaee758f99a1abd4a2f27542d80da6f2219d2175440fb9ab076",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "source": "Derived from earth_western_desert_360m_terrain.csv by point decimation (values identical to CSV rows, no averaging)",
+      "row_count": 1974,
+      "row_count_note": "1974 Point features = 25.0% of the 7896 CSV cells",
+      "columns": [
+        "elevation",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_std",
+        "elev_variability_std",
+        "tri"
+      ],
+      "missing_value_counts": {
+        "elevation": 0,
+        "slope_deg": 88,
+        "aspect_deg": 88,
+        "roughness_std": 88,
+        "elev_variability_std": 174,
+        "tri": 88
+      },
+      "geographic_bounds": {
+        "lon_min": 27.998871,
+        "lon_max": 28.297487,
+        "lat_min": 27.152095,
+        "lat_max": 27.45107,
+        "coordinate_system": "No crs member; RFC 7946 WGS84 is consistent with Earth source (EPSG:4326)"
+      },
+      "resolution": {
+        "grid_m": 360,
+        "decimation": "regular lattice subsample"
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "all features are Point with 2-element [lon,lat]",
+          "every feature matches a CSV cell, elevation diff = 0"
+        ]
+      },
+      "known_limitations": [
+        "Features have no site, scale_m, units or body properties.",
+        "Decimation ratio differs by file (25.0%), so aggregate statistics differ from the summary JSON and CSV.",
+        "Missing properties are JSON null."
+      ]
+    },
+    {
+      "dataset_name": "mars_jezero_120m_terrain.csv",
+      "file_path": "Data/processed/Mars files/mars_jezero_120m_terrain.csv",
+      "file_sha256": "b6775db8f512f0f9a3ce3a91d60ca082b3f82aa35bf2207c2ef44ba8f15d4a72",
+      "body": "mars",
+      "site": "mars_jezero",
+      "source": "Mars 2020 Science Investigation CTX DEM Mosaic 20 m (USGS Astrogeology), M20_JezeroCrater_CTXDEM_20m.tif",
+      "row_count": 96369,
+      "columns": [
+        "site",
+        "scale_m",
+        "x_m_localTM",
+        "y_m_localTM",
+        "lon_deg",
+        "lat_deg",
+        "elevation",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_std",
+        "elev_variability_std",
+        "tri"
+      ],
+      "missing_value_counts": {
+        "site": 0,
+        "scale_m": 0,
+        "x_m_localTM": 0,
+        "y_m_localTM": 0,
+        "lon_deg": 0,
+        "lat_deg": 0,
+        "elevation": 0,
+        "slope_deg": 1248,
+        "aspect_deg": 1248,
+        "roughness_std": 1248,
+        "elev_variability_std": 2488,
+        "tri": 1248
+      },
+      "geographic_bounds": {
+        "lon_min": 77.198607,
+        "lon_max": 77.95071,
+        "lat_min": 18.099238,
+        "lat_max": 18.650267,
+        "basis": "cell centres from CSV",
+        "coordinate_system": "Source: projected CRS on Mars 2000 sphere. Terrain grid: local transverse Mercator on the same sphere, metres. lon/lat are Mars-sphere coordinates, NOT WGS84.",
+        "local_grid_extent_km_summary": [
+          42.36,
+          32.76
+        ],
+        "x_m_localTM": [
+          -21420.0,
+          20820.0
+        ],
+        "y_m_localTM": [
+          -16620.0,
+          16020.0
+        ]
+      },
+      "resolution": {
+        "grid_m": 120,
+        "native_source_pixel_m": "20 x 20 m (projected, Jezero_Crater_Projection on GCS_Mars_2000_Sphere)",
+        "resampling": "area average (rasterio Resampling.average) onto square metre grid",
+        "kernels_m": {
+          "slope": "3x3 central difference, baseline 2x120 m",
+          "roughness_std": "3x3 = 360 m",
+          "elev_variability_std": "5x5 = 600 m",
+          "tri": "3x3 Riley"
+        }
+      },
+      "vertical_reference": "Elevation relative to MOLA-localised reference per USGS catalog (secondary: DATASET_INVENTORY); exact reference not stated in project files.",
+      "value_ranges": {
+        "elevation": [
+          -2916.9897,
+          -1518.2499
+        ],
+        "slope_deg": [
+          0.0022,
+          39.4487
+        ],
+        "aspect_deg": [
+          0.0025,
+          359.9926
+        ],
+        "roughness_std": [
+          0.1391,
+          78.8651
+        ],
+        "elev_variability_std": [
+          0.4423,
+          108.1518
+        ],
+        "tri": [
+          0.5772,
+          241.6659
+        ]
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "column schema consistent across files",
+          "no duplicate (x,y) cells",
+          "complete regular grid at stated spacing",
+          "no inf values",
+          "slope 0-90 and aspect 0-360 in range",
+          "row count equals summary csv_rows",
+          "summary n/min/max/mean/std match CSV within 4-decimal rounding",
+          "NaN pattern equals kernel border exactly"
+        ],
+        "not_verifiable": [
+          "raw-to-processed lineage (raw rasters absent)",
+          "vertical datum"
+        ]
+      },
+      "known_limitations": [
+        "Border cells have NaN slope/aspect/roughness/TRI (1-cell kernel edge) and NaN elev_variability_std (2-cell edge); this is expected, not data loss.",
+        "CSV columns carry no units; units (metres, degrees) are only stated in summaries/README.",
+        "Aspect is defined (non-NaN) on near-flat cells where it is physically meaningless.",
+        "Raw source rasters are not in the delivered ZIP, so source-to-processed values could not be re-derived in this audit.",
+        "Elevation is relative to a body-specific reference; absolute elevations are not comparable across Earth/Mars/Moon.",
+        "lon_deg/lat_deg are planetocentric on a sphere; a web map or GeoJSON consumer that assumes WGS84/Earth will mis-place or mis-project these points.",
+        "20 m source averaged to 120 m/360 m; site extent (about 42 x 33 km) is narrower than a full crater-plus-delta context (crater diameter is external knowledge, not in project files)."
+      ]
+    },
+    {
+      "dataset_name": "mars_jezero_360m_terrain.csv",
+      "file_path": "Data/processed/Mars files/mars_jezero_360m_terrain.csv",
+      "file_sha256": "fafef6dfca0ed7fa2b13b5d0a32b6a505b8360bde82763b00c1e5546991aaaf4",
+      "body": "mars",
+      "site": "mars_jezero",
+      "source": "Mars 2020 Science Investigation CTX DEM Mosaic 20 m (USGS Astrogeology), M20_JezeroCrater_CTXDEM_20m.tif",
+      "row_count": 10856,
+      "columns": [
+        "site",
+        "scale_m",
+        "x_m_localTM",
+        "y_m_localTM",
+        "lon_deg",
+        "lat_deg",
+        "elevation",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_std",
+        "elev_variability_std",
+        "tri"
+      ],
+      "missing_value_counts": {
+        "site": 0,
+        "scale_m": 0,
+        "x_m_localTM": 0,
+        "y_m_localTM": 0,
+        "lon_deg": 0,
+        "lat_deg": 0,
+        "elevation": 0,
+        "slope_deg": 416,
+        "aspect_deg": 416,
+        "roughness_std": 416,
+        "elev_variability_std": 824,
+        "tri": 416
+      },
+      "geographic_bounds": {
+        "lon_min": 77.198607,
+        "lon_max": 77.948573,
+        "lat_min": 18.097214,
+        "lat_max": 18.650267,
+        "basis": "cell centres from CSV",
+        "coordinate_system": "Source: projected CRS on Mars 2000 sphere. Terrain grid: local transverse Mercator on the same sphere, metres. lon/lat are Mars-sphere coordinates, NOT WGS84.",
+        "local_grid_extent_km_summary": [
+          42.48,
+          33.12
+        ],
+        "x_m_localTM": [
+          -21420.0,
+          20700.0
+        ],
+        "y_m_localTM": [
+          -16740.0,
+          16020.0
+        ]
+      },
+      "resolution": {
+        "grid_m": 360,
+        "native_source_pixel_m": "20 x 20 m (projected, Jezero_Crater_Projection on GCS_Mars_2000_Sphere)",
+        "resampling": "area average (rasterio Resampling.average) onto square metre grid",
+        "kernels_m": {
+          "slope": "3x3 central difference, baseline 2x360 m",
+          "roughness_std": "3x3 = 1080 m",
+          "elev_variability_std": "5x5 = 1800 m",
+          "tri": "3x3 Riley"
+        }
+      },
+      "vertical_reference": "Elevation relative to MOLA-localised reference per USGS catalog (secondary: DATASET_INVENTORY); exact reference not stated in project files.",
+      "value_ranges": {
+        "elevation": [
+          -2907.1689,
+          -1536.4436
+        ],
+        "slope_deg": [
+          0.0128,
+          27.5967
+        ],
+        "aspect_deg": [
+          0.0483,
+          359.9493
+        ],
+        "roughness_std": [
+          0.4914,
+          133.4131
+        ],
+        "elev_variability_std": [
+          1.6719,
+          168.4624
+        ],
+        "tri": [
+          1.9556,
+          455.3469
+        ]
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "column schema consistent across files",
+          "no duplicate (x,y) cells",
+          "complete regular grid at stated spacing",
+          "no inf values",
+          "slope 0-90 and aspect 0-360 in range",
+          "row count equals summary csv_rows",
+          "summary n/min/max/mean/std match CSV within 4-decimal rounding",
+          "NaN pattern equals kernel border exactly"
+        ],
+        "not_verifiable": [
+          "raw-to-processed lineage (raw rasters absent)",
+          "vertical datum"
+        ]
+      },
+      "known_limitations": [
+        "Border cells have NaN slope/aspect/roughness/TRI (1-cell kernel edge) and NaN elev_variability_std (2-cell edge); this is expected, not data loss.",
+        "CSV columns carry no units; units (metres, degrees) are only stated in summaries/README.",
+        "Aspect is defined (non-NaN) on near-flat cells where it is physically meaningless.",
+        "Raw source rasters are not in the delivered ZIP, so source-to-processed values could not be re-derived in this audit.",
+        "Elevation is relative to a body-specific reference; absolute elevations are not comparable across Earth/Mars/Moon.",
+        "lon_deg/lat_deg are planetocentric on a sphere; a web map or GeoJSON consumer that assumes WGS84/Earth will mis-place or mis-project these points.",
+        "20 m source averaged to 120 m/360 m; site extent (about 42 x 33 km) is narrower than a full crater-plus-delta context (crater diameter is external knowledge, not in project files).",
+        "roughness/variability kernels are 1080 m / 1800 m at 360 m scale vs 360 m / 600 m at 120 m scale: values are NOT comparable between scales."
+      ]
+    },
+    {
+      "dataset_name": "mars_jezero_120m_terrain.geojson",
+      "file_path": "Data/processed/Mars files/mars_jezero_120m_terrain.geojson",
+      "file_sha256": "7e05ad20221e517fcb59880e9ee685bd4a7913b74daba2fa7af613c291580c32",
+      "body": "mars",
+      "site": "mars_jezero",
+      "source": "Derived from mars_jezero_120m_terrain.csv by point decimation (values identical to CSV rows, no averaging)",
+      "row_count": 3905,
+      "row_count_note": "3905 Point features = 4.1% of the 96369 CSV cells",
+      "columns": [
+        "elevation",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_std",
+        "elev_variability_std",
+        "tri"
+      ],
+      "missing_value_counts": {
+        "elevation": 0,
+        "slope_deg": 125,
+        "aspect_deg": 125,
+        "roughness_std": 125,
+        "elev_variability_std": 125,
+        "tri": 125
+      },
+      "geographic_bounds": {
+        "lon_min": 77.198607,
+        "lon_max": 77.946437,
+        "lat_min": 18.103287,
+        "lat_max": 18.650267,
+        "coordinate_system": "No crs member; RFC 7946 implies WGS84, which is wrong for Mars/Moon"
+      },
+      "resolution": {
+        "grid_m": 120,
+        "decimation": "regular lattice subsample"
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "all features are Point with 2-element [lon,lat]",
+          "every feature matches a CSV cell, elevation diff = 0"
+        ]
+      },
+      "known_limitations": [
+        "Features have no site, scale_m, units or body properties.",
+        "Decimation ratio differs by file (4.1%), so aggregate statistics differ from the summary JSON and CSV.",
+        "Missing properties are JSON null.",
+        "Moon/Mars coordinates are not WGS84; do not drape on an Earth basemap."
+      ]
+    },
+    {
+      "dataset_name": "mars_jezero_360m_terrain.geojson",
+      "file_path": "Data/processed/Mars files/mars_jezero_360m_terrain.geojson",
+      "file_sha256": "8a82e1801c7a2e784f40db119e280c10352e9461d834958bdd91f1aeae4eab77",
+      "body": "mars",
+      "site": "mars_jezero",
+      "source": "Derived from mars_jezero_360m_terrain.csv by point decimation (values identical to CSV rows, no averaging)",
+      "row_count": 2714,
+      "row_count_note": "2714 Point features = 25.0% of the 10856 CSV cells",
+      "columns": [
+        "elevation",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_std",
+        "elev_variability_std",
+        "tri"
+      ],
+      "missing_value_counts": {
+        "elevation": 0,
+        "slope_deg": 104,
+        "aspect_deg": 104,
+        "roughness_std": 104,
+        "elev_variability_std": 206,
+        "tri": 104
+      },
+      "geographic_bounds": {
+        "lon_min": 77.198607,
+        "lon_max": 77.942163,
+        "lat_min": 18.103287,
+        "lat_max": 18.650267,
+        "coordinate_system": "No crs member; RFC 7946 implies WGS84, which is wrong for Mars/Moon"
+      },
+      "resolution": {
+        "grid_m": 360,
+        "decimation": "regular lattice subsample"
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "all features are Point with 2-element [lon,lat]",
+          "every feature matches a CSV cell, elevation diff = 0"
+        ]
+      },
+      "known_limitations": [
+        "Features have no site, scale_m, units or body properties.",
+        "Decimation ratio differs by file (25.0%), so aggregate statistics differ from the summary JSON and CSV.",
+        "Missing properties are JSON null.",
+        "Moon/Mars coordinates are not WGS84; do not drape on an Earth basemap."
+      ]
+    },
+    {
+      "dataset_name": "moon_taurus_littrow_120m_terrain.csv",
+      "file_path": "Data/processed/Moon files/moon_taurus_littrow_120m_terrain.csv",
+      "file_sha256": "70e10c044d5459cb8548661c2cc312e6d1ea8175f6bdbed549afa26159f38c75",
+      "body": "moon",
+      "site": "moon_taurus_littrow",
+      "source": "LRO LOLA global LDEM 118 m, Mar 2014 (USGS Astrogeology); HTTP range-read window; int16 x 0.5 = metres",
+      "row_count": 29535,
+      "columns": [
+        "site",
+        "scale_m",
+        "x_m_localTM",
+        "y_m_localTM",
+        "lon_deg",
+        "lat_deg",
+        "elevation",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_std",
+        "elev_variability_std",
+        "tri"
+      ],
+      "missing_value_counts": {
+        "site": 0,
+        "scale_m": 0,
+        "x_m_localTM": 0,
+        "y_m_localTM": 0,
+        "lon_deg": 0,
+        "lat_deg": 0,
+        "elevation": 0,
+        "slope_deg": 684,
+        "aspect_deg": 684,
+        "roughness_std": 684,
+        "elev_variability_std": 1360,
+        "tri": 684
+      },
+      "geographic_bounds": {
+        "lon_min": 30.400323,
+        "lon_max": 31.152352,
+        "lat_min": 19.851243,
+        "lat_max": 20.500652,
+        "basis": "cell centres from CSV",
+        "coordinate_system": "Source: simple cylindrical on lunar sphere (R=1737400 m). Terrain grid: local transverse Mercator, metres. lon/lat are Moon-sphere coordinates, NOT WGS84.",
+        "local_grid_extent_km_summary": [
+          21.48,
+          19.8
+        ],
+        "x_m_localTM": [
+          -10500.0,
+          10860.0
+        ],
+        "y_m_localTM": [
+          -10260.0,
+          9420.0
+        ]
+      },
+      "resolution": {
+        "grid_m": 120,
+        "native_source_pixel_m": "118.45 x 118.45 m (SimpleCylindrical Moon, sphere R=1737.4 km)",
+        "resampling": "area average (rasterio Resampling.average) onto square metre grid",
+        "kernels_m": {
+          "slope": "3x3 central difference, baseline 2x120 m",
+          "roughness_std": "3x3 = 360 m",
+          "elev_variability_std": "5x5 = 600 m",
+          "tri": "3x3 Riley"
+        }
+      },
+      "vertical_reference": "Heights relative to lunar reference sphere, radius 1737.4 km (from source CRS).",
+      "value_ranges": {
+        "elevation": [
+          -2922.4703,
+          -205.7345
+        ],
+        "slope_deg": [
+          0.0208,
+          37.7724
+        ],
+        "aspect_deg": [
+          0.0525,
+          359.9904
+        ],
+        "roughness_std": [
+          0.2887,
+          75.0403
+        ],
+        "elev_variability_std": [
+          0.8311,
+          116.8825
+        ],
+        "tri": [
+          0.9574,
+          227.582
+        ]
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "column schema consistent across files",
+          "no duplicate (x,y) cells",
+          "complete regular grid at stated spacing",
+          "no inf values",
+          "slope 0-90 and aspect 0-360 in range",
+          "row count equals summary csv_rows",
+          "summary n/min/max/mean/std match CSV within 4-decimal rounding",
+          "NaN pattern equals kernel border exactly"
+        ],
+        "not_verifiable": [
+          "raw-to-processed lineage (raw rasters absent)",
+          "vertical datum"
+        ]
+      },
+      "known_limitations": [
+        "Border cells have NaN slope/aspect/roughness/TRI (1-cell kernel edge) and NaN elev_variability_std (2-cell edge); this is expected, not data loss.",
+        "CSV columns carry no units; units (metres, degrees) are only stated in summaries/README.",
+        "Aspect is defined (non-NaN) on near-flat cells where it is physically meaningless.",
+        "Raw source rasters are not in the delivered ZIP, so source-to-processed values could not be re-derived in this audit.",
+        "Elevation is relative to a body-specific reference; absolute elevations are not comparable across Earth/Mars/Moon.",
+        "lon_deg/lat_deg are planetocentric on a sphere; a web map or GeoJSON consumer that assumes WGS84/Earth will mis-place or mis-project these points.",
+        "Native 118 m is close to the 120 m grid so almost no averaging; effective LOLA resolution may be coarser than nominal (not verified)."
+      ]
+    },
+    {
+      "dataset_name": "moon_taurus_littrow_360m_terrain.csv",
+      "file_path": "Data/processed/Moon files/moon_taurus_littrow_360m_terrain.csv",
+      "file_sha256": "9076d6c51af38424a120567e07759a1f5f528cd89ec915b0729955ca00e52c4f",
+      "body": "moon",
+      "site": "moon_taurus_littrow",
+      "source": "LRO LOLA global LDEM 118 m, Mar 2014 (USGS Astrogeology); HTTP range-read window; int16 x 0.5 = metres",
+      "row_count": 3416,
+      "columns": [
+        "site",
+        "scale_m",
+        "x_m_localTM",
+        "y_m_localTM",
+        "lon_deg",
+        "lat_deg",
+        "elevation",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_std",
+        "elev_variability_std",
+        "tri"
+      ],
+      "missing_value_counts": {
+        "site": 0,
+        "scale_m": 0,
+        "x_m_localTM": 0,
+        "y_m_localTM": 0,
+        "lon_deg": 0,
+        "lat_deg": 0,
+        "elevation": 0,
+        "slope_deg": 230,
+        "aspect_deg": 230,
+        "roughness_std": 230,
+        "elev_variability_std": 452,
+        "tri": 230
+      },
+      "geographic_bounds": {
+        "lon_min": 30.396088,
+        "lon_max": 31.156587,
+        "lat_min": 19.851234,
+        "lat_max": 20.504609,
+        "basis": "cell centres from CSV",
+        "coordinate_system": "Source: simple cylindrical on lunar sphere (R=1737400 m). Terrain grid: local transverse Mercator, metres. lon/lat are Moon-sphere coordinates, NOT WGS84.",
+        "local_grid_extent_km_summary": [
+          21.96,
+          20.16
+        ],
+        "x_m_localTM": [
+          -10620.0,
+          10980.0
+        ],
+        "y_m_localTM": [
+          -10260.0,
+          9540.0
+        ]
+      },
+      "resolution": {
+        "grid_m": 360,
+        "native_source_pixel_m": "118.45 x 118.45 m (SimpleCylindrical Moon, sphere R=1737.4 km)",
+        "resampling": "area average (rasterio Resampling.average) onto square metre grid",
+        "kernels_m": {
+          "slope": "3x3 central difference, baseline 2x360 m",
+          "roughness_std": "3x3 = 1080 m",
+          "elev_variability_std": "5x5 = 1800 m",
+          "tri": "3x3 Riley"
+        }
+      },
+      "vertical_reference": "Heights relative to lunar reference sphere, radius 1737.4 km (from source CRS).",
+      "value_ranges": {
+        "elevation": [
+          -2900.1549,
+          -211.9614
+        ],
+        "slope_deg": [
+          0.0536,
+          29.7431
+        ],
+        "aspect_deg": [
+          0.3218,
+          359.6376
+        ],
+        "roughness_std": [
+          2.0331,
+          164.5661
+        ],
+        "elev_variability_std": [
+          6.467,
+          273.9562
+        ],
+        "tri": [
+          8.7299,
+          493.789
+        ]
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "column schema consistent across files",
+          "no duplicate (x,y) cells",
+          "complete regular grid at stated spacing",
+          "no inf values",
+          "slope 0-90 and aspect 0-360 in range",
+          "row count equals summary csv_rows",
+          "summary n/min/max/mean/std match CSV within 4-decimal rounding",
+          "NaN pattern equals kernel border exactly"
+        ],
+        "not_verifiable": [
+          "raw-to-processed lineage (raw rasters absent)",
+          "vertical datum"
+        ]
+      },
+      "known_limitations": [
+        "Border cells have NaN slope/aspect/roughness/TRI (1-cell kernel edge) and NaN elev_variability_std (2-cell edge); this is expected, not data loss.",
+        "CSV columns carry no units; units (metres, degrees) are only stated in summaries/README.",
+        "Aspect is defined (non-NaN) on near-flat cells where it is physically meaningless.",
+        "Raw source rasters are not in the delivered ZIP, so source-to-processed values could not be re-derived in this audit.",
+        "Elevation is relative to a body-specific reference; absolute elevations are not comparable across Earth/Mars/Moon.",
+        "lon_deg/lat_deg are planetocentric on a sphere; a web map or GeoJSON consumer that assumes WGS84/Earth will mis-place or mis-project these points.",
+        "Native 118 m is close to the 120 m grid so almost no averaging; effective LOLA resolution may be coarser than nominal (not verified).",
+        "roughness/variability kernels are 1080 m / 1800 m at 360 m scale vs 360 m / 600 m at 120 m scale: values are NOT comparable between scales."
+      ]
+    },
+    {
+      "dataset_name": "moon_taurus_littrow_120m_terrain.geojson",
+      "file_path": "Data/processed/Moon files/moon_taurus_littrow_120m_terrain.geojson",
+      "file_sha256": "e1dfa532bb50daefa96f6b2e4d74373c77784584cad9b966f97a8f0c2024051f",
+      "body": "moon",
+      "site": "moon_taurus_littrow",
+      "source": "Derived from moon_taurus_littrow_120m_terrain.csv by point decimation (values identical to CSV rows, no averaging)",
+      "row_count": 3300,
+      "row_count_note": "3300 Point features = 11.2% of the 29535 CSV cells",
+      "columns": [
+        "elevation",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_std",
+        "elev_variability_std",
+        "tri"
+      ],
+      "missing_value_counts": {
+        "elevation": 0,
+        "slope_deg": 114,
+        "aspect_deg": 114,
+        "roughness_std": 114,
+        "elev_variability_std": 168,
+        "tri": 114
+      },
+      "geographic_bounds": {
+        "lon_min": 30.400323,
+        "lon_max": 31.148127,
+        "lat_min": 19.859166,
+        "lat_max": 20.500652,
+        "coordinate_system": "No crs member; RFC 7946 implies WGS84, which is wrong for Mars/Moon"
+      },
+      "resolution": {
+        "grid_m": 120,
+        "decimation": "regular lattice subsample"
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "all features are Point with 2-element [lon,lat]",
+          "every feature matches a CSV cell, elevation diff = 0"
+        ]
+      },
+      "known_limitations": [
+        "Features have no site, scale_m, units or body properties.",
+        "Decimation ratio differs by file (11.2%), so aggregate statistics differ from the summary JSON and CSV.",
+        "Missing properties are JSON null.",
+        "Moon/Mars coordinates are not WGS84; do not drape on an Earth basemap."
+      ]
+    },
+    {
+      "dataset_name": "moon_taurus_littrow_360m_terrain.geojson",
+      "file_path": "Data/processed/Moon files/moon_taurus_littrow_360m_terrain.geojson",
+      "file_sha256": "676a4d78e54ef3dc6030607673fe2a424100768307e0a7987cb92d6f98186a57",
+      "body": "moon",
+      "site": "moon_taurus_littrow",
+      "source": "Derived from moon_taurus_littrow_360m_terrain.csv by point decimation (values identical to CSV rows, no averaging)",
+      "row_count": 3416,
+      "row_count_note": "3416 Point features = 100.0% of the 3416 CSV cells",
+      "columns": [
+        "elevation",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_std",
+        "elev_variability_std",
+        "tri"
+      ],
+      "missing_value_counts": {
+        "elevation": 0,
+        "slope_deg": 230,
+        "aspect_deg": 230,
+        "roughness_std": 230,
+        "elev_variability_std": 452,
+        "tri": 230
+      },
+      "geographic_bounds": {
+        "lon_min": 30.396088,
+        "lon_max": 31.156587,
+        "lat_min": 19.851234,
+        "lat_max": 20.504609,
+        "coordinate_system": "No crs member; RFC 7946 implies WGS84, which is wrong for Mars/Moon"
+      },
+      "resolution": {
+        "grid_m": 360,
+        "decimation": "none (all cells)"
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "all features are Point with 2-element [lon,lat]",
+          "every feature matches a CSV cell, elevation diff = 0"
+        ]
+      },
+      "known_limitations": [
+        "Features have no site, scale_m, units or body properties.",
+        "Decimation ratio differs by file (100.0%), so aggregate statistics differ from the summary JSON and CSV.",
+        "Missing properties are JSON null.",
+        "Moon/Mars coordinates are not WGS84; do not drape on an Earth basemap."
+      ]
+    },
+    {
+      "dataset_name": "earth_western_desert_power_daily.csv",
+      "file_path": "Data/processed/Earth files/earth_western_desert_power_daily.csv",
+      "file_sha256": "a7cbf9c5e1e52484b06171054f6ea88cc4c787a00fbee573831b45542f557f8a",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "source": "NASA POWER daily point API, community AG, point lon 28.15 lat 27.3, 2023-01-01..2023-12-31 (from reports/download_log.json URLs)",
+      "row_count": 365,
+      "columns": [
+        "date",
+        "T2M_MAX",
+        "T2M_MIN",
+        "ALLSKY_SFC_SW_DWN",
+        "WS2M",
+        "PS"
+      ],
+      "missing_value_counts": {
+        "date": 0,
+        "T2M_MAX": 0,
+        "T2M_MIN": 0,
+        "ALLSKY_SFC_SW_DWN": 0,
+        "WS2M": 0,
+        "PS": 0
+      },
+      "geographic_bounds": {
+        "point_lon": 28.15,
+        "point_lat": 27.3,
+        "note": "single point; terrain bbox lon 28.0-28.3, lat 27.15-27.45"
+      },
+      "resolution": {
+        "temporal": "daily",
+        "spatial": "one model grid cell (about 0.5 deg per DATASET_INVENTORY, not verified from file)"
+      },
+      "units_reported": {
+        "T2M_MAX": "C",
+        "T2M_MIN": "C",
+        "ALLSKY_SFC_SW_DWN": "MJ/m^2/day",
+        "WS2M": "m/s",
+        "PS": "kPa"
+      },
+      "value_ranges": {
+        "T2M_MAX": [
+          14.5,
+          43.08
+        ],
+        "T2M_MIN": [
+          2.39,
+          27.84
+        ],
+        "ALLSKY_SFC_SW_DWN": [
+          9.64,
+          30.74
+        ],
+        "WS2M": [
+          0.7,
+          5.81
+        ],
+        "PS": [
+          98.64,
+          100.78
+        ]
+      },
+      "validation_status": {
+        "audit_status": "PARTIAL",
+        "verified_by_audit": [
+          "365 contiguous unique dates",
+          "no nulls or -999 fill values",
+          "T2M_MAX >= T2M_MIN on every day"
+        ],
+        "failed": [
+          "T2M (mean air temperature) absent: status_earth reports FAILED, KeyError T2M"
+        ]
+      },
+      "known_limitations": [
+        "Missing T2M: 5 of 6 requested variables present.",
+        "Single year (2023); not a climatology.",
+        "One value for the whole 33 km site; cannot be joined per terrain cell.",
+        "Reanalysis/satellite-derived model output, not station measurement.",
+        "Date stored as integer YYYYMMDD.",
+        "No relative humidity, precipitation, or hourly data."
+      ]
+    },
+    {
+      "dataset_name": "comparison_120m.csv",
+      "file_path": "Data/processed/comparison_120m.csv",
+      "file_sha256": "a4f3e1b81111d9ab1ab3439349c506c3cf682254fc355702471241e7f0926949",
+      "body": "earth, mars, moon",
+      "site": "all three",
+      "source": "Derived: site-wide means/stds of 120 m terrain metrics from the three 120 m terrain CSVs",
+      "row_count": 3,
+      "columns": [
+        "body",
+        "scale_m",
+        "site",
+        "valid_cells",
+        "elev_variability_std_mean",
+        "elev_variability_std_std",
+        "roughness_std_mean",
+        "roughness_std_std",
+        "slope_deg_mean",
+        "slope_deg_std",
+        "tri_mean",
+        "tri_std"
+      ],
+      "missing_value_counts": {
+        "body": 0,
+        "scale_m": 0,
+        "site": 0,
+        "valid_cells": 0,
+        "elev_variability_std_mean": 0,
+        "elev_variability_std_std": 0,
+        "roughness_std_mean": 0,
+        "roughness_std_std": 0,
+        "slope_deg_mean": 0,
+        "slope_deg_std": 0,
+        "tri_mean": 0,
+        "tri_std": 0
+      },
+      "geographic_bounds": {
+        "note": "none stored; one row per site"
+      },
+      "resolution": {
+        "grid_m": 120
+      },
+      "validation_status": {
+        "audit_status": "PASS_WITH_WARNINGS",
+        "verified_by_audit": [
+          "valid_cells and all 8 statistics equal the 120 m summary JSONs to 4 decimals"
+        ]
+      },
+      "known_limitations": [
+        "Only 120 m; no 360 m rows.",
+        "Only means and standard deviations of skewed variables (no median/percentiles); no elevation or aspect rows.",
+        "No climate variables.",
+        "No similarity score or distance metric is computed anywhere in the package.",
+        "Roughness/variability at 120 m depend on native resolution (30 m / 20 m averaged vs 118 m barely averaged)."
+      ]
+    }
+  ]
+}

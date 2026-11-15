@@ -1,0 +1,109 @@
+{
+ "note": "Potential evidence gaps, not measurements. Statuses are derived from the data actually loaded. No source listed here was accessed by this project.",
+ "counts": {
+  "Partially available": 2,
+  "Missing": 5,
+  "Not independently verified": 2
+ },
+ "items": [
+  {
+   "id": "earth_t2m",
+   "variable": "T2M (daily mean 2 m air temperature)",
+   "body": "Earth",
+   "why_it_matters": "Mean temperature anchors thermal-regime comparisons; max/min alone do not give the mean.",
+   "status": "Partially available",
+   "current_evidence": "Columns loaded: date, T2M_MAX, T2M_MIN, ALLSKY_SFC_SW_DWN, WS2M, PS. T2M is not in the files; the pipeline reports its download failed. Do not derive it from T2M_MAX/T2M_MIN.",
+   "recommended_source": "NASA POWER daily point API, parameter T2M (the parameter list in reports/power_parameter_availability.json lists it; it was not downloaded).",
+   "source_access": "Recommended only. This project did not access this source.",
+   "cannot_conclude": "Mean daily temperature, diurnal-mean statistics, any thermal analog claim."
+  },
+  {
+   "id": "moon_temperature",
+   "variable": "Verified lunar surface temperature",
+   "body": "Moon",
+   "why_it_matters": "Surface thermal extremes drive mission design for hardware and power.",
+   "status": "Missing",
+   "current_evidence": "Manifest lists Moon temperature/solar as unavailable (Diviner not processed).",
+   "recommended_source": "LRO Diviner Lunar Radiometer products (NASA PDS Geosciences Node).",
+   "source_access": "Recommended only. This project did not access this source.",
+   "cannot_conclude": "Any thermal similarity between Earth cells and Taurus-Littrow."
+  },
+  {
+   "id": "mars_climate",
+   "variable": "Verified Mars climate (temperature, pressure, wind, solar, humidity)",
+   "body": "Mars",
+   "why_it_matters": "Atmosphere controls dust, thermal cycling and entry/operations conditions.",
+   "status": "Missing",
+   "current_evidence": "Manifest lists Mars atmosphere as unavailable (MEDA not processed).",
+   "recommended_source": "Mars 2020 MEDA environmental data (NASA PDS Atmospheres Node).",
+   "source_access": "Recommended only. This project did not access this source.",
+   "cannot_conclude": "Any atmospheric or climate analog claim for Jezero."
+  },
+  {
+   "id": "moon_illumination",
+   "variable": "Lunar illumination / solar geometry",
+   "body": "Moon",
+   "why_it_matters": "Sun angle and shadow set power, thermal and imaging conditions.",
+   "status": "Missing",
+   "current_evidence": "No illumination dataset is registered in the site manifest.",
+   "recommended_source": "LOLA-derived illumination products and LRO Camera imagery (NASA PDS / USGS Astrogeology).",
+   "source_access": "Recommended only. This project did not access this source.",
+   "cannot_conclude": "Lighting, shadowing or power-availability similarity."
+  },
+  {
+   "id": "surface_composition",
+   "variable": "Surface composition (mineralogy / chemistry)",
+   "body": "Earth, Mars, Moon",
+   "why_it_matters": "Composition shapes dust, chemistry and science targets; terrain shape alone does not capture it.",
+   "status": "Missing",
+   "current_evidence": "Surface-characteristic layers are not implemented (README, DATASET_INVENTORY).",
+   "recommended_source": "Mars: CRISM and Mars 2020 instrument data (PDS). Moon: LRO/Apollo sample and spectral products (PDS). Earth: geological maps.",
+   "source_access": "Recommended only. This project did not access this source.",
+   "cannot_conclude": "Whether any Earth cell is geologically similar."
+  },
+  {
+   "id": "regolith_soil",
+   "variable": "Soil / regolith properties (grain size, cohesion, rock abundance)",
+   "body": "Earth, Mars, Moon",
+   "why_it_matters": "Trafficability and excavation depend on soil mechanics.",
+   "status": "Missing",
+   "current_evidence": "No soil or regolith layer is in the processed data.",
+   "recommended_source": "Moon: Apollo returned-sample data and Diviner rock abundance. Mars: rover traverse and thermal-inertia products. Earth: soil surveys.",
+   "source_access": "Recommended only. This project did not access this source.",
+   "cannot_conclude": "Rover mobility or excavation analog claims."
+  },
+  {
+   "id": "vertical_datums",
+   "variable": "Common vertical datum for absolute elevation",
+   "body": "Earth, Mars, Moon",
+   "why_it_matters": "Each body uses its own elevation zero, so absolute elevations are not comparable.",
+   "status": "Partially available",
+   "current_evidence": "Elevation exists per body and is used for within-body terrain metrics only; the similarity model excludes it.",
+   "recommended_source": "Body-specific datum documentation (NASADEM, MOLA/CTX, LOLA).",
+   "source_access": "Recommended only. This project did not access this source.",
+   "cannot_conclude": "Any cross-body comparison of absolute elevation."
+  },
+  {
+   "id": "reference_representativeness",
+   "variable": "Representativeness of one reference site per body",
+   "body": "Mars, Moon",
+   "why_it_matters": "Jezero and Taurus-Littrow are single sites; scores describe closeness to them only.",
+   "status": "Not independently verified",
+   "current_evidence": "One reference site per body; no external validation of the scores.",
+   "recommended_source": "Additional reference sites and independent analog studies.",
+   "source_access": "Recommended only. This project did not access this source.",
+   "cannot_conclude": "That a high-scoring cell resembles Mars or the Moon in general."
+  },
+  {
+   "id": "climate_model_vs_station",
+   "variable": "Station-measured Earth climate",
+   "body": "Earth",
+   "why_it_matters": "POWER values are modelled/satellite-derived for a grid cell, not station measurements.",
+   "status": "Not independently verified",
+   "current_evidence": "Daily POWER records exist (n=365) for one point.",
+   "recommended_source": "Egyptian meteorological station records.",
+   "source_access": "Recommended only. This project did not access this source.",
+   "cannot_conclude": "Local measured temperature extremes."
+  }
+ ]
+}

@@ -1,0 +1,77 @@
+{
+  "site": "mars_jezero",
+  "body": "mars",
+  "scale_m": 360,
+  "generated_utc": "2026-11-14T15:09:25+00:00",
+  "provenance": {
+    "source_file": "raw\\mars\\M20_JezeroCrater_CTXDEM_20m.tif",
+    "source_sha256": "ba7f706ea1b5d63a562f28a7dcf7a7f3c79bce7f048e6974b57e8a33c30d1ba2",
+    "dataset": "Mars 2020 Science Investigation CTX DEM Mosaic 20 m (USGS Astrogeology)",
+    "source_native_pixel_m": [
+      20.0,
+      20.0
+    ],
+    "scale_factor_applied": 1.0,
+    "resampling": "area average (rasterio Resampling.average) onto square metre grid",
+    "grid_crs": "local transverse Mercator on the source raster's own datum, metres",
+    "source_window_px": [
+      553,
+      1884,
+      2132,
+      1663
+    ]
+  },
+  "grid": {
+    "width": 118,
+    "height": 92,
+    "cells": 10856,
+    "valid_cells": 10856,
+    "csv_rows": 10856,
+    "valid_fraction": 1.0,
+    "extent_km": [
+      42.48,
+      33.12
+    ]
+  },
+  "kernels_m": {
+    "slope": "3x3 central difference, baseline 2x360 m",
+    "roughness_std": "3x3 = 1080 m",
+    "elev_variability_std": "5x5 = 1800 m",
+    "tri": "3x3 Riley"
+  },
+  "elevation": {
+    "n": 10856,
+    "min": -2907.1688583690757,
+    "max": -1536.44361232985,
+    "mean": -2455.7707065131926,
+    "std": 255.51743598691095
+  },
+  "slope_deg": {
+    "n": 10440,
+    "min": 0.012798772497813807,
+    "max": 27.59667014212404,
+    "mean": 2.859864666415711,
+    "std": 3.614477618583437
+  },
+  "roughness_std": {
+    "n": 10440,
+    "min": 0.4913884168385008,
+    "max": 133.4131149421628,
+    "mean": 15.371476100424022,
+    "std": 18.57153688348811
+  },
+  "elev_variability_std": {
+    "n": 10032,
+    "min": 1.671912726807742,
+    "max": 168.46235363550537,
+    "mean": 24.374530890883314,
+    "std": 28.90016605023864
+  },
+  "tri": {
+    "n": 10440,
+    "min": 1.9556480472514053,
+    "max": 455.34688223122623,
+    "mean": 49.610415662688105,
+    "std": 57.82335888473726
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "weights": {
+    "slope_deg": 0.3,
+    "roughness_std": 0.2,
+    "elev_variability_std": 0.3,
+    "tri": 0.2
+  },
+  "targets": {
+    "mars": {
+      "models_120": {
+        "slope_deg": "ln",
+        "roughness_std": "ln",
+        "elev_variability_std": "ln",
+        "tri": "ln"
+      },
+      "models_360": {
+        "slope_deg": "ln",
+        "roughness_std": "ln",
+        "elev_variability_std": "ln",
+        "tri": "ln"
+      },
+      "null_pattern_matches": true,
+      "n_compared": 67896,
+      "max_abs_diff_score": 0.0049999716552928675,
+      "max_abs_diff_feature_score": 0.049999503132672984,
+      "max_abs_diff_contribution": 0.004999957544187694,
+      "max_abs_diff_completeness": 0.0,
+      "rank_max_abs_diff_unrounded_python_vs_js": 0.0,
+      "rank_mismatch_count": 0,
+      "rank_null_pattern_matches": true,
+      "null_pattern_360_matches": true,
+      "max_abs_diff_score_360m": 0.004998916743614856
+    },
+    "moon": {
+      "models_120": {
+        "slope_deg": "beta",
+        "roughness_std": "beta",
+        "elev_variability_std": "beta",
+        "tri": "beta"
+      },
+      "models_360": {
+        "slope_deg": "beta",
+        "roughness_std": "beta",
+        "elev_variability_std": "beta",
+        "tri": "beta"
+      },
+      "null_pattern_matches": true,
+      "n_compared": 67896,
+      "max_abs_diff_score": 0.004999985200960566,
+      "max_abs_diff_feature_score": 0.04999948853932068,
+      "max_abs_diff_contribution": 0.004999846561796417,
+      "max_abs_diff_completeness": 0.0,
+      "rank_max_abs_diff_unrounded_python_vs_js": 0.0,
+      "rank_mismatch_count": 0,
+      "rank_null_pattern_matches": true,
+      "null_pattern_360_matches": true,
+      "max_abs_diff_score_360m": 0.004996966971468453
+    }
+  },
+  "tolerance_note": "JS erfc is accurate to ~1e-15; GeoJSON rounds score/contribution to 2 decimals and feature score to 1 decimal, so expected max diffs are <=0.005 / 0.005 / 0.05."
+}

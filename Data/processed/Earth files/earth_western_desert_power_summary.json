@@ -1,0 +1,48 @@
+{
+  "T2M_MAX": {
+    "n": 365,
+    "mean": 29.745369863013703,
+    "min": 14.5,
+    "max": 43.08,
+    "units": "C",
+    "community_used": "AG",
+    "source_sha256": "b7a8e29b78b2736b92402a4e39a59b4822110b2aad33911a9deaef251eb4be70"
+  },
+  "T2M_MIN": {
+    "n": 365,
+    "mean": 15.850109589041097,
+    "min": 2.39,
+    "max": 27.84,
+    "units": "C",
+    "community_used": "AG",
+    "source_sha256": "f82cf7f68b0a24fbf568796f20b3b1ed4acf7b7f3af6bc5266262d80199cf89c"
+  },
+  "ALLSKY_SFC_SW_DWN": {
+    "n": 365,
+    "mean": 22.39528767123288,
+    "min": 9.64,
+    "max": 30.74,
+    "units": "MJ/m^2/day",
+    "community_used": "AG",
+    "source_sha256": "8599953cff1e7b69f81a7333a9687fac52d5ad3c50bae44d3041f05595211cb6"
+  },
+  "WS2M": {
+    "n": 365,
+    "mean": 3.0200547945205485,
+    "min": 0.7,
+    "max": 5.81,
+    "units": "m/s",
+    "community_used": "AG",
+    "source_sha256": "dd9813557b0fd39153a019715b9900c6422b1d9e363a5969e9457909aaae5137"
+  },
+  "PS": {
+    "n": 365,
+    "mean": 99.61657534246574,
+    "min": 98.64,
+    "max": 100.78,
+    "units": "kPa",
+    "community_used": "AG",
+    "source_sha256": "5dd4595af9947d3fff6b3115d69a8cafaeb30762e2b9fbfe8ba019b149042b0b"
+  },
+  "_note": "Reanalysis/satellite-derived model values for the grid cell containing the point, not station measurements. Units as reported by the API response."
+}

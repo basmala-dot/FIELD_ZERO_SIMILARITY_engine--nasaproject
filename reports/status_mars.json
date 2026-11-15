@@ -1,0 +1,180 @@
+{
+  "body": "mars",
+  "generated_utc": "2026-11-14T15:09:40+00:00",
+  "code": [
+    [
+      "CTX DEM downloader (resumable, size-vs-server check)",
+      "written; not yet run against USGS"
+    ],
+    [
+      "projected-CRS handling (pyproj + local metre grid)",
+      "written; needs the selftest on your machine"
+    ],
+    [
+      "terrain processor at common metre scale",
+      "written; math unit-tested"
+    ],
+    [
+      "validator",
+      "written"
+    ]
+  ],
+  "not_implemented": [
+    "MEDA atmosphere (pressure, temperature, wind, solar) - researched in DATASET_INVENTORY.md, no code",
+    "Mars surface characteristics (thermal inertia/albedo)"
+  ],
+  "datasets": [
+    {
+      "dataset": "Mars 2020 Science Investigation CTX DEM Mosaic 20 m (USGS Astrogeology)",
+      "file": "raw\\mars\\M20_JezeroCrater_CTXDEM_20m.tif",
+      "checks": [
+        {
+          "check": "file size > 0",
+          "ok": true,
+          "severity": "error",
+          "detail": "90345300 bytes"
+        },
+        {
+          "check": "size equals download log",
+          "ok": true,
+          "severity": "error",
+          "detail": "log 90345300 vs disk 90345300"
+        },
+        {
+          "check": "sha256 equals download log",
+          "ok": true,
+          "severity": "error",
+          "detail": "file unchanged since download"
+        },
+        {
+          "check": "size equals server Content-Length",
+          "ok": true,
+          "severity": "error",
+          "detail": "server 90345300 vs disk 90345300"
+        },
+        {
+          "check": "size in expected range",
+          "ok": true,
+          "severity": "warning",
+          "detail": "90.3 MB, expected 70-105 MB"
+        },
+        {
+          "check": "TIFF header",
+          "ok": true,
+          "severity": "error",
+          "detail": "b'II*\\x00'"
+        },
+        {
+          "check": "has CRS",
+          "ok": true,
+          "severity": "error",
+          "detail": "PROJCS[\"Jezero_Crater_Projection\",GEOGCS[\"GCS_Mars_2000_Sphere\",DATUM[\"Mars_2000_(Sphere)\""
+        },
+        {
+          "check": "raster has pixels",
+          "ok": true,
+          "severity": "error",
+          "detail": "4456 x 5067"
+        },
+        {
+          "check": "geotransform valid",
+          "ok": true,
+          "severity": "error",
+          "detail": "| 20.00, 0.00, 4329000.00|\n| 0.00,-20.00, 1143420.00|\n| 0.00, 0.00, 1.00|"
+        },
+        {
+          "check": "pixel size matches expected resolution",
+          "ok": true,
+          "severity": "error",
+          "detail": "measured 20.0 x 20.0 m, expected ~20.0 m"
+        },
+        {
+          "check": "raster overlaps site bbox",
+          "ok": true,
+          "severity": "error",
+          "detail": "100.0 % of site bbox covered"
+        },
+        {
+          "check": "valid pixels >= 90%",
+          "ok": true,
+          "severity": "error",
+          "detail": "22,564,575 of 22,578,552 valid (99.94 %)"
+        },
+        {
+          "check": "elevations plausible for body (after scale)",
+          "ok": true,
+          "severity": "error",
+          "detail": "-3504.6..-475.8 m, allowed -9000.0..22000.0"
+        },
+        {
+          "check": "not a constant raster",
+          "ok": true,
+          "severity": "error",
+          "detail": "std 403.930 m"
+        }
+      ],
+      "metrics": {
+        "bytes": 90345300,
+        "sha256": "ba7f706ea1b5d63a562f28a7dcf7a7f3c79bce7f048e6974b57e8a33c30d1ba2",
+        "width": 4456,
+        "height": 5067,
+        "count": 1,
+        "dtype": "float32",
+        "crs": "PROJCS[\"Jezero_Crater_Projection\",GEOGCS[\"GCS_Mars_2000_Sphere\",DATUM[\"Mars_2000_(Sphere)\",SPHEROID[\"Mars_2000_Sphere\",3396190,0]],PRIMEM[\"Reference_Meridian\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Equirectangular\"],PARAMETER[\"standard_parallel_1\",18.4663],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+        "nodata": -3.4028234663852886e+38,
+        "bounds": [
+          4328999.999999998,
+          1042080.0000000028,
+          4418119.999999998,
+          1143420.0000000028
+        ],
+        "crs_is_projected": true,
+        "native_pixel_m": [
+          20.0,
+          20.0
+        ],
+        "site_bbox_coverage_fraction": 1.0,
+        "n_pixels": 22578552,
+        "n_valid": 22564575,
+        "n_invalid": 13977,
+        "valid_fraction": 0.99938,
+        "elev_min_m": -3504.645263671875,
+        "elev_max_m": -475.8408203125,
+        "elev_std_m": 403.9299040664254,
+        "scale_applied": 1.0
+      },
+      "state": "VALIDATED",
+      "site": "mars_jezero",
+      "role": "elevation"
+    }
+  ],
+  "processed": [
+    {
+      "site": "mars_jezero",
+      "scale_m": 120,
+      "csv_rows": 96369,
+      "summary_csv_rows": 96369,
+      "valid_cells": 96369,
+      "source_sha256": "ba7f706ea1b5d63a562f28a7dcf7a7f3c79bce7f048e6974b57e8a33c30d1ba2",
+      "extent_km": [
+        42.36,
+        32.76
+      ],
+      "consistent": true
+    },
+    {
+      "site": "mars_jezero",
+      "scale_m": 360,
+      "csv_rows": 10856,
+      "summary_csv_rows": 10856,
+      "valid_cells": 10856,
+      "source_sha256": "ba7f706ea1b5d63a562f28a7dcf7a7f3c79bce7f048e6974b57e8a33c30d1ba2",
+      "extent_km": [
+        42.48,
+        33.12
+      ],
+      "consistent": true
+    }
+  ],
+  "headline": "1 of 1 dataset(s) are on disk AND validated."
+}

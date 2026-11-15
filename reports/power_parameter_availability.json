@@ -1,0 +1,38 @@
+{
+  "AG": {
+    "url": "https://power.larc.nasa.gov/api/system/manager/parameters?community=ag&temporal=daily",
+    "http": 200,
+    "lists": {
+      "T2M": true,
+      "T2M_MAX": true,
+      "T2M_MIN": true,
+      "ALLSKY_SFC_SW_DWN": true,
+      "WS2M": true,
+      "PS": true
+    }
+  },
+  "RE": {
+    "url": "https://power.larc.nasa.gov/api/system/manager/parameters?community=re&temporal=daily",
+    "http": 200,
+    "lists": {
+      "T2M": true,
+      "T2M_MAX": true,
+      "T2M_MIN": true,
+      "ALLSKY_SFC_SW_DWN": true,
+      "WS2M": true,
+      "PS": true
+    }
+  },
+  "SB": {
+    "url": "https://power.larc.nasa.gov/api/system/manager/parameters?community=sb&temporal=daily",
+    "http": 200,
+    "lists": {
+      "T2M": true,
+      "T2M_MAX": true,
+      "T2M_MIN": true,
+      "ALLSKY_SFC_SW_DWN": true,
+      "WS2M": true,
+      "PS": true
+    }
+  }
+}

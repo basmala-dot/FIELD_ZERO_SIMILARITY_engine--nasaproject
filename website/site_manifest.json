@@ -1,0 +1,1270 @@
+{
+  "project": "FIELD//ZERO",
+  "schema_version": 2,
+  "generated_utc": "2026-11-14T00:00:00+00:00",
+  "path_base": "Every dataset 'path' is relative to the location of THIS manifest file (website/) and is URL-encoded (spaces are %20). Resolve with new URL(path, manifestUrl). The web server root must be the project root so that ../Data/ is reachable (e.g. python -m http.server from the project root, then open /website/).",
+  "note": "Registers only files that exist in Data/processed/. Counts, hashes and bounds were taken from the actual files. Mars/Moon lon/lat are not WGS84. Earth POWER lacks T2M. Mars and Moon have no climate datasets.",
+  "sources": {
+    "nasadem": {
+      "name": "NASADEM_HGT v001 (NASA LP DAAC), 1 arc-second",
+      "provider": "NASA LP DAAC",
+      "doi": "10.5067/MEASURES/NASADEM/NASADEM_HGT.001",
+      "catalog": "https://www.earthdata.nasa.gov/data/catalog/lpcloud-nasadem-hgt-001",
+      "access": "Earthdata Login",
+      "project_ref": [
+        "metadata/sources.json#nasadem_hgt_v001",
+        "reports/status_earth.md"
+      ]
+    },
+    "usgs_ctx_dem_20m": {
+      "name": "Mars 2020 Science Investigation CTX DEM Mosaic, 20 m (M20_JezeroCrater_CTXDEM_20m.tif)",
+      "provider": "USGS Astrogeology",
+      "url": "https://planetarymaps.usgs.gov/mosaic/mars2020_trn/CTX/ScienceInvestigationMaps_JPL/M20_JezeroCrater_CTXDEM_20m.tif",
+      "catalog": "https://astrogeology.usgs.gov/search/map/mars_2020_science_investigation_ctx_dem_mosaic",
+      "project_ref": [
+        "metadata/sources.json#m20_ctx_dem_20m",
+        "reports/status_mars.md"
+      ]
+    },
+    "usgs_lola_ldem_118m": {
+      "name": "LRO LOLA global LDEM 118 m, Mar 2014 (Lunar_LRO_LOLA_Global_LDEM_118m_Mar2014.tif)",
+      "provider": "USGS Astrogeology / LOLA Science Team (GSFC)",
+      "url": "https://planetarymaps.usgs.gov/mosaic/Lunar_LRO_LOLA_Global_LDEM_118m_Mar2014.tif",
+      "catalog": "https://astrogeology.usgs.gov/search/map/moon_lro_lola_dem_118m",
+      "project_ref": [
+        "metadata/sources.json#lola_ldem_118m",
+        "reports/status_moon.md"
+      ]
+    },
+    "nasa_power_daily": {
+      "name": "NASA POWER daily point API (community AG)",
+      "provider": "NASA LaRC POWER project",
+      "url": "https://power.larc.nasa.gov/api/temporal/daily/point",
+      "docs": "https://power.larc.nasa.gov/docs/services/api/temporal/daily/",
+      "project_ref": [
+        "metadata/sources.json#nasa_power_daily",
+        "reports/download_log.json",
+        "reports/power_parameter_availability.json"
+      ]
+    },
+    "field_zero_pipeline": {
+      "name": "FIELD//ZERO processing pipeline (derived products)",
+      "provider": "FIELD//ZERO team",
+      "project_ref": [
+        "reports/processing_status.json",
+        "reports/PROJECT_AUDIT.md",
+        "reports/data_quality_summary.json"
+      ]
+    }
+  },
+  "datasets": [
+    {
+      "id": "earth_120m_geojson",
+      "title": "Earth - Western Desert (Egypt) - 120 m terrain (GeoJSON points)",
+      "kind": "terrain_geojson",
+      "format": "geojson",
+      "path": "../Data/processed/Earth%20files/earth_western_desert_120m_terrain.geojson",
+      "load": "auto",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "scale_m": 120,
+      "sources": [
+        "nasadem",
+        "field_zero_pipeline"
+      ],
+      "description": "Point features decimated from the 120 m terrain grid (values identical to the CSV rows, no averaging). Properties: elevation, slope, aspect, roughness, elevation variability, TRI.",
+      "coordinate_system": "WGS84 lon/lat; GeoJSON file has no crs member",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "native_resolution": "27.48 x 30.92 m (1 arc-second)",
+      "grid_resolution_m": 120,
+      "expected": {
+        "geometry_type": "Point",
+        "feature_count": 2800,
+        "property_keys": [
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "bounds": {
+          "lon": [
+            28.000086,
+            28.297486
+          ],
+          "lat": [
+            27.152096,
+            27.449987
+          ]
+        },
+        "decimated_from_rows": 68944
+      },
+      "missing_value_policy": "Border cells have null slope/aspect/roughness/tri (and null elev_variability_std); Missing values are kept as null; the loader never substitutes numbers.",
+      "notes": [
+        "Decimated subset: aggregate statistics differ from the summary JSON and CSV."
+      ],
+      "bytes": 685805,
+      "sha256": "a3727035e399b3ae697b6d3d17e42aa227aed4ae3347b6e14cf04efeb0b7cf02"
+    },
+    {
+      "id": "earth_120m_summary",
+      "title": "Earth - Western Desert (Egypt) - 120 m terrain summary statistics",
+      "kind": "terrain_summary",
+      "format": "json",
+      "path": "../Data/processed/Earth%20files/earth_western_desert_120m_terrain_summary.json",
+      "load": "auto",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "scale_m": 120,
+      "sources": [
+        "nasadem",
+        "field_zero_pipeline"
+      ],
+      "description": "Provenance, grid definition, kernel sizes and n/min/max/mean/std for elevation, slope, roughness, elevation variability and TRI, computed over the full CSV grid (not the decimated GeoJSON).",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "expected": {
+        "required_keys": [
+          "site",
+          "body",
+          "scale_m",
+          "provenance",
+          "grid",
+          "kernels_m",
+          "elevation",
+          "slope_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ]
+      },
+      "missing_value_policy": "No aspect_deg statistics are provided in summaries.",
+      "bytes": 1965,
+      "sha256": "1470112015e58eafd80e24ab73d4157d62e71cb095be682df04dceefb2566362"
+    },
+    {
+      "id": "earth_120m_terrain_csv",
+      "title": "Earth - Western Desert (Egypt) - 120 m terrain grid (full CSV)",
+      "kind": "terrain_csv",
+      "format": "csv",
+      "path": "../Data/processed/Earth%20files/earth_western_desert_120m_terrain.csv",
+      "load": "on_demand",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "scale_m": 120,
+      "sources": [
+        "nasadem",
+        "field_zero_pipeline"
+      ],
+      "description": "Complete regular 120 m grid (68944 cells) with local metre coordinates and lon/lat. Large file; loaded only when requested.",
+      "coordinate_system": "WGS84 lon/lat",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "native_resolution": "27.48 x 30.92 m (1 arc-second)",
+      "grid_resolution_m": 120,
+      "expected": {
+        "row_count": 68944,
+        "columns": [
+          "site",
+          "scale_m",
+          "x_m_localTM",
+          "y_m_localTM",
+          "lon_deg",
+          "lat_deg",
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "numeric_columns": [
+          "scale_m",
+          "x_m_localTM",
+          "y_m_localTM",
+          "lon_deg",
+          "lat_deg",
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "string_columns": [
+          "site"
+        ]
+      },
+      "missing_value_policy": "Empty cells (kernel border) become null. Missing values are kept as null; the loader never substitutes numbers.",
+      "bytes": 7265247,
+      "sha256": "f5557ebe107a448dc52c3e8fcea47c8cc48d9df0e73c829d8d816c4838d60a71"
+    },
+    {
+      "id": "earth_360m_geojson",
+      "title": "Earth - Western Desert (Egypt) - 360 m terrain (GeoJSON points)",
+      "kind": "terrain_geojson",
+      "format": "geojson",
+      "path": "../Data/processed/Earth%20files/earth_western_desert_360m_terrain.geojson",
+      "load": "auto",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "scale_m": 360,
+      "sources": [
+        "nasadem",
+        "field_zero_pipeline"
+      ],
+      "description": "Point features decimated from the 360 m terrain grid (values identical to the CSV rows, no averaging). Properties: elevation, slope, aspect, roughness, elevation variability, TRI.",
+      "coordinate_system": "WGS84 lon/lat; GeoJSON file has no crs member",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "native_resolution": "27.48 x 30.92 m (1 arc-second)",
+      "grid_resolution_m": 360,
+      "expected": {
+        "geometry_type": "Point",
+        "feature_count": 1974,
+        "property_keys": [
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "bounds": {
+          "lon": [
+            27.998871,
+            28.297487
+          ],
+          "lat": [
+            27.152095,
+            27.45107
+          ]
+        },
+        "decimated_from_rows": 7896
+      },
+      "missing_value_policy": "Border cells have null slope/aspect/roughness/tri (and null elev_variability_std); Missing values are kept as null; the loader never substitutes numbers.",
+      "notes": [
+        "Decimated subset: aggregate statistics differ from the summary JSON and CSV."
+      ],
+      "bytes": 483696,
+      "sha256": "4f549cfde27cbeaee758f99a1abd4a2f27542d80da6f2219d2175440fb9ab076"
+    },
+    {
+      "id": "earth_360m_summary",
+      "title": "Earth - Western Desert (Egypt) - 360 m terrain summary statistics",
+      "kind": "terrain_summary",
+      "format": "json",
+      "path": "../Data/processed/Earth%20files/earth_western_desert_360m_terrain_summary.json",
+      "load": "auto",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "scale_m": 360,
+      "sources": [
+        "nasadem",
+        "field_zero_pipeline"
+      ],
+      "description": "Provenance, grid definition, kernel sizes and n/min/max/mean/std for elevation, slope, roughness, elevation variability and TRI, computed over the full CSV grid (not the decimated GeoJSON).",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "expected": {
+        "required_keys": [
+          "site",
+          "body",
+          "scale_m",
+          "provenance",
+          "grid",
+          "kernels_m",
+          "elevation",
+          "slope_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ]
+      },
+      "missing_value_policy": "No aspect_deg statistics are provided in summaries.",
+      "bytes": 1960,
+      "sha256": "bc9daf015cab45f8440572c06dd0ce691614d4df66a1304fbc3f263866cf9558"
+    },
+    {
+      "id": "earth_360m_terrain_csv",
+      "title": "Earth - Western Desert (Egypt) - 360 m terrain grid (full CSV)",
+      "kind": "terrain_csv",
+      "format": "csv",
+      "path": "../Data/processed/Earth%20files/earth_western_desert_360m_terrain.csv",
+      "load": "on_demand",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "scale_m": 360,
+      "sources": [
+        "nasadem",
+        "field_zero_pipeline"
+      ],
+      "description": "Complete regular 360 m grid (7896 cells) with local metre coordinates and lon/lat. Large file; loaded only when requested.",
+      "coordinate_system": "WGS84 lon/lat",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "native_resolution": "27.48 x 30.92 m (1 arc-second)",
+      "grid_resolution_m": 360,
+      "expected": {
+        "row_count": 7896,
+        "columns": [
+          "site",
+          "scale_m",
+          "x_m_localTM",
+          "y_m_localTM",
+          "lon_deg",
+          "lat_deg",
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "numeric_columns": [
+          "scale_m",
+          "x_m_localTM",
+          "y_m_localTM",
+          "lon_deg",
+          "lat_deg",
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "string_columns": [
+          "site"
+        ]
+      },
+      "missing_value_policy": "Empty cells (kernel border) become null. Missing values are kept as null; the loader never substitutes numbers.",
+      "bytes": 825558,
+      "sha256": "fe4513c6a280cdd36331432cec0ca55681af1b053fb529b51fd74896411e4208"
+    },
+    {
+      "id": "mars_120m_geojson",
+      "title": "Mars - Jezero crater - 120 m terrain (GeoJSON points)",
+      "kind": "terrain_geojson",
+      "format": "geojson",
+      "path": "../Data/processed/Mars%20files/mars_jezero_120m_terrain.geojson",
+      "load": "auto",
+      "body": "mars",
+      "site": "mars_jezero",
+      "scale_m": 120,
+      "sources": [
+        "usgs_ctx_dem_20m",
+        "field_zero_pipeline"
+      ],
+      "description": "Point features decimated from the 120 m terrain grid (values identical to the CSV rows, no averaging). Properties: elevation, slope, aspect, roughness, elevation variability, TRI.",
+      "coordinate_system": "Mars 2000 sphere planetocentric lon/lat (NOT WGS84); GeoJSON file has no crs member",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "native_resolution": "20 x 20 m",
+      "grid_resolution_m": 120,
+      "expected": {
+        "geometry_type": "Point",
+        "feature_count": 3905,
+        "property_keys": [
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "bounds": {
+          "lon": [
+            77.198607,
+            77.946437
+          ],
+          "lat": [
+            18.103287,
+            18.650267
+          ]
+        },
+        "decimated_from_rows": 96369
+      },
+      "missing_value_policy": "Border cells have null slope/aspect/roughness/tri (and null elev_variability_std); Missing values are kept as null; the loader never substitutes numbers.",
+      "notes": [
+        "Decimated subset: aggregate statistics differ from the summary JSON and CSV.",
+        "lon/lat are not WGS84; do not place on an Earth basemap."
+      ],
+      "bytes": 970730,
+      "sha256": "7e05ad20221e517fcb59880e9ee685bd4a7913b74daba2fa7af613c291580c32"
+    },
+    {
+      "id": "mars_120m_summary",
+      "title": "Mars - Jezero crater - 120 m terrain summary statistics",
+      "kind": "terrain_summary",
+      "format": "json",
+      "path": "../Data/processed/Mars%20files/mars_jezero_120m_terrain_summary.json",
+      "load": "auto",
+      "body": "mars",
+      "site": "mars_jezero",
+      "scale_m": 120,
+      "sources": [
+        "usgs_ctx_dem_20m",
+        "field_zero_pipeline"
+      ],
+      "description": "Provenance, grid definition, kernel sizes and n/min/max/mean/std for elevation, slope, roughness, elevation variability and TRI, computed over the full CSV grid (not the decimated GeoJSON).",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "expected": {
+        "required_keys": [
+          "site",
+          "body",
+          "scale_m",
+          "provenance",
+          "grid",
+          "kernels_m",
+          "elevation",
+          "slope_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ]
+      },
+      "missing_value_policy": "No aspect_deg statistics are provided in summaries.",
+      "bytes": 1998,
+      "sha256": "7218d69a3352cd01261119089bfcbadaaea8f7e14fe2e36a0f53835b3a291bb3"
+    },
+    {
+      "id": "mars_120m_terrain_csv",
+      "title": "Mars - Jezero crater - 120 m terrain grid (full CSV)",
+      "kind": "terrain_csv",
+      "format": "csv",
+      "path": "../Data/processed/Mars%20files/mars_jezero_120m_terrain.csv",
+      "load": "on_demand",
+      "body": "mars",
+      "site": "mars_jezero",
+      "scale_m": 120,
+      "sources": [
+        "usgs_ctx_dem_20m",
+        "field_zero_pipeline"
+      ],
+      "description": "Complete regular 120 m grid (96369 cells) with local metre coordinates and lon/lat. Large file; loaded only when requested.",
+      "coordinate_system": "Mars 2000 sphere planetocentric lon/lat (NOT WGS84)",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "native_resolution": "20 x 20 m",
+      "grid_resolution_m": 120,
+      "expected": {
+        "row_count": 96369,
+        "columns": [
+          "site",
+          "scale_m",
+          "x_m_localTM",
+          "y_m_localTM",
+          "lon_deg",
+          "lat_deg",
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "numeric_columns": [
+          "scale_m",
+          "x_m_localTM",
+          "y_m_localTM",
+          "lon_deg",
+          "lat_deg",
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "string_columns": [
+          "site"
+        ]
+      },
+      "missing_value_policy": "Empty cells (kernel border) become null. Missing values are kept as null; the loader never substitutes numbers.",
+      "bytes": 9663356,
+      "sha256": "b6775db8f512f0f9a3ce3a91d60ca082b3f82aa35bf2207c2ef44ba8f15d4a72"
+    },
+    {
+      "id": "mars_360m_geojson",
+      "title": "Mars - Jezero crater - 360 m terrain (GeoJSON points)",
+      "kind": "terrain_geojson",
+      "format": "geojson",
+      "path": "../Data/processed/Mars%20files/mars_jezero_360m_terrain.geojson",
+      "load": "auto",
+      "body": "mars",
+      "site": "mars_jezero",
+      "scale_m": 360,
+      "sources": [
+        "usgs_ctx_dem_20m",
+        "field_zero_pipeline"
+      ],
+      "description": "Point features decimated from the 360 m terrain grid (values identical to the CSV rows, no averaging). Properties: elevation, slope, aspect, roughness, elevation variability, TRI.",
+      "coordinate_system": "Mars 2000 sphere planetocentric lon/lat (NOT WGS84); GeoJSON file has no crs member",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "native_resolution": "20 x 20 m",
+      "grid_resolution_m": 360,
+      "expected": {
+        "geometry_type": "Point",
+        "feature_count": 2714,
+        "property_keys": [
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "bounds": {
+          "lon": [
+            77.198607,
+            77.942163
+          ],
+          "lat": [
+            18.103287,
+            18.650267
+          ]
+        },
+        "decimated_from_rows": 10856
+      },
+      "missing_value_policy": "Border cells have null slope/aspect/roughness/tri (and null elev_variability_std); Missing values are kept as null; the loader never substitutes numbers.",
+      "notes": [
+        "Decimated subset: aggregate statistics differ from the summary JSON and CSV.",
+        "lon/lat are not WGS84; do not place on an Earth basemap."
+      ],
+      "bytes": 676773,
+      "sha256": "8a82e1801c7a2e784f40db119e280c10352e9461d834958bdd91f1aeae4eab77"
+    },
+    {
+      "id": "mars_360m_summary",
+      "title": "Mars - Jezero crater - 360 m terrain summary statistics",
+      "kind": "terrain_summary",
+      "format": "json",
+      "path": "../Data/processed/Mars%20files/mars_jezero_360m_terrain_summary.json",
+      "load": "auto",
+      "body": "mars",
+      "site": "mars_jezero",
+      "scale_m": 360,
+      "sources": [
+        "usgs_ctx_dem_20m",
+        "field_zero_pipeline"
+      ],
+      "description": "Provenance, grid definition, kernel sizes and n/min/max/mean/std for elevation, slope, roughness, elevation variability and TRI, computed over the full CSV grid (not the decimated GeoJSON).",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "expected": {
+        "required_keys": [
+          "site",
+          "body",
+          "scale_m",
+          "provenance",
+          "grid",
+          "kernels_m",
+          "elevation",
+          "slope_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ]
+      },
+      "missing_value_policy": "No aspect_deg statistics are provided in summaries.",
+      "bytes": 1995,
+      "sha256": "3151d54b011d93c8c7004cc37df33de4227298c7ba41b1eb45413e49ef3a5d20"
+    },
+    {
+      "id": "mars_360m_terrain_csv",
+      "title": "Mars - Jezero crater - 360 m terrain grid (full CSV)",
+      "kind": "terrain_csv",
+      "format": "csv",
+      "path": "../Data/processed/Mars%20files/mars_jezero_360m_terrain.csv",
+      "load": "on_demand",
+      "body": "mars",
+      "site": "mars_jezero",
+      "scale_m": 360,
+      "sources": [
+        "usgs_ctx_dem_20m",
+        "field_zero_pipeline"
+      ],
+      "description": "Complete regular 360 m grid (10856 cells) with local metre coordinates and lon/lat. Large file; loaded only when requested.",
+      "coordinate_system": "Mars 2000 sphere planetocentric lon/lat (NOT WGS84)",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "native_resolution": "20 x 20 m",
+      "grid_resolution_m": 360,
+      "expected": {
+        "row_count": 10856,
+        "columns": [
+          "site",
+          "scale_m",
+          "x_m_localTM",
+          "y_m_localTM",
+          "lon_deg",
+          "lat_deg",
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "numeric_columns": [
+          "scale_m",
+          "x_m_localTM",
+          "y_m_localTM",
+          "lon_deg",
+          "lat_deg",
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "string_columns": [
+          "site"
+        ]
+      },
+      "missing_value_policy": "Empty cells (kernel border) become null. Missing values are kept as null; the loader never substitutes numbers.",
+      "bytes": 1088620,
+      "sha256": "fafef6dfca0ed7fa2b13b5d0a32b6a505b8360bde82763b00c1e5546991aaaf4"
+    },
+    {
+      "id": "moon_120m_geojson",
+      "title": "Moon - Taurus-Littrow - 120 m terrain (GeoJSON points)",
+      "kind": "terrain_geojson",
+      "format": "geojson",
+      "path": "../Data/processed/Moon%20files/moon_taurus_littrow_120m_terrain.geojson",
+      "load": "auto",
+      "body": "moon",
+      "site": "moon_taurus_littrow",
+      "scale_m": 120,
+      "sources": [
+        "usgs_lola_ldem_118m",
+        "field_zero_pipeline"
+      ],
+      "description": "Point features decimated from the 120 m terrain grid (values identical to the CSV rows, no averaging). Properties: elevation, slope, aspect, roughness, elevation variability, TRI.",
+      "coordinate_system": "Moon sphere (R=1737.4 km) lon/lat (NOT WGS84); GeoJSON file has no crs member",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "native_resolution": "118.45 x 118.45 m",
+      "grid_resolution_m": 120,
+      "expected": {
+        "geometry_type": "Point",
+        "feature_count": 3300,
+        "property_keys": [
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "bounds": {
+          "lon": [
+            30.400323,
+            31.148127
+          ],
+          "lat": [
+            19.859166,
+            20.500652
+          ]
+        },
+        "decimated_from_rows": 29535
+      },
+      "missing_value_policy": "Border cells have null slope/aspect/roughness/tri (and null elev_variability_std); Missing values are kept as null; the loader never substitutes numbers.",
+      "notes": [
+        "Decimated subset: aggregate statistics differ from the summary JSON and CSV.",
+        "lon/lat are not WGS84; do not place on an Earth basemap."
+      ],
+      "bytes": 824693,
+      "sha256": "e1dfa532bb50daefa96f6b2e4d74373c77784584cad9b966f97a8f0c2024051f"
+    },
+    {
+      "id": "moon_120m_summary",
+      "title": "Moon - Taurus-Littrow - 120 m terrain summary statistics",
+      "kind": "terrain_summary",
+      "format": "json",
+      "path": "../Data/processed/Moon%20files/moon_taurus_littrow_120m_terrain_summary.json",
+      "load": "auto",
+      "body": "moon",
+      "site": "moon_taurus_littrow",
+      "scale_m": 120,
+      "sources": [
+        "usgs_lola_ldem_118m",
+        "field_zero_pipeline"
+      ],
+      "description": "Provenance, grid definition, kernel sizes and n/min/max/mean/std for elevation, slope, roughness, elevation variability and TRI, computed over the full CSV grid (not the decimated GeoJSON).",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "expected": {
+        "required_keys": [
+          "site",
+          "body",
+          "scale_m",
+          "provenance",
+          "grid",
+          "kernels_m",
+          "elevation",
+          "slope_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ]
+      },
+      "missing_value_policy": "No aspect_deg statistics are provided in summaries.",
+      "bytes": 1988,
+      "sha256": "af6336ef5c91d545dcc7b6045ed6d81d1e527bbca6506517a82d26cd75f274a8"
+    },
+    {
+      "id": "moon_120m_terrain_csv",
+      "title": "Moon - Taurus-Littrow - 120 m terrain grid (full CSV)",
+      "kind": "terrain_csv",
+      "format": "csv",
+      "path": "../Data/processed/Moon%20files/moon_taurus_littrow_120m_terrain.csv",
+      "load": "on_demand",
+      "body": "moon",
+      "site": "moon_taurus_littrow",
+      "scale_m": 120,
+      "sources": [
+        "usgs_lola_ldem_118m",
+        "field_zero_pipeline"
+      ],
+      "description": "Complete regular 120 m grid (29535 cells) with local metre coordinates and lon/lat. Large file; loaded only when requested.",
+      "coordinate_system": "Moon sphere (R=1737.4 km) lon/lat (NOT WGS84)",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "native_resolution": "118.45 x 118.45 m",
+      "grid_resolution_m": 120,
+      "expected": {
+        "row_count": 29535,
+        "columns": [
+          "site",
+          "scale_m",
+          "x_m_localTM",
+          "y_m_localTM",
+          "lon_deg",
+          "lat_deg",
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "numeric_columns": [
+          "scale_m",
+          "x_m_localTM",
+          "y_m_localTM",
+          "lon_deg",
+          "lat_deg",
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "string_columns": [
+          "site"
+        ]
+      },
+      "missing_value_policy": "Empty cells (kernel border) become null. Missing values are kept as null; the loader never substitutes numbers.",
+      "bytes": 3201351,
+      "sha256": "70e10c044d5459cb8548661c2cc312e6d1ea8175f6bdbed549afa26159f38c75"
+    },
+    {
+      "id": "moon_360m_geojson",
+      "title": "Moon - Taurus-Littrow - 360 m terrain (GeoJSON points)",
+      "kind": "terrain_geojson",
+      "format": "geojson",
+      "path": "../Data/processed/Moon%20files/moon_taurus_littrow_360m_terrain.geojson",
+      "load": "auto",
+      "body": "moon",
+      "site": "moon_taurus_littrow",
+      "scale_m": 360,
+      "sources": [
+        "usgs_lola_ldem_118m",
+        "field_zero_pipeline"
+      ],
+      "description": "Point features decimated from the 360 m terrain grid (values identical to the CSV rows, no averaging). Properties: elevation, slope, aspect, roughness, elevation variability, TRI.",
+      "coordinate_system": "Moon sphere (R=1737.4 km) lon/lat (NOT WGS84); GeoJSON file has no crs member",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "native_resolution": "118.45 x 118.45 m",
+      "grid_resolution_m": 360,
+      "expected": {
+        "geometry_type": "Point",
+        "feature_count": 3416,
+        "property_keys": [
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "bounds": {
+          "lon": [
+            30.396088,
+            31.156587
+          ],
+          "lat": [
+            19.851234,
+            20.504609
+          ]
+        },
+        "decimated_from_rows": 3416
+      },
+      "missing_value_policy": "Border cells have null slope/aspect/roughness/tri (and null elev_variability_std); Missing values are kept as null; the loader never substitutes numbers.",
+      "notes": [
+        "Decimated subset: aggregate statistics differ from the summary JSON and CSV.",
+        "lon/lat are not WGS84; do not place on an Earth basemap."
+      ],
+      "bytes": 856894,
+      "sha256": "676a4d78e54ef3dc6030607673fe2a424100768307e0a7987cb92d6f98186a57"
+    },
+    {
+      "id": "moon_360m_summary",
+      "title": "Moon - Taurus-Littrow - 360 m terrain summary statistics",
+      "kind": "terrain_summary",
+      "format": "json",
+      "path": "../Data/processed/Moon%20files/moon_taurus_littrow_360m_terrain_summary.json",
+      "load": "auto",
+      "body": "moon",
+      "site": "moon_taurus_littrow",
+      "scale_m": 360,
+      "sources": [
+        "usgs_lola_ldem_118m",
+        "field_zero_pipeline"
+      ],
+      "description": "Provenance, grid definition, kernel sizes and n/min/max/mean/std for elevation, slope, roughness, elevation variability and TRI, computed over the full CSV grid (not the decimated GeoJSON).",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "expected": {
+        "required_keys": [
+          "site",
+          "body",
+          "scale_m",
+          "provenance",
+          "grid",
+          "kernels_m",
+          "elevation",
+          "slope_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ]
+      },
+      "missing_value_policy": "No aspect_deg statistics are provided in summaries.",
+      "bytes": 1974,
+      "sha256": "c372d7835faba99798d780fd0179367dd128fd2439be61dedc4bc1690368803f"
+    },
+    {
+      "id": "moon_360m_terrain_csv",
+      "title": "Moon - Taurus-Littrow - 360 m terrain grid (full CSV)",
+      "kind": "terrain_csv",
+      "format": "csv",
+      "path": "../Data/processed/Moon%20files/moon_taurus_littrow_360m_terrain.csv",
+      "load": "on_demand",
+      "body": "moon",
+      "site": "moon_taurus_littrow",
+      "scale_m": 360,
+      "sources": [
+        "usgs_lola_ldem_118m",
+        "field_zero_pipeline"
+      ],
+      "description": "Complete regular 360 m grid (3416 cells) with local metre coordinates and lon/lat. Large file; loaded only when requested.",
+      "coordinate_system": "Moon sphere (R=1737.4 km) lon/lat (NOT WGS84)",
+      "units": {
+        "elevation": "m",
+        "slope_deg": "degree",
+        "aspect_deg": "degree",
+        "roughness_std": "m",
+        "elev_variability_std": "m",
+        "tri": "m"
+      },
+      "native_resolution": "118.45 x 118.45 m",
+      "grid_resolution_m": 360,
+      "expected": {
+        "row_count": 3416,
+        "columns": [
+          "site",
+          "scale_m",
+          "x_m_localTM",
+          "y_m_localTM",
+          "lon_deg",
+          "lat_deg",
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "numeric_columns": [
+          "scale_m",
+          "x_m_localTM",
+          "y_m_localTM",
+          "lon_deg",
+          "lat_deg",
+          "elevation",
+          "slope_deg",
+          "aspect_deg",
+          "roughness_std",
+          "elev_variability_std",
+          "tri"
+        ],
+        "string_columns": [
+          "site"
+        ]
+      },
+      "missing_value_policy": "Empty cells (kernel border) become null. Missing values are kept as null; the loader never substitutes numbers.",
+      "bytes": 369503,
+      "sha256": "9076d6c51af38424a120567e07759a1f5f528cd89ec915b0729955ca00e52c4f"
+    },
+    {
+      "id": "earth_power_daily_csv",
+      "title": "Earth - NASA POWER daily climate, 2023 (single point)",
+      "kind": "climate_csv",
+      "format": "csv",
+      "path": "../Data/processed/Earth%20files/earth_western_desert_power_daily.csv",
+      "load": "auto",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "sources": [
+        "nasa_power_daily",
+        "field_zero_pipeline"
+      ],
+      "description": "Daily POWER values for one model grid cell at lon 28.15, lat 27.3, 2023-01-01..2023-12-31. Reanalysis/satellite-derived, not station data. Not resolvable per terrain cell.",
+      "point": {
+        "lon": 28.15,
+        "lat": 27.3
+      },
+      "temporal": {
+        "start": "2023-01-01",
+        "end": "2023-12-31",
+        "step": "day"
+      },
+      "units": {
+        "T2M_MAX": "degree C",
+        "T2M_MIN": "degree C",
+        "ALLSKY_SFC_SW_DWN": "MJ/m^2/day",
+        "WS2M": "m/s",
+        "PS": "kPa"
+      },
+      "expected": {
+        "row_count": 365,
+        "columns": [
+          "date",
+          "T2M_MAX",
+          "T2M_MIN",
+          "ALLSKY_SFC_SW_DWN",
+          "WS2M",
+          "PS"
+        ],
+        "numeric_columns": [
+          "date",
+          "T2M_MAX",
+          "T2M_MIN",
+          "ALLSKY_SFC_SW_DWN",
+          "WS2M",
+          "PS"
+        ],
+        "date_column": "date",
+        "date_format": "YYYYMMDD"
+      },
+      "missing_variables": [
+        {
+          "name": "T2M",
+          "reason": "Download/validation failed (status_earth.md: KeyError T2M); not present in CSV or summary. Do not derive it from T2M_MAX/T2M_MIN."
+        }
+      ],
+      "missing_value_policy": "No nulls present. Missing values are kept as null; the loader never substitutes numbers.",
+      "bytes": 14085,
+      "sha256": "a7cbf9c5e1e52484b06171054f6ea88cc4c787a00fbee573831b45542f557f8a"
+    },
+    {
+      "id": "earth_power_summary",
+      "title": "Earth - NASA POWER 2023 summary statistics",
+      "kind": "climate_summary",
+      "format": "json",
+      "path": "../Data/processed/Earth%20files/earth_western_desert_power_summary.json",
+      "load": "auto",
+      "body": "earth",
+      "site": "earth_western_desert",
+      "sources": [
+        "nasa_power_daily",
+        "field_zero_pipeline"
+      ],
+      "description": "n/mean/min/max, units, community and source hash for each POWER variable that exists. T2M is absent.",
+      "units": {
+        "T2M_MAX": "degree C",
+        "T2M_MIN": "degree C",
+        "ALLSKY_SFC_SW_DWN": "MJ/m^2/day",
+        "WS2M": "m/s",
+        "PS": "kPa"
+      },
+      "expected": {
+        "required_keys": [
+          "T2M_MAX",
+          "T2M_MIN",
+          "ALLSKY_SFC_SW_DWN",
+          "WS2M",
+          "PS"
+        ]
+      },
+      "missing_variables": [
+        {
+          "name": "T2M",
+          "reason": "Download/validation failed (status_earth.md: KeyError T2M); not present in CSV or summary. Do not derive it from T2M_MAX/T2M_MIN."
+        }
+      ],
+      "missing_value_policy": "T2M is not present and is not estimated.",
+      "bytes": 1398,
+      "sha256": "0469d868a68fc073c0abffbf3744c6d64849839127b6bb7bab7606806328f936"
+    },
+    {
+      "id": "comparison_120m",
+      "title": "Cross-body terrain comparison at 120 m",
+      "kind": "comparison",
+      "format": "csv",
+      "path": "../Data/processed/comparison_120m.csv",
+      "load": "auto",
+      "body": "earth,mars,moon",
+      "site": "all",
+      "scale_m": 120,
+      "sources": [
+        "nasadem",
+        "usgs_ctx_dem_20m",
+        "usgs_lola_ldem_118m",
+        "field_zero_pipeline"
+      ],
+      "description": "One row per body: valid_cells and mean/std of elevation variability, roughness, slope and TRI at 120 m. Descriptive only; not a similarity score. No 360 m equivalent exists.",
+      "units": {
+        "elev_variability_std": "m",
+        "roughness_std": "m",
+        "slope_deg": "degree",
+        "tri": "m"
+      },
+      "expected": {
+        "row_count": 3,
+        "columns": [
+          "body",
+          "scale_m",
+          "site",
+          "valid_cells",
+          "elev_variability_std_mean",
+          "elev_variability_std_std",
+          "roughness_std_mean",
+          "roughness_std_std",
+          "slope_deg_mean",
+          "slope_deg_std",
+          "tri_mean",
+          "tri_std"
+        ],
+        "numeric_columns": [
+          "scale_m",
+          "valid_cells",
+          "elev_variability_std_mean",
+          "elev_variability_std_std",
+          "roughness_std_mean",
+          "roughness_std_std",
+          "slope_deg_mean",
+          "slope_deg_std",
+          "tri_mean",
+          "tri_std"
+        ],
+        "string_columns": [
+          "body",
+          "site"
+        ]
+      },
+      "missing_value_policy": "Missing values are kept as null; the loader never substitutes numbers.",
+      "bytes": 444,
+      "sha256": "a4f3e1b81111d9ab1ab3439349c506c3cf682254fc355702471241e7f0926949"
+    }
+  ],
+  "layers": [
+    {
+      "site": "earth_western_desert",
+      "body": "earth",
+      "label": "Earth - Western Desert (Egypt)",
+      "coordinate_system": "WGS84 lon/lat",
+      "geojson": {
+        "120": "earth_120m_geojson",
+        "360": "earth_360m_geojson"
+      },
+      "summary": {
+        "120": "earth_120m_summary",
+        "360": "earth_360m_summary"
+      },
+      "terrain_csv": {
+        "120": "earth_120m_terrain_csv",
+        "360": "earth_360m_terrain_csv"
+      },
+      "climate": {
+        "daily": "earth_power_daily_csv",
+        "summary": "earth_power_summary"
+      }
+    },
+    {
+      "site": "mars_jezero",
+      "body": "mars",
+      "label": "Mars - Jezero crater",
+      "coordinate_system": "Mars 2000 sphere planetocentric lon/lat (NOT WGS84)",
+      "geojson": {
+        "120": "mars_120m_geojson",
+        "360": "mars_360m_geojson"
+      },
+      "summary": {
+        "120": "mars_120m_summary",
+        "360": "mars_360m_summary"
+      },
+      "terrain_csv": {
+        "120": "mars_120m_terrain_csv",
+        "360": "mars_360m_terrain_csv"
+      }
+    },
+    {
+      "site": "moon_taurus_littrow",
+      "body": "moon",
+      "label": "Moon - Taurus-Littrow",
+      "coordinate_system": "Moon sphere (R=1737.4 km) lon/lat (NOT WGS84)",
+      "geojson": {
+        "120": "moon_120m_geojson",
+        "360": "moon_360m_geojson"
+      },
+      "summary": {
+        "120": "moon_120m_summary",
+        "360": "moon_360m_summary"
+      },
+      "terrain_csv": {
+        "120": "moon_120m_terrain_csv",
+        "360": "moon_360m_terrain_csv"
+      }
+    }
+  ],
+  "unavailable": [
+    {
+      "body": "earth",
+      "variable": "T2M",
+      "reason": "missing from POWER files"
+    },
+    {
+      "body": "mars",
+      "variable": "atmosphere (temperature, pressure, wind, solar, humidity)",
+      "reason": "MEDA not processed"
+    },
+    {
+      "body": "moon",
+      "variable": "temperature/solar",
+      "reason": "Diviner not processed; no atmosphere for pressure/wind"
+    }
+  ]
+}

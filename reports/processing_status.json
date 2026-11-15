@@ -1,0 +1,9 @@
+{
+  "earth_western_desert:dem:120m": "ok (68944 cells CSV, 2800 geojson points)",
+  "earth_western_desert:dem:360m": "ok (7896 cells CSV, 1974 geojson points)",
+  "earth_western_desert:power": "ok (365 days, 5/6 variables)",
+  "mars_jezero:dem:120m": "ok (96369 cells CSV, 3905 geojson points)",
+  "mars_jezero:dem:360m": "ok (10856 cells CSV, 2714 geojson points)",
+  "moon_taurus_littrow:dem:120m": "ok (29535 cells CSV, 3300 geojson points)",
+  "moon_taurus_littrow:dem:360m": "ok (3416 cells CSV, 3416 geojson points)"
+}

@@ -1,0 +1,426 @@
+{
+  "body": "earth",
+  "generated_utc": "2026-11-14T15:09:40+00:00",
+  "code": [
+    [
+      "config / sites / scales",
+      "written"
+    ],
+    [
+      "NASA POWER downloader (community chosen per variable by trial)",
+      "written; not yet run against the real API"
+    ],
+    [
+      "NASADEM: earthaccess download, zip extract, HGT->GeoTIFF, mosaic",
+      "written; HGT reader unit-tested on a synthetic tile; rasterio steps need the selftest on your machine"
+    ],
+    [
+      "terrain processor at common metre scale",
+      "written; math unit-tested on analytic surfaces"
+    ],
+    [
+      "validator",
+      "written"
+    ]
+  ],
+  "not_implemented": [
+    "Surface-characteristic layers (land cover/soil)",
+    "POWER hourly/climatology"
+  ],
+  "datasets": [
+    {
+      "dataset": "NASADEM_HGT v001 (NASA LP DAAC)",
+      "file": "raw\\earth\\earth_western_desert_nasadem_window.tif",
+      "checks": [
+        {
+          "check": "file size > 0",
+          "ok": true,
+          "severity": "error",
+          "detail": "895846 bytes"
+        },
+        {
+          "check": "size equals download log",
+          "ok": true,
+          "severity": "error",
+          "detail": "log 895846 vs disk 895846"
+        },
+        {
+          "check": "sha256 equals download log",
+          "ok": true,
+          "severity": "error",
+          "detail": "file unchanged since download"
+        },
+        {
+          "check": "TIFF header",
+          "ok": true,
+          "severity": "error",
+          "detail": "b'II*\\x00'"
+        },
+        {
+          "check": "has CRS",
+          "ok": true,
+          "severity": "error",
+          "detail": "EPSG:4326"
+        },
+        {
+          "check": "raster has pixels",
+          "ok": true,
+          "severity": "error",
+          "detail": "1080 x 1080"
+        },
+        {
+          "check": "geotransform valid",
+          "ok": true,
+          "severity": "error",
+          "detail": "| 0.00, 0.00, 28.00|\n| 0.00,-0.00, 27.45|\n| 0.00, 0.00, 1.00|"
+        },
+        {
+          "check": "pixel size matches expected resolution",
+          "ok": true,
+          "severity": "error",
+          "detail": "measured 27.5 x 30.9 m, expected ~30.0 m"
+        },
+        {
+          "check": "raster overlaps site bbox",
+          "ok": true,
+          "severity": "error",
+          "detail": "100.0 % of site bbox covered"
+        },
+        {
+          "check": "valid pixels >= 90%",
+          "ok": true,
+          "severity": "error",
+          "detail": "1,166,400 of 1,166,400 valid (100.00 %)"
+        },
+        {
+          "check": "elevations plausible for body (after scale)",
+          "ok": true,
+          "severity": "error",
+          "detail": "-33.0..293.0 m, allowed -500.0..9000.0"
+        },
+        {
+          "check": "not a constant raster",
+          "ok": true,
+          "severity": "error",
+          "detail": "std 38.147 m"
+        }
+      ],
+      "metrics": {
+        "bytes": 895846,
+        "sha256": "c5a50a52c8d02a9721c8ba6ca7e9317d541a1a45ea497ba6c68d4c93321bda70",
+        "width": 1080,
+        "height": 1080,
+        "count": 1,
+        "dtype": "int16",
+        "crs": "EPSG:4326",
+        "nodata": -32768.0,
+        "bounds": [
+          28.0,
+          27.15,
+          28.3,
+          27.45
+        ],
+        "crs_is_projected": false,
+        "native_pixel_m": [
+          27.478,
+          30.922
+        ],
+        "site_bbox_coverage_fraction": 1.0,
+        "n_pixels": 1166400,
+        "n_valid": 1166400,
+        "n_invalid": 0,
+        "valid_fraction": 1.0,
+        "elev_min_m": -33.0,
+        "elev_max_m": 293.0,
+        "elev_std_m": 38.14701037433034,
+        "scale_applied": 1.0
+      },
+      "state": "VALIDATED",
+      "site": "earth_western_desert",
+      "role": "elevation"
+    },
+    {
+      "dataset": "NASA POWER daily point",
+      "variables": {
+        "T2M": {
+          "file": "raw\\earth\\power\\earth_western_desert_T2M_MIN_AG.json",
+          "community": "AG",
+          "bytes": 6561,
+          "sha256": "f82cf7f68b0a24fbf568796f20b3b1ed4acf7b7f3af6bc5266262d80199cf89c",
+          "checks": [
+            {
+              "check": "JSON parses with properties.parameter.T2M",
+              "ok": false,
+              "severity": "error",
+              "detail": "KeyError('T2M')"
+            },
+            {
+              "check": "sha256 equals download log",
+              "ok": true,
+              "severity": "error",
+              "detail": ""
+            }
+          ],
+          "state": "FAILED"
+        },
+        "T2M_MAX": {
+          "file": "raw\\earth\\power\\earth_western_desert_T2M_MAX_AG.json",
+          "community": "AG",
+          "bytes": 6650,
+          "sha256": "b7a8e29b78b2736b92402a4e39a59b4822110b2aad33911a9deaef251eb4be70",
+          "checks": [
+            {
+              "check": "JSON has the variable",
+              "ok": true,
+              "severity": "error",
+              "detail": ""
+            },
+            {
+              "check": "covers 365 days",
+              "ok": true,
+              "severity": "error",
+              "detail": "365 days"
+            },
+            {
+              "check": "valid values >= 90 %",
+              "ok": true,
+              "severity": "error",
+              "detail": "365/365"
+            },
+            {
+              "check": "not constant",
+              "ok": true,
+              "severity": "error",
+              "detail": "341 distinct values"
+            },
+            {
+              "check": "sha256 equals download log",
+              "ok": true,
+              "severity": "error",
+              "detail": ""
+            }
+          ],
+          "n_days": 365,
+          "n_valid": 365,
+          "units": "C",
+          "min": 14.5,
+          "max": 43.08,
+          "state": "VALIDATED"
+        },
+        "T2M_MIN": {
+          "file": "raw\\earth\\power\\earth_western_desert_T2M_MIN_AG.json",
+          "community": "AG",
+          "bytes": 6561,
+          "sha256": "f82cf7f68b0a24fbf568796f20b3b1ed4acf7b7f3af6bc5266262d80199cf89c",
+          "checks": [
+            {
+              "check": "JSON has the variable",
+              "ok": true,
+              "severity": "error",
+              "detail": ""
+            },
+            {
+              "check": "covers 365 days",
+              "ok": true,
+              "severity": "error",
+              "detail": "365 days"
+            },
+            {
+              "check": "valid values >= 90 %",
+              "ok": true,
+              "severity": "error",
+              "detail": "365/365"
+            },
+            {
+              "check": "not constant",
+              "ok": true,
+              "severity": "error",
+              "detail": "334 distinct values"
+            },
+            {
+              "check": "sha256 equals download log",
+              "ok": true,
+              "severity": "error",
+              "detail": ""
+            }
+          ],
+          "n_days": 365,
+          "n_valid": 365,
+          "units": "C",
+          "min": 2.39,
+          "max": 27.84,
+          "state": "VALIDATED"
+        },
+        "ALLSKY_SFC_SW_DWN": {
+          "file": "raw\\earth\\power\\earth_western_desert_ALLSKY_SFC_SW_DWN_AG.json",
+          "community": "AG",
+          "bytes": 6694,
+          "sha256": "8599953cff1e7b69f81a7333a9687fac52d5ad3c50bae44d3041f05595211cb6",
+          "checks": [
+            {
+              "check": "JSON has the variable",
+              "ok": true,
+              "severity": "error",
+              "detail": ""
+            },
+            {
+              "check": "covers 365 days",
+              "ok": true,
+              "severity": "error",
+              "detail": "365 days"
+            },
+            {
+              "check": "valid values >= 90 %",
+              "ok": true,
+              "severity": "error",
+              "detail": "365/365"
+            },
+            {
+              "check": "not constant",
+              "ok": true,
+              "severity": "error",
+              "detail": "331 distinct values"
+            },
+            {
+              "check": "sha256 equals download log",
+              "ok": true,
+              "severity": "error",
+              "detail": ""
+            }
+          ],
+          "n_days": 365,
+          "n_valid": 365,
+          "units": "MJ/m^2/day",
+          "min": 9.64,
+          "max": 30.74,
+          "state": "VALIDATED"
+        },
+        "WS2M": {
+          "file": "raw\\earth\\power\\earth_western_desert_WS2M_AG.json",
+          "community": "AG",
+          "bytes": 6278,
+          "sha256": "dd9813557b0fd39153a019715b9900c6422b1d9e363a5969e9457909aaae5137",
+          "checks": [
+            {
+              "check": "JSON has the variable",
+              "ok": true,
+              "severity": "error",
+              "detail": ""
+            },
+            {
+              "check": "covers 365 days",
+              "ok": true,
+              "severity": "error",
+              "detail": "365 days"
+            },
+            {
+              "check": "valid values >= 90 %",
+              "ok": true,
+              "severity": "error",
+              "detail": "365/365"
+            },
+            {
+              "check": "not constant",
+              "ok": true,
+              "severity": "error",
+              "detail": "224 distinct values"
+            },
+            {
+              "check": "sha256 equals download log",
+              "ok": true,
+              "severity": "error",
+              "detail": ""
+            }
+          ],
+          "n_days": 365,
+          "n_valid": 365,
+          "units": "m/s",
+          "min": 0.7,
+          "max": 5.81,
+          "state": "VALIDATED"
+        },
+        "PS": {
+          "file": "raw\\earth\\power\\earth_western_desert_PS_AG.json",
+          "community": "AG",
+          "bytes": 6695,
+          "sha256": "5dd4595af9947d3fff6b3115d69a8cafaeb30762e2b9fbfe8ba019b149042b0b",
+          "checks": [
+            {
+              "check": "JSON has the variable",
+              "ok": true,
+              "severity": "error",
+              "detail": ""
+            },
+            {
+              "check": "covers 365 days",
+              "ok": true,
+              "severity": "error",
+              "detail": "365 days"
+            },
+            {
+              "check": "valid values >= 90 %",
+              "ok": true,
+              "severity": "error",
+              "detail": "365/365"
+            },
+            {
+              "check": "not constant",
+              "ok": true,
+              "severity": "error",
+              "detail": "154 distinct values"
+            },
+            {
+              "check": "sha256 equals download log",
+              "ok": true,
+              "severity": "error",
+              "detail": ""
+            }
+          ],
+          "n_days": 365,
+          "n_valid": 365,
+          "units": "kPa",
+          "min": 98.64,
+          "max": 100.78,
+          "state": "VALIDATED"
+        }
+      },
+      "checks": [],
+      "state": "PARTIAL",
+      "metrics": {
+        "variables_validated": 5,
+        "variables_expected": 6
+      },
+      "site": "earth_western_desert",
+      "role": "climate"
+    }
+  ],
+  "processed": [
+    {
+      "site": "earth_western_desert",
+      "scale_m": 120,
+      "csv_rows": 68944,
+      "summary_csv_rows": 68944,
+      "valid_cells": 68944,
+      "source_sha256": "c5a50a52c8d02a9721c8ba6ca7e9317d541a1a45ea497ba6c68d4c93321bda70",
+      "extent_km": [
+        29.76,
+        33.36
+      ],
+      "consistent": true
+    },
+    {
+      "site": "earth_western_desert",
+      "scale_m": 360,
+      "csv_rows": 7896,
+      "summary_csv_rows": 7896,
+      "valid_cells": 7896,
+      "source_sha256": "c5a50a52c8d02a9721c8ba6ca7e9317d541a1a45ea497ba6c68d4c93321bda70",
+      "extent_km": [
+        30.24,
+        33.84
+      ],
+      "consistent": true
+    }
+  ],
+  "headline": "1 of 2 dataset(s) are on disk AND validated."
+}

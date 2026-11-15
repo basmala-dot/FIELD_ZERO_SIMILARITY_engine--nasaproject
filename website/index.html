@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FIELD//ZERO: where Earth meets another world</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="boot" role="status"><svg viewBox="0 0 80 80" width="72" aria-hidden="true"><ellipse class="orb" cx="40" cy="40" rx="34" ry="14"/><circle cx="40" cy="40" r="9" fill="#B65F43"/><circle class="moonlet" cx="74" cy="40" r="3" fill="#C9A24A"/></svg><p id="boot-msg">Unrolling the survey map…</p></div>
+
+<nav id="rail" aria-label="Mission chapters">
+  <a class="brand" href="#control">FIELD//ZERO</a>
+  <a href="#control" data-ch="control"><i>I</i>Mission Control</a>
+  <a href="#explorer" data-ch="explorer"><i>II</i>Planetary Explorer</a>
+  <a href="#discovery" data-ch="discovery"><i>III</i>Analog Discovery</a>
+  <a href="#notes" data-ch="notes"><i>IV</i>Field Notes</a>
+  <a href="#portfolio" data-ch="portfolio"><i>V</i>Mission Portfolio</a>
+  <a href="#evidence" data-ch="evidence"><i>VI</i>Evidence Room</a>
+  <a href="#brief" data-ch="brief"><i>VII</i>Mission Brief</a>
+</nav>
+
+<main>
+<section id="control" class="chapter hero">
+  <svg class="orbits" viewBox="0 0 600 320" aria-hidden="true">
+    <ellipse cx="300" cy="170" rx="270" ry="110" fill="none" stroke="#14213D" stroke-opacity=".25" stroke-dasharray="2 6"/>
+    <ellipse cx="300" cy="170" rx="180" ry="70" fill="none" stroke="#14213D" stroke-opacity=".25" stroke-dasharray="2 6"/>
+    <circle cx="300" cy="170" r="34" fill="#5E9C9A"/><path d="M270 160q20-14 44-4t18 22q-30 14-62-18z" fill="#14213D" fill-opacity=".18"/>
+    <circle class="p mars" cx="520" cy="130" r="17" fill="#B65F43"/><circle class="p moon" cx="150" cy="215" r="11" fill="#EADFC8" stroke="#14213D" stroke-opacity=".4"/>
+    <path d="M60 40l3 7 7 3-7 3-3 7-3-7-7-3 7-3zM540 250l2 5 5 2-5 2-2 5-2-5-5-2 5-2zM470 40l2 4 4 2-4 2-2 4-2-4-4-2 4-2z" fill="#C9A24A"/>
+  </svg>
+  <p class="label">Planetary analog intelligence · NASA Space Apps</p>
+  <h1>Where Earth meets another world</h1>
+  <p class="lede">Which patches of Egypt's Western Desert have terrain shaped like Jezero Crater on Mars or Taurus-Littrow on the Moon? Every number on this page comes from the project's processed datasets, and every limit is spelled out.</p>
+  <div id="stats" class="stats"></div>
+  <div class="two"><div><h2>Key findings</h2><ul id="findings" class="plain"></ul></div><div><h2>Data status</h2><div id="datastatus"></div></div></div>
+  <p class="note" id="objectives"></p>
+</section>
+
+<section id="explorer" class="chapter">
+  <h2 class="big">Let's explore the terrain</h2>
+  <p class="lede">Three worlds, three separate coordinate systems. Earth uses WGS84 on a street basemap. Mars and Moon use their own surface coordinates in metres, with no basemap.</p>
+  <div class="bar" id="mapbar">
+    <div class="seg" id="bodyseg"></div>
+    <label>Colour cells by <select id="layersel"></select></label>
+    <label><input type="checkbox" id="candtoggle" checked> Top candidates</label>
+    <label><input type="checkbox" id="porttoggle" checked> Portfolio</label>
+  </div>
+  <div class="mapwrap"><div id="map" role="application" aria-label="Terrain map"></div><div id="maplegend" class="legend"></div><div id="mapnote" class="mapnote" hidden></div></div>
+  <div class="two"><div id="detail" class="card"><h3>A closer look at the surface</h3><p>Click any cell on the map to read its coordinates, terrain metrics and similarity scores.</p></div><div id="pinned" class="card"><h3>Compare pinned cells</h3><p>Pin up to three cells from the detail panel.</p></div></div>
+  <p class="src" id="mapsrc"></p>
+</section>
+
+<section id="discovery" class="chapter">
+  <h2 class="big">Your next mission candidate</h2>
+  <p class="lede">The engine's top-ranked Earth cells, at least 2 km apart. A high score means close terrain shape, not a confirmed analog.</p>
+  <div class="bar"><div class="seg" id="tgtseg"></div><div class="seg" id="scaleseg"></div></div>
+  <div class="two wide"><div class="card scroll"><table id="candtable"></table></div><div id="canddetail" class="card"></div></div>
+</section>
+
+<section id="notes" class="chapter navy">
+  <h2 class="big">Scientific field notes</h2>
+  <p class="lede">A closer look at the surface: distributions, resolution effects and the climate records we actually have.</p>
+  <div id="charts" class="grid"></div>
+</section>
+
+<section id="portfolio" class="chapter">
+  <h2 class="big">A team of sites, not a pile of neighbours</h2>
+  <p class="lede">The optimizer keeps scores high while spreading picks across different terrain and different places.</p>
+  <div class="bar">
+    <div class="seg" id="ptgt"></div>
+    <label>Sites <input type="range" id="pn" min="2" max="10" value="5"><b id="pnv">5</b></label>
+    <label>Min separation <input type="range" id="psep" min="1" max="6" value="2"><b id="psepv">2 km</b></label>
+  </div>
+  <div id="pobj" class="note"></div><div id="pitems" class="grid"></div><div id="pcmp" class="note"></div>
+</section>
+
+<section id="evidence" class="chapter">
+  <h2 class="big">How much do we really know?</h2>
+  <p class="lede">Every good discovery starts with evidence. These are potential gaps, not measurements, and no listed source was accessed by this project.</p>
+  <div id="gapsum" class="stats"></div><div id="gaps" class="grid"></div>
+</section>
+
+<section id="brief" class="chapter">
+  <h2 class="big">Mission brief</h2>
+  <div class="bar"><button id="dlmd">Download brief (.md)</button><button id="dljson">Download data (.json)</button><button id="print">Print or save PDF</button></div>
+  <article id="briefbody" class="card paper"></article>
+</section>
+</main>
+<footer><p>Terrain analog model. Not proof of environmental equivalence. No location here is a confirmed planetary analog.</p></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="js/data-loader.js"></script>
+<script src="js/similarity-engine.js"></script>
+<script src="js/mission-intelligence.js"></script>
+<script src="js/map.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
