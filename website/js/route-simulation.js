@@ -1,4 +1,4 @@
-/*! FIELD//ZERO route simulation v0.1.0
+/*! FIELD//ZERO route simulation v0.2.0
  *
  *  SIMULATED VALUES. NOT A PHYSICALLY VALIDATED ROVER DYNAMICS MODEL.
  *
@@ -63,6 +63,13 @@
  *    .applyAction({type:'WAIT', duration_s} | {type:'SKIP_OBJECTIVE', objective_id})
  *    .on('state'|'event'|'status', fn) -> unsubscribe fn
  *  estimatePlan(plan, rover, options) -> analytic pre-run estimate (same model, no stepping)
+ *  fromMissionScenario(scenario, options?) -> { ok, plan, rover, errors[], warnings[], mapping[], source }   (v0.2.0)
+ *      Adapter from the REAL planning engine hand-off (FieldZeroMission.exportSimulationScenario(), kind
+ *      'fieldzero_simulation_scenario', schema 1.0) to this module's plan + rover. Without it that export cannot be simulated:
+ *      its segments are column arrays per grid-cell step, not one object per waypoint pair. Never invents terrain: a leg whose
+ *      grade is missing stays unknown; roughness is not exported by the planner so it stays null.
+ *  report.coordinate_reference (v0.2.0): { wgs84, lon_lat, local_xy, source }. lon/lat are WGS84 ONLY when wgs84 === true (Earth).
+ *      Mars and Moon lon/lat are sphere-based and must never be drawn on an Earth/WGS84 basemap; use x_m / y_m.
  *  Provenance tags used everywhere: 'plan' (from planner input), 'simulated', 'estimated', 'assumed', 'unknown'.
  */
 (function (root, factory) {
@@ -76,6 +83,12 @@
   var EPS = 1e-9, TOL_WH = 1e-6;
   // Mean radii for the lon/lat fallback only. Mars/Moon values are the ones already used by website/js/map.js; Earth = IUGG mean radius.
   var BODY_RADIUS_M = { earth: 6371008.8, mars: 3396190, moon: 1737400 };
+  var BODY_CRS = {
+    earth: { wgs84: true, lon_lat: 'WGS84 lon/lat' },
+    mars: { wgs84: false, lon_lat: 'Mars sphere lon/lat (GCS_Mars_2000_Sphere), NOT WGS84' },
+    moon: { wgs84: false, lon_lat: 'Moon sphere lon/lat (R = 1737.4 km), NOT WGS84' }
+  };
+  var SCENARIO_KIND = 'fieldzero_simulation_scenario', SCENARIO_SCHEMA = '1.0';
   var NOMINAL_CONDITION = { mobility: 1, power_draw_factor: 1, battery_health: 1, slope_limit_factor: 1 };
 
   var DEFAULT_ROVER = {
@@ -156,6 +169,19 @@
     if (!plan.contract) warnings.push('plan.contract missing; assuming ' + CONTRACT.plan + '.');
     else if (plan.contract !== CONTRACT.plan) warnings.push('plan.contract "' + plan.contract + '" differs from ' + CONTRACT.plan + '; field mapping may be incomplete.');
 
+    // body, coordinate reference and option sanity (nothing is repaired silently)
+    var crs = { wgs84: null, lon_lat: 'unknown (plan.body missing or not earth/mars/moon)', local_xy: 'x_m / y_m: local metres exactly as supplied by the plan; valid within one site only', source: 'unknown' };
+    if (!body) warnings.push('plan.body is missing: the coordinate reference of lon/lat is unknown, so lon/lat must not be drawn on any basemap.');
+    else if (!BODY_CRS[body]) warnings.push('plan.body \"' + body + '\" is not earth, mars or moon: coordinate reference unknown.');
+    else { crs.wgs84 = BODY_CRS[body].wgs84; crs.lon_lat = BODY_CRS[body].lon_lat; crs.source = 'derived from plan.body'; }
+    var cf = plan.coordinate_frame;
+    if (cf && typeof cf === 'object') {
+      if (typeof cf.wgs84 === 'boolean' && BODY_CRS[body] && cf.wgs84 !== BODY_CRS[body].wgs84) errors.push('plan.coordinate_frame.wgs84 = ' + cf.wgs84 + ' contradicts body \"' + body + '\" (' + BODY_CRS[body].lon_lat + ').');
+      else if (typeof cf.name === 'string' || typeof cf.lon_lat === 'string') { crs.source = 'plan.coordinate_frame (checked against plan.body)'; if (typeof cf.name === 'string') crs.local_xy = cf.name; if (typeof cf.lon_lat === 'string' && !BODY_CRS[body]) crs.lon_lat = cf.lon_lat; }
+    }
+    if (options.onViolation !== undefined && options.onViolation !== 'halt' && options.onViolation !== 'record_and_continue') warnings.push('options.onViolation \"' + options.onViolation + '\" is not recognised; treated as \"halt\".');
+    ['stepSeconds', 'tickIntervalMs', 'traceEveryS'].forEach(function (k) { if (options[k] !== undefined && !positive(options[k])) warnings.push('options.' + k + ' must be a number > 0; the default is used.'); });
+
     // waypoints
     var wps = [], i;
     var rawW = Array.isArray(plan.waypoints) ? plan.waypoints : [];
@@ -172,7 +198,7 @@
       } else errors.push('waypoint ' + o.id + ' has no usable x_m/y_m (and no lon/lat + known body radius).');
       wps.push(o);
     });
-    if (projected) warnings.push(projected + ' waypoint(s) were projected from lon/lat with an equirectangular approximation (assumption); prefer supplying x_m/y_m.');
+    if (projected) warnings.push(projected + ' waypoint(s) were projected from lon/lat with an equirectangular approximation on a SPHERE of the body mean radius (assumption; Earth is treated as a sphere, not the WGS84 ellipsoid); prefer supplying x_m/y_m.');
     var seen = {}; wps.forEach(function (w) { if (seen[w.id]) errors.push('duplicate waypoint id ' + w.id); seen[w.id] = true; });
 
     // segments
@@ -250,7 +276,7 @@
 
     return { rover: R, errors: errors, warnings: warnings, gaps: gaps, body: body, plan_id: plan.id || null, plan_name: plan.name || null, waypoints: wps, segments: segs,
       objectives: objs, objByWp: objByWp, constraints: C, environment: env, limits: limits, usable_wh: usable, reserve_wh: usable * reserveFrac,
-      E0: usable * R.initial_soc_frac, solar_w: env.solar_input_w, alternatives: Array.isArray(plan.alternatives) ? plan.alternatives : [] };
+      E0: usable * R.initial_soc_frac, solar_w: env.solar_input_w, alternatives: Array.isArray(plan.alternatives) ? plan.alternatives : [], crs: crs };
   }
 
   // ------------------------------------------------------------------ analytic estimate
@@ -477,7 +503,7 @@
         contract: CONTRACT.state, plan_id: M.plan_id, tick: S.tick, status: status(), phase: phase,
         halted: S.halted ? clone(S.halted) : null,
         time: { elapsed_s: rd(S.t, 3), run_elapsed_s: rd(S.t - S.t0, 3), limit_s: lim, remaining_s: lim != null ? rd(Math.max(0, lim - S.t), 3) : null },
-        position: { x_m: rd(pos.x_m, 3), y_m: rd(pos.y_m, 3), lon_deg: pos.lon_deg != null ? rd(pos.lon_deg, 7) : null, lat_deg: pos.lat_deg != null ? rd(pos.lat_deg, 7) : null, elevation_m: pos.elevation_m != null ? rd(pos.elevation_m, 2) : null,
+        position: { x_m: rd(pos.x_m, 3), y_m: rd(pos.y_m, 3), wgs84: M.crs.wgs84, lon_deg: pos.lon_deg != null ? rd(pos.lon_deg, 7) : null, lat_deg: pos.lat_deg != null ? rd(pos.lat_deg, 7) : null, elevation_m: pos.elevation_m != null ? rd(pos.elevation_m, 2) : null,
           provenance: 'simulated (interpolated along planned route)' },
         route: { segment_index: sg ? sg.index : null, segment_count: M.segments.length, segment_id: sg ? sg.id : null, from: sg ? sg.from : null, to: sg ? sg.to : null,
           distance_traveled_m: rd(drivenInPlan, 3), total_distance_m: rd(total, 3), remaining_distance_m: rd(Math.max(0, total - drivenInPlan), 3), progress_fraction: total > 0 ? rd(clamp(drivenInPlan / total, 0, 1), 5) : null },
@@ -515,7 +541,7 @@
       var consumed = S.energy_by.drive + S.energy_by.dwell + S.energy_by.wait;
       var objectives = M.objectives.map(function (o) { var st = S.objStatus[o.id]; return { id: o.id, label: o.label, waypoint_id: o.waypoint_id, required: o.required, dwell_s: o.dwell_s, requires: o.requires, status: st === 'completed' ? 'completed' : st === 'skipped' ? 'skipped' : 'incomplete', completed_t_s: S.objT[o.id] != null ? S.objT[o.id] : null }; });
       return {
-        contract: CONTRACT.report, version: VERSION, plan_id: M.plan_id, plan_name: M.plan_name, body: M.body, rover_id: R.id, rover: clone(R),
+        contract: CONTRACT.report, version: VERSION, plan_id: M.plan_id, plan_name: M.plan_name, body: M.body, coordinate_reference: clone(M.crs), rover_id: R.id, rover: clone(R),
         status: status(), halted: S.halted ? clone(S.halted) : null, validation: { errors: M.errors.slice(), warnings: M.warnings.slice() },
         totals: {
           run_started_at_s: S.t0, elapsed_s: S.t, run_elapsed_s: S.t - S.t0, time_by_activity_s: { drive: S.time_by.drive, dwell: S.time_by.dwell, wait: S.time_by.wait },
@@ -572,7 +598,117 @@
     return ctl;
   }
 
-  return { version: VERSION, CONTRACT: CONTRACT, DEFAULT_ROVER: DEFAULT_ROVER, NOMINAL_CONDITION: NOMINAL_CONDITION, ASSUMPTIONS: ASSUMPTIONS, BODY_RADIUS_M: BODY_RADIUS_M,
+
+  // ------------------------------------------------------------------ adapter: real planning-engine export -> sim plan
+  /**
+   * Maps FieldZeroMission.exportSimulationScenario() (kind 'fieldzero_simulation_scenario', schema '1.0') to { plan, rover }.
+   * Mapping rules (also returned in `mapping`):
+   *   waypoints       scenario.waypoints (real grid-cell centres, local TM metres)           -> plan.waypoints
+   *   leg length      sum(segments.length_m) over the cell steps between two waypoints (3-D)   -> segment.length_m
+   *   slope_deg       length-weighted mean of |segments.grade_deg| (travel grade)               -> segment.slope_deg
+   *   slope_deg_max   max(|grade_deg|, profile.cell_slope_deg of the cells on the leg)          -> segment.slope_deg_max (limit checks)
+   *   roughness       NOT exported by the planner -> null (unknown, never invented)
+   *   objectives      one required objective per waypoint of kind 'stop'; dwell = expected.resources.site_dwell_h_each
+   *   constraints     applied slope/roughness limit; max_mission_s = time budget (h) if the user set one
+   *   rover           planner vehicle -> sim rover: speed direct; idle/dwell power = basePowerW; drive_power_w = basePowerW + m*g*Crr*v/eta
+   *                   (flat-ground value of the planner's own formula); slope_power_w_per_deg = m*g*v/eta*pi/180 (small-angle form of
+   *                   its uphill term). Battery capacity = the planner's spendable energy budget (reserve already deducted, so reserve 0);
+   *                   if no energy budget was set the sim placeholder capacity stays and a warning says so.
+   * The planner and this simulator use DIFFERENT physical models; their time/energy figures are expected to differ.
+   */
+  function fromMissionScenario(sc, options) {
+    options = options || {};
+    var errors = [], warnings = [], mapping = [], isArr = Array.isArray;
+    function failOut() { return { ok: false, plan: null, rover: null, errors: errors, warnings: warnings, mapping: mapping, source: null }; }
+    if (!sc || typeof sc !== 'object' || isArr(sc)) { errors.push('scenario must be the object returned by FieldZeroMission.exportSimulationScenario().'); return failOut(); }
+    if (sc.kind !== SCENARIO_KIND) errors.push('scenario.kind must be \"' + SCENARIO_KIND + '\" (got ' + JSON.stringify(sc.kind) + ').');
+    if (sc.schema_version !== SCENARIO_SCHEMA) warnings.push('scenario.schema_version ' + JSON.stringify(sc.schema_version) + ' differs from the supported ' + SCENARIO_SCHEMA + '; field mapping may be incomplete.');
+    var wps = sc.waypoints, path = sc.path, sg = sc.segments, pr = sc.profile || {};
+    if (!isArr(wps) || wps.length < 2) errors.push('scenario.waypoints needs at least 2 waypoints.');
+    if (!isArr(path) || path.length < 2) errors.push('scenario.path needs at least 2 cell row indices.');
+    var nSteps = isArr(path) ? path.length - 1 : 0;
+    ['length_m', 'horizontal_m', 'grade_deg'].forEach(function (k) {
+      if (!sg || !isArr(sg[k]) || sg[k].length !== nSteps) errors.push('scenario.segments.' + k + ' must be an array with one entry per path step (' + nSteps + ').');
+    });
+    if (!isNum(sc.scale_m)) warnings.push('scenario.scale_m missing.');
+    if (errors.length) return failOut();
+
+    var idx = [], cur = 0;
+    wps.forEach(function (w, i) {
+      if (!w || !isNum(w.x_m) || !isNum(w.y_m) || !isNum(w.row_index)) { errors.push('waypoints[' + i + '] needs numeric x_m, y_m and row_index.'); return; }
+      var k = i === 0 ? 0 : cur + 1; while (k < path.length && path[k] !== w.row_index) k++;
+      if (k >= path.length) errors.push('waypoints[' + i + '] (row ' + w.row_index + ') is not on scenario.path in travel order.'); else { idx.push(k); cur = k; }
+    });
+    if (!errors.length && (idx[0] !== 0 || idx[idx.length - 1] !== path.length - 1)) errors.push('The first/last waypoint must be the first/last cell of scenario.path.');
+    if (errors.length) return failOut();
+
+    var cs = isArr(pr.cell_slope_deg) && pr.cell_slope_deg.length === path.length ? pr.cell_slope_deg : null;
+    if (!cs) warnings.push('profile.cell_slope_deg is missing or misaligned: limit checks use travel grade only.');
+    var src = 'FieldZeroMission route export, ' + sc.body + ' ' + sc.scale_m + ' m DEM-derived grid (' + (sc.grid && sc.grid.source_table || 'source table n/a') + '); slope = travel grade between cell centres; roughness not exported';
+    var plan = { contract: CONTRACT.plan, id: options.id || ('scenario-' + sc.body + '-' + (sc.strategy && sc.strategy.id || 'route')), name: options.name || ((sc.strategy && sc.strategy.id || 'route') + ' route on ' + sc.body + ' (planner export)'), body: sc.body,
+      coordinate_frame: sc.coordinate_frame ? { name: sc.coordinate_frame.name, lon_lat: sc.coordinate_frame.lon_lat, wgs84: sc.coordinate_frame.wgs84 } : undefined, waypoints: [], segments: [], objectives: [], constraints: {}, environment: { solar_input_w: 0 }, alternatives: [],
+      planner_estimate: sc.expected && sc.expected.metrics ? { distance_m: sc.expected.metrics.distance_m, est_drive_time_h: sc.expected.metrics.est_drive_time_h, est_energy_wh: sc.expected.metrics.est_energy_wh, basis: 'planner estimate (planner model, not this simulator)' } : null };
+    wps.forEach(function (w, i) { plan.waypoints.push({ id: w.id != null ? String(w.id) : 'wp' + i, x_m: w.x_m, y_m: w.y_m, lon_deg: isNum(w.lon_deg) ? w.lon_deg : undefined, lat_deg: isNum(w.lat_deg) ? w.lat_deg : undefined, elevation_m: isNum(w.elevation_m) ? w.elevation_m : undefined }); });
+    var unknownLegs = 0, bentLegs = 0, sg_ = sg;
+    for (var i = 0; i < wps.length - 1; i++) {
+      var a = idx[i], b = idx[i + 1], len = 0, hor = 0, wsum = 0, gmax = 0, cmax = null, unk = false;
+      for (var k = a; k < b; k++) {
+        var l = sg_.length_m[k], h = sg_.horizontal_m[k], g = sg_.grade_deg[k];
+        if (!isNum(l) || l < 0) { errors.push('segments.length_m[' + k + '] is not a valid length.'); continue; }
+        len += l; hor += isNum(h) ? h : 0;
+        if (!isNum(g)) unk = true; else { wsum += Math.abs(g) * l; gmax = Math.max(gmax, Math.abs(g)); }
+      }
+      if (cs) for (var q = a; q <= b; q++) if (isNum(cs[q])) cmax = cmax == null ? cs[q] : Math.max(cmax, cs[q]);
+      var straight = Math.hypot(wps[i + 1].x_m - wps[i].x_m, wps[i + 1].y_m - wps[i].y_m);
+      if (Math.abs(hor - straight) > Math.max(1, 0.005 * straight)) bentLegs++;
+      if (unk) unknownLegs++;
+      plan.segments.push({ from: plan.waypoints[i].id, to: plan.waypoints[i + 1].id, length_m: len, slope_deg: unk || len <= 0 ? null : wsum / len, slope_deg_max: unk ? null : (cmax != null ? Math.max(gmax, cmax) : gmax),
+        roughness_std: null, roughness_std_max: null, tri: null, passable: true, terrain_source: src });
+    }
+    if (errors.length) return failOut();
+    if (unknownLegs) warnings.push(unknownLegs + ' leg(s) contain a step without a grade value: their slope stays unknown (not invented).');
+    if (bentLegs) warnings.push(bentLegs + ' leg(s) are not straight between their waypoints: lengths come from the planned cell path, but the simulated position is linearly interpolated and may deviate from the planned cells.');
+    warnings.push('Roughness is not part of the planner export: segment roughness is unknown (null) and roughness limits cannot be checked.');
+    mapping.push({ field: 'plan.segments[].length_m', source: 'sum(scenario.segments.length_m) per leg', provenance: 'planner estimate (3-D length between cell centres)' },
+      { field: 'plan.segments[].slope_deg / slope_deg_max', source: 'mean |grade_deg| / max(|grade_deg|, profile.cell_slope_deg)', provenance: 'derived from DEM values (coarse, not rover-scale)' });
+
+    // objectives
+    var dwellH = sc.expected && sc.expected.resources && isNum(sc.expected.resources.site_dwell_h_each) ? sc.expected.resources.site_dwell_h_each : null;
+    if (dwellH == null) warnings.push('expected.resources.site_dwell_h_each missing: objective dwell time set to 0.');
+    wps.forEach(function (w, i) { if (w.kind === 'stop') plan.objectives.push({ id: 'OBJ-' + plan.waypoints[i].id, label: 'Site visit at ' + plan.waypoints[i].id + ' (terrain row ' + w.row_index + ')', waypoint_id: plan.waypoints[i].id, required: true, dwell_s: dwellH == null ? 0 : dwellH * 3600 }); });
+    if (!plan.objectives.length) warnings.push('The export has no waypoint of kind \"stop\": the plan has no objectives.');
+    mapping.push({ field: 'plan.objectives', source: 'waypoints of kind \"stop\"; dwell = expected.resources.site_dwell_h_each', provenance: 'planner assumption (siteDwellH)' });
+
+    // constraints
+    var ca = sc.constraints && sc.constraints.applied || {}, cu = sc.constraints && sc.constraints.user || {};
+    if (positive(ca.slope_limit_applied_deg)) plan.constraints.max_slope_deg = ca.slope_limit_applied_deg;
+    if (positive(ca.roughness_limit_applied_m)) plan.constraints.max_roughness_std = ca.roughness_limit_applied_m;
+    var tb = sc.expected && sc.expected.resources && sc.expected.resources.time && sc.expected.resources.time.budget;
+    if (positive(tb)) plan.constraints.max_mission_s = tb * 3600;
+    mapping.push({ field: 'plan.constraints', source: 'constraints.applied (slope, roughness) and expected.resources.time.budget (h -> s)', provenance: 'user input / planner assumption' });
+
+    // rover
+    var vp = sc.vehicle && sc.vehicle.parameters, g = sc.vehicle && sc.vehicle.gravity && sc.vehicle.gravity.value, rv = {};
+    var okv = vp && positive(vp.massKg) && positive(vp.nominalSpeedMps) && positive(vp.rollingResistance) && positive(vp.drivetrainEfficiency) && isNum(vp.basePowerW) && vp.basePowerW >= 0 && positive(g);
+    if (!okv) warnings.push('scenario.vehicle is incomplete: the simulator placeholder rover is used (assumed values).');
+    else {
+      var mg = vp.massKg * g, v = vp.nominalSpeedMps, eta = vp.drivetrainEfficiency;
+      rv = { id: 'PLANNER_VEHICLE' + (sc.vehicle.is_placeholder ? '_PLACEHOLDER' : ''), name: 'Vehicle from planning-engine export' + (sc.vehicle.is_placeholder ? ' (PLACEHOLDER parameters, not a real rover)' : ''),
+        nominal_speed_mps: v, idle_power_w: vp.basePowerW, dwell_power_w: vp.basePowerW, drive_power_w: vp.basePowerW + mg * vp.rollingResistance * v / eta, slope_power_w_per_deg: mg * v / eta * Math.PI / 180,
+        parameter_provenance: sc.vehicle.is_placeholder ? 'assumed' : 'supplied' };
+      var lim = positive(cu.max_slope_deg) ? cu.max_slope_deg : (positive(ca.slope_limit_applied_deg) ? ca.slope_limit_applied_deg : null);
+      if (lim != null) rv.max_slope_deg = lim;
+      mapping.push({ field: 'rover.*', source: 'vehicle.parameters + vehicle.gravity', provenance: sc.vehicle.is_placeholder ? 'placeholder (planner)' : 'user-supplied (planner)', derivation: 'drive_power_w = basePowerW + m*g*Crr*v/eta; slope_power_w_per_deg = m*g*v/eta*pi/180; idle = dwell = basePowerW' });
+    }
+    var eb = sc.expected && sc.expected.resources && sc.expected.resources.energy && sc.expected.resources.energy.budget;
+    if (positive(eb)) { rv.battery_capacity_wh = eb; rv.min_soc_frac = 0; mapping.push({ field: 'rover.battery_capacity_wh', source: 'expected.resources.energy.budget (planner spendable energy = budget x (1 - reserve))', provenance: 'user input', derivation: 'reserve already deducted by the planner, so the simulated reserve fraction is 0' }); }
+    else warnings.push('No energy budget in the export: the simulator placeholder battery capacity (' + DEFAULT_ROVER.battery_capacity_wh + ' Wh, assumed) is used. Supply rover.battery_capacity_wh for a meaningful energy result.');
+    if (options.rover) Object.keys(options.rover).forEach(function (k) { rv[k] = options.rover[k]; });
+    var out = { ok: true, plan: plan, rover: rv, errors: errors, warnings: warnings, mapping: mapping, source: { kind: sc.kind, schema_version: sc.schema_version, body: sc.body, scale_m: sc.scale_m, strategy: sc.strategy && sc.strategy.id || null, path_cells: path.length, waypoints: wps.length } };
+    return JSON.parse(JSON.stringify(out));
+  }
+
+  return { version: VERSION, CONTRACT: CONTRACT, BODY_CRS: BODY_CRS, fromMissionScenario: fromMissionScenario, DEFAULT_ROVER: DEFAULT_ROVER, NOMINAL_CONDITION: NOMINAL_CONDITION, ASSUMPTIONS: ASSUMPTIONS, BODY_RADIUS_M: BODY_RADIUS_M,
     normalizeRover: normalizeRover, validate: function (plan, rover) { var M = prepare(plan, { rover: rover }); return { errors: M.errors, warnings: M.warnings, data_gaps: M.gaps, limits: M.limits }; },
     createSimulation: createSimulation, estimatePlan: estimatePlan,
     run: function (plan, options) { return createSimulation(plan, options).runToEnd(); } };

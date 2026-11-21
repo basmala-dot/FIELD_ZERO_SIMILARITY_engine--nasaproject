@@ -1,4 +1,4 @@
-/*! FIELD//ZERO cost and resource engine v0.1.0
+/*! FIELD//ZERO cost and resource engine v0.1.1
  *
  *  RESOURCE LEDGER + TRANSPARENT COST MODEL. COST NUMBERS ARE ABSTRACT UNITS, NOT MONEY, UNLESS THE CALLER SUPPLIES RATES.
  *
@@ -39,7 +39,8 @@
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof self !== 'undefined' ? self : this), function (root) {
   'use strict';
 
-  var VERSION = '0.1.0', CONTRACT = 'FZ-COST-0.1';
+  var VERSION = '0.1.1', CONTRACT = 'FZ-COST-0.1';
+  var DUTIES = { drive: 1, dwell: 1, wait: 1, always: 1 };
   var DEFAULT_ASSUMPTIONS = {
     currency: 'CU (abstract cost units; not money, not calibrated to any real programme)',
     rates: { operations_per_hour: 100, energy_per_wh: 0.02, mobility_wear_per_km: 50, battery_cycle_cost: 400 },
@@ -68,10 +69,13 @@
     var a = clone(DEFAULT_ASSUMPTIONS), rateProv = {}, any = false;
     Object.keys(a.rates).forEach(function (k) { rateProv[k] = 'placeholder'; });
     if (user && user.currency) a.currency = user.currency;
+    var ignored = [];
     if (user && user.rates) Object.keys(user.rates).forEach(function (k) {
-      if (a.rates[k] === undefined) return;
+      if (a.rates[k] === undefined) { ignored.push({ path: 'rates.' + k, reason: 'unknown rate name (known: ' + Object.keys(a.rates).join(', ') + ')' }); return; }
       if (isNum(user.rates[k]) && user.rates[k] >= 0) { a.rates[k] = user.rates[k]; rateProv[k] = 'user-supplied'; any = true; }
+      else ignored.push({ path: 'rates.' + k, value: user.rates[k], reason: 'must be a finite number >= 0; the placeholder rate is kept' });
     });
+    a.ignored_inputs = ignored;
     a.rate_provenance = rateProv; a.rate_units = RATE_UNITS;
     a.provenance = any ? (Object.keys(rateProv).every(function (k) { return rateProv[k] === 'user-supplied'; }) ? 'user-supplied' : 'mixed (some placeholder)') : 'placeholder';
     return a;
@@ -139,7 +143,9 @@
     var objStatus = {}; report.objectives.forEach(function (o) { objStatus[o.id] = o.status; });
     var usedSim = consumablesFromObjectives(report.objectives, function (o) { return o.status === 'completed'; });
     var equipment = ((rover && rover.equipment) || []).map(function (eq) {
-      var duty = eq.duty || 'always', hrs = qSim.by_activity_s[duty] / 3600, av = isNum(eq.available_hours) ? eq.available_hours : null;
+      var duty = eq.duty || 'always', av = isNum(eq.available_hours) ? eq.available_hours : null;
+      if (!DUTIES[duty]) { notes.push('Equipment \"' + eq.id + '\" has unknown duty \"' + duty + '\" (use drive, dwell, wait or always): its hours are unavailable, not guessed.'); return { id: eq.id, name: eq.name || eq.id, duty: duty, hours_used: null, available_hours: av, remaining_hours: null, status: 'duty_invalid', provenance: 'simulated' }; }
+      var hrs = qSim.by_activity_s[duty] / 3600;
       return { id: eq.id, name: eq.name || eq.id, duty: duty, hours_used: rd(hrs, 4), available_hours: av, remaining_hours: av == null ? null : rd(av - hrs, 4), status: av == null ? 'availability_unknown' : (av - hrs < 0 ? 'exhausted' : 'ok'), provenance: 'simulated' };
     });
     var inventory = ((plan && plan.resources) || []).map(function (rs) {
@@ -163,6 +169,8 @@
     var estCost = null, qEst = null;
     if (est) { qEst = qFromEstimate(est, usable); estCost = components(qEst, A, rover, plan, { estimated: estPlanConsumables }); }
     else notes.push('No pre-run estimate: pass `plan` with FieldZeroSim available, or an `estimate` object.');
+    if (est && est.unreachable_segments) notes.push('The pre-run estimate skips segments with zero effective speed (mobility 0): its time, energy and cost are LOWER BOUNDS, not a full-route estimate.');
+    (A.ignored_inputs || []).forEach(function (g) { notes.push('Ignored assumption input ' + g.path + ': ' + g.reason + '.'); });
     var simCost = components(qSim, A, rover, plan, { simulated: usedSim });
     var meas = null, measCost = null;
     if (tele) { var qM = qFromTelemetry(tele, usable); measCost = components(qM, A, rover, plan, { measured: qM.consumables_used }); meas = { elapsed_s: qM.elapsed_s, distance_m: qM.distance_m, energy_wh: qM.energy_wh, net_discharge_wh: qM.net_discharge_wh, provenance: 'measured (caller-supplied telemetry)' }; }
@@ -190,7 +198,7 @@
         note: lower < upper ? 'Range because a constant charging source exists; the lower value assumes all of it is usable.' : 'No charging credit available; shortfall is exact under the model.', provenance: 'estimated' });
       var lim = report.limits.max_mission_s;
       if (isNum(lim) && T.elapsed_s + remEst.time_s > lim + 1e-6) shortages.push({ resource: 'time', unit: 's', required: rd(remEst.time_s, 1), available: rd(Math.max(0, lim - T.elapsed_s), 1), shortfall_upper: rd(T.elapsed_s + remEst.time_s - lim, 1), shortfall_lower: rd(T.elapsed_s + remEst.time_s - lim, 1), note: '', provenance: 'estimated' });
-      equipment.forEach(function (e) { if (e.available_hours == null) return;
+      equipment.forEach(function (e) { if (e.available_hours == null || e.remaining_hours == null) return;
         var need = ((e.duty === 'drive' ? remEst.drive.time_s : e.duty === 'dwell' ? remEst.dwell.time_s : e.duty === 'wait' ? 0 : remEst.time_s) / 3600);
         if (need > e.remaining_hours + 1e-9) shortages.push({ resource: 'equipment:' + e.id, unit: 'h', required: rd(need, 3), available: e.remaining_hours, shortfall_upper: rd(need - e.remaining_hours, 3), shortfall_lower: rd(need - e.remaining_hours, 3), note: 'duty = ' + e.duty, provenance: 'estimated' }); });
     }

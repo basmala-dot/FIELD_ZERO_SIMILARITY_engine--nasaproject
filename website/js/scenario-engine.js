@@ -1,4 +1,4 @@
-/*! FIELD//ZERO what-if scenario engine v0.1.0
+/*! FIELD//ZERO what-if scenario engine v0.1.1
  *
  *  WHAT-IF COMPARISONS UNDER THE SAME ASSUMED ROVER MODEL. NOT FORECASTS.
  *
@@ -36,7 +36,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof self !== 'undefined' ? self : this), function (root) {
   'use strict';
 
-  var VERSION = '0.1.0', CONTRACT = 'FZ-SCENARIOS-0.1';
+  var VERSION = '0.1.1', CONTRACT = 'FZ-SCENARIOS-0.1';
   var SUPPORTED = {
     resources: ['battery_capacity_scale', 'battery_capacity_wh', 'initial_soc_frac', 'solar_input_w', 'reserve_frac'],
     duration: ['max_mission_s', 'max_mission_scale'],
@@ -66,7 +66,9 @@
   // ------------------------------------------------------------------ change application
   function flatten(changes) {
     var atoms = [], ignored = [];
+    if (changes != null && (typeof changes !== 'object' || Array.isArray(changes))) return { atoms: atoms, ignored: [{ path: 'changes', reason: 'changes must be an object keyed by change group' }] };
     Object.keys(changes || {}).forEach(function (g) {
+      if (changes[g] != null && (typeof changes[g] !== 'object' || Array.isArray(changes[g]))) { ignored.push({ path: g, reason: 'change group must be an object of key/value pairs' }); return; }
       if (!SUPPORTED[g]) { ignored.push({ path: g, reason: 'unknown change group (supported: ' + Object.keys(SUPPORTED).join(', ') + ')' }); return; }
       Object.keys(changes[g] || {}).forEach(function (k) {
         if (SUPPORTED[g].indexOf(k) === -1) ignored.push({ path: g + '.' + k, reason: 'unsupported key (supported: ' + SUPPORTED[g].join(', ') + ')' });
@@ -102,7 +104,7 @@
         else if (k === 'battery_capacity_wh') { if (!(isNum(v) && v > 0)) return bad(a, 'must be > 0'); ok(a, nr.battery_capacity_wh, v, 'Battery nameplate capacity ' + rd(nr.battery_capacity_wh, 1) + ' -> ' + v + ' Wh.'); r.battery_capacity_wh = v; }
         else if (k === 'initial_soc_frac') { if (!(isNum(v) && v >= 0 && v <= 1)) return bad(a, 'must be within [0,1]'); ok(a, nr.initial_soc_frac, v, 'Initial state of charge ' + rd(nr.initial_soc_frac * 100, 1) + '% -> ' + rd(v * 100, 1) + '%.'); r.initial_soc_frac = v; }
         else if (k === 'solar_input_w') { if (!(isNum(v) && v >= 0)) return bad(a, 'must be >= 0'); var f0 = (plan.environment && plan.environment.solar_input_w) || 0; ok(a, f0, v, 'Constant charging power ' + f0 + ' -> ' + v + ' W (assumed constant; no day/night model).'); p.environment.solar_input_w = v; }
-        else if (k === 'reserve_frac') { if (!(isNum(v) && v >= 0 && v < 1)) return bad(a, 'must be within [0,1)'); ok(a, nr.min_soc_frac, v, 'Battery reserve ' + rd(nr.min_soc_frac * 100, 1) + '% -> ' + rd(v * 100, 1) + '% of usable capacity.'); r.min_soc_frac = v; }
+        else if (k === 'reserve_frac') { if (!(isNum(v) && v >= 0 && v < 1)) return bad(a, 'must be within [0,1)'); var cminR = p.constraints && isNum(p.constraints.min_battery_soc_frac) ? p.constraints.min_battery_soc_frac : null; if (cminR != null && v <= cminR) return bad(a, 'has no effect: plan.constraints.min_battery_soc_frac = ' + cminR + ' is at least as strict and still governs the reserve'); ok(a, nr.min_soc_frac, v, 'Battery reserve ' + rd(nr.min_soc_frac * 100, 1) + '% -> ' + rd(v * 100, 1) + '% of usable capacity.'); r.min_soc_frac = v; }
       } else if (a.group === 'duration') {
         var cur = isNum(p.constraints.max_mission_s) ? p.constraints.max_mission_s : null;
         if (k === 'max_mission_s') { if (!(isNum(v) && v > 0)) return bad(a, 'must be > 0'); ok(a, cur, v, 'Mission time limit ' + (cur == null ? 'none' : rd(cur, 0) + ' s') + ' -> ' + rd(v, 0) + ' s.'); p.constraints.max_mission_s = v; }
@@ -192,13 +194,19 @@
     if (!Sim) return { contract: CONTRACT, version: VERSION, status: 'error', error: 'route-simulation module (FieldZeroSim) is required.' };
     var ctx = { Sim: Sim, Fail: dep(input, 'failure', 'FieldZeroFailure', './failure-analysis.js'), Cost: dep(input, 'cost', 'FieldZeroCost', './cost-engine.js'), options: input.options || {}, assumptions: input.assumptions };
     var plan = input.plan, rover = input.rover || {}, notes = [];
+    if (input.scenarios !== undefined && input.scenarios !== null && !Array.isArray(input.scenarios)) return { contract: CONTRACT, version: VERSION, status: 'error', error: 'scenarios must be an array of { id, name?, changes } objects.' };
     if (!ctx.Fail) notes.push('failure-analysis module not available: risk index, failure causes and recovery are omitted.');
     if (!ctx.Cost) notes.push('cost-engine module not available: cost deltas are omitted.');
     var base = runOne(plan, rover, ctx, ctx.options.evaluateRecovery === true);
     if (base.invalid) return { contract: CONTRACT, version: VERSION, status: 'invalid_baseline', error: 'Baseline plan/rover invalid: ' + base.invalid.join('; '), notes: notes };
     var attribution = input.attribution !== false, res = [];
+    var seenIds = {};
     (input.scenarios || []).forEach(function (sc, i) {
-      var id = sc.id != null ? String(sc.id) : 'S' + (i + 1), ap = applyChanges(plan, rover, sc.changes || {}, Sim);
+      if (!sc || typeof sc !== 'object' || Array.isArray(sc)) { res.push({ id: 'S' + (i + 1), name: 'S' + (i + 1), status: 'invalid_scenario', changes_applied: [], ignored: [], explanation: ['scenarios[' + i + '] must be an object { id, name?, changes }; it was skipped.'] }); return; }
+      var id = sc.id != null ? String(sc.id) : 'S' + (i + 1);
+      if (seenIds[id]) { res.push({ id: id, name: sc.name || id, status: 'invalid_scenario', changes_applied: [], ignored: [], explanation: ['Duplicate scenario id "' + id + '" (scenarios[' + i + ']); skipped so results stay unambiguous.'] }); return; }
+      seenIds[id] = true;
+      var ap = applyChanges(plan, rover, sc.changes || {}, Sim);
       if (!ap.applied.length) { res.push({ id: id, name: sc.name || id, description: sc.description || '', status: 'no_changes_applied', changes_applied: [], ignored: ap.ignored, explanation: ['No valid change was applied; nothing to compare.'] }); return; }
       var run1 = runOne(ap.plan, ap.rover, ctx, ctx.options.evaluateRecovery !== false);
       if (run1.invalid) { res.push({ id: id, name: sc.name || id, status: 'invalid_scenario', changes_applied: ap.applied, ignored: ap.ignored, explanation: ['The changed inputs are invalid: ' + run1.invalid.join('; ')] }); return; }
@@ -234,12 +242,14 @@
 
   /** Parameter sweep, e.g. path 'resources.battery_capacity_scale', values [0.5,0.6,...]. */
   function sweep(input) {
+    input = input || {};
     var parts = String(input.path || '').split('.'), g = parts[0], k = parts[1];
+    if (!Array.isArray(input.values) || !input.values.length || input.values.length > 200) return { contract: CONTRACT, status: 'error', error: 'values must be a non-empty array (max 200 entries).' };
     if (!SUPPORTED[g] || SUPPORTED[g].indexOf(k) === -1) return { contract: CONTRACT, status: 'error', error: 'unsupported path "' + input.path + '"' };
     var scs = (input.values || []).map(function (v, i) { var ch = {}; ch[g] = {}; ch[g][k] = v; return { id: 'v' + i, name: input.path + ' = ' + v, changes: ch }; });
     var r = run({ plan: input.plan, rover: input.rover, scenarios: scs, attribution: false, deps: input.deps, options: { evaluateRecovery: false }, assumptions: input.assumptions });
     if (r.status !== 'ok') return r;
-    var rows = r.scenarios.map(function (s, i) { return { value: input.values[i], status: s.status, mission_class: s.summary && s.summary.mission_class, halted_code: s.summary && s.summary.halted_code, progress_fraction: s.summary && s.summary.progress_fraction, required_completed: s.summary && s.summary.required_completed, risk_index: s.summary && s.summary.risk_index, min_energy_wh: s.summary && s.summary.min_energy_wh }; });
+    var rows = r.scenarios.map(function (s, i) { return { value: input.values[i], status: s.status, reason: s.status === 'ok' ? null : ((s.ignored && s.ignored[0] && s.ignored[0].reason) || (s.explanation && s.explanation[0]) || null), mission_class: s.summary && s.summary.mission_class, halted_code: s.summary && s.summary.halted_code, progress_fraction: s.summary && s.summary.progress_fraction, required_completed: s.summary && s.summary.required_completed, risk_index: s.summary && s.summary.risk_index, min_energy_wh: s.summary && s.summary.min_energy_wh }; });
     var flip = null; for (var i = 1; i < rows.length; i++) if (rows[i].mission_class && rows[i - 1].mission_class && rows[i].mission_class !== rows[i - 1].mission_class) { flip = { between_values: [rows[i - 1].value, rows[i].value], from: rows[i - 1].mission_class, to: rows[i].mission_class }; break; }
     return { contract: CONTRACT, status: 'ok', path: input.path, baseline: r.baseline, rows: rows, first_outcome_change: flip, note: 'Resolution is limited to the supplied values; refine the list near the change for a tighter threshold.' };
   }

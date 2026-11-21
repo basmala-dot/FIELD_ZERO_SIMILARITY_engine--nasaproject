@@ -1,4 +1,4 @@
-/*! FIELD//ZERO final mission results v0.1.0
+/*! FIELD//ZERO final mission results v0.1.1
  *
  *  Combines route simulation, failure analysis, cost/resource engine (and optionally scenario comparisons) into one
  *  structured mission report for the frontend. It computes almost nothing new: every number is taken from the module
@@ -35,7 +35,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof self !== 'undefined' ? self : this), function (root) {
   'use strict';
 
-  var VERSION = '0.1.0', CONTRACT = 'FZ-MISSION-RESULTS-0.1';
+  var VERSION = '0.1.1', CONTRACT = 'FZ-MISSION-RESULTS-0.1';
   function isNum(v) { return typeof v === 'number' && isFinite(v); }
   function rd(v, d) { if (!isNum(v)) return v; var k = Math.pow(10, d == null ? 3 : d); return Math.round(v * k) / k; }
   function clone(o) { return o == null ? o : JSON.parse(JSON.stringify(o)); }
@@ -72,6 +72,7 @@
     var os = report.objective_summary, crit = [], rat = [], hardFail = report.events.some(function (e) { return e.severity === 'failure'; });
     var routeDone = report.status === 'completed', reqAll = os.required_total > 0 ? os.required_completed === os.required_total : routeDone;
     var unknown = report.segments.filter(function (s) { return !s.terrain_known; }).length, E = report.totals.energy;
+    var viol = report.events.filter(function (e) { return e.severity === 'violation'; });
     var lim = report.limits.max_mission_s, margins = failure && failure.margins ? failure.margins : null;
     var thin = margins ? margins.components.filter(function (c) { return c.id !== 'data' && c.risk != null && c.risk >= 0.5; }) : [];
     crit.push({ id: 'route_completed', description: 'The planned route was driven to its end', met: routeDone, value: rd(report.totals.progress_fraction, 4) });
@@ -79,13 +80,15 @@
     crit.push({ id: 'no_hard_failure', description: 'No failure stopped the run', met: !hardFail, value: report.halted ? report.halted.code : null });
     crit.push({ id: 'energy_reserve', description: 'Battery stayed above its reserve', met: E.min_wh >= E.reserve_wh - 1e-6, value: rd(E.min_wh - E.reserve_wh, 2) + ' Wh above reserve at the lowest point' });
     crit.push({ id: 'time_limit', description: 'Finished within the mission time limit', met: lim == null ? null : report.totals.elapsed_s <= lim + 1e-6, value: lim == null ? 'no limit defined' : rd(report.totals.elapsed_s, 0) + ' of ' + rd(lim, 0) + ' s' });
+    crit.push({ id: 'no_constraint_violations', description: 'No constraint violation was recorded (relevant when the run continued past violations)', met: viol.length === 0, value: viol.length ? uniq(viol.map(function (e) { return e.code; })).join(', ') : null });
     crit.push({ id: 'terrain_data_complete', description: 'Terrain slope known for every segment', met: unknown === 0, value: (report.segments.length - unknown) + '/' + report.segments.length + ' segments' });
     var verdict;
     if (report.status === 'invalid') verdict = 'INVALID_INPUT';
-    else if (reqAll && routeDone && !hardFail) verdict = (thin.length || unknown) ? 'SUCCESS_WITH_CAVEATS' : 'SUCCESS';
+    else if (reqAll && routeDone && !hardFail) verdict = (thin.length || unknown || viol.length) ? 'SUCCESS_WITH_CAVEATS' : 'SUCCESS';
     else verdict = os.required_completed > 0 || (os.required_total === 0 && report.totals.progress_fraction > 0) ? 'PARTIAL' : 'FAILED';
     if (os.required_total === 0) rat.push('No required objectives are defined in the plan, so success is judged on route completion only.');
     rat.push(os.required_completed + ' of ' + os.required_total + ' required objective(s) completed; route ' + rd((report.totals.progress_fraction || 0) * 100, 1) + '% complete.');
+    if (viol.length) rat.push('Constraint violation(s) were recorded while the run continued (' + uniq(viol.map(function (e) { return e.code; })).join(', ') + '). Completing the route does not mean the constraints were respected; a real operation would have to treat them as breaches.');
     if (report.halted) rat.push('The run stopped on ' + report.halted.code + ': ' + report.halted.message);
     thin.forEach(function (c) { rat.push('Thin ' + c.id + ' margin (' + rd(c.margin_frac * 100, 1) + '%).'); });
     if (unknown) rat.push(unknown + ' segment(s) have unknown terrain, so limit checks there are not possible.');
@@ -140,6 +143,7 @@
     var provenance = [
       { item: 'Route geometry and waypoints', class: 'real/plan input', detail: 'As supplied by the planning engine (provisional contract); not generated here.' },
       { item: 'Terrain per segment', class: terrainSources.indexOf('unknown') !== -1 ? 'plan input with gaps' : 'plan input', detail: 'Sources: ' + terrainSources.join(', ') },
+      { item: 'Coordinates', class: report.coordinate_reference && report.coordinate_reference.wgs84 === true ? 'WGS84 lon/lat + local metres' : 'NOT WGS84 or unknown', detail: report.coordinate_reference ? report.coordinate_reference.lon_lat : 'coordinate reference not reported' },
       { item: 'Rover parameters', class: report.rover.parameter_provenance === 'supplied' ? 'caller-supplied' : 'assumed', detail: 'Rover id ' + report.rover_id },
       { item: 'Position, speed, time, energy', class: 'simulated', detail: 'Linear speed/power rules (see assumptions); not a validated dynamics model.' },
       { item: 'Pre-run estimates', class: 'estimated', detail: 'Analytic, same assumed model.' },
@@ -150,6 +154,7 @@
     var lim = [];
     report.validation.warnings.forEach(function (w) { lim.push(w); });
     report.data_gaps.forEach(function (g) { lim.push(g.message); });
+    if (report.coordinate_reference && report.coordinate_reference.wgs84 !== true) lim.push('Coordinates: ' + report.coordinate_reference.lon_lat + '. Do not draw lon/lat on an Earth (WGS84) basemap; use the local metre coordinates.');
     lim.push('The route comes from the planning engine through a PROVISIONAL contract; field mapping may change when the final planning API is available.');
     if (!(cost && cost.cost.measured)) lim.push('No measured telemetry: all "actual" values are simulated, not observed.');
     [Fail && Fail.LIMITATIONS, cost && cost.limitations].forEach(function (l) { (l || []).forEach(function (x) { lim.push(x); }); });
@@ -159,7 +164,7 @@
 
     return { contract: CONTRACT, version: VERSION, status: 'ok', deterministic: true,
       meta: { plan_id: report.plan_id, plan_name: report.plan_name, body: report.body, rover_id: report.rover_id, modules: { simulation: report.version, failure: failure ? failure.version : null, cost: cost ? cost.version : null, scenarios: input.scenarios ? input.scenarios.version : null, results: VERSION },
-        plan_contract: 'FZ-PLAN-PROVISIONAL-0.1' },
+        plan_contract: 'FZ-PLAN-PROVISIONAL-0.1', coordinate_reference: report.coordinate_reference || null },
       progress: progress, objectives: objectives, rover_performance: rolePerformance(report, cost), resource_consumption: resource, failures: failures, recovery: recovery, cost: costBlock,
       success_assessment: assess(report, failure, cost, execd), scenarios: sc, provenance: provenance, data_limitations: uniq(lim), assumptions: assumptions };
   }
@@ -183,7 +188,7 @@
     var L = [], p = r.progress, a = r.success_assessment, e = r.resource_consumption.energy, f = function (v, d) { return isNum(v) ? String(rd(v, d == null ? 2 : d)) : 'n/a'; };
     L.push('# FIELD//ZERO mission results', '', '_Simulated values under an assumed rover model. Not a validated prediction._', '', '## Verdict', '**' + a.label + '** (confidence: ' + a.confidence + ')', '');
     a.rationale.forEach(function (x) { L.push('- ' + x); });
-    L.push('', '## Progress', '- Status: ' + p.status_label, '- Route: ' + f(p.progress_fraction * 100, 1) + '% (' + p.segments_completed + '/' + p.segments_total + ' segments), ' + f(p.distance_in_plan_m, 0) + ' of ' + f(p.planned_distance_m, 0) + ' m', '- Elapsed: ' + f(p.elapsed_s / 3600, 2) + ' h');
+    L.push('', '## Progress', '- Status: ' + p.status_label, '- Coordinates: ' + (r.meta.coordinate_reference ? r.meta.coordinate_reference.lon_lat : 'reference not reported'), '- Route: ' + f(p.progress_fraction * 100, 1) + '% (' + p.segments_completed + '/' + p.segments_total + ' segments), ' + f(p.distance_in_plan_m, 0) + ' of ' + f(p.planned_distance_m, 0) + ' m', '- Elapsed: ' + f(p.elapsed_s / 3600, 2) + ' h');
     L.push('', '## Objectives', '- Required: ' + r.objectives.required_completed + '/' + r.objectives.required_total);
     r.objectives.completed.forEach(function (o) { L.push('- [x] ' + o.id + (o.required ? '' : ' (optional)')); });
     r.objectives.incomplete.forEach(function (o) { L.push('- [ ] ' + o.id + (o.required ? '' : ' (optional)')); });
