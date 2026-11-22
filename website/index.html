@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="FIELD//ZERO: plan, rehearse and report planetary missions on Earth terrain that resembles Mars and the Moon.">
+<title>FIELD//ZERO: plan, rehearse and report planetary missions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="style.css">
+<style id="fz-shell-css">
+/* FIELD//ZERO shell additions. Every rule is scoped with an fz- prefix or an id introduced in this file.
+   Tokens (--navy, --gold, --parch ...) come from style.css, which is unchanged. */
+.fz-vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.fz-skip{position:fixed;left:12px;top:-64px;z-index:1000;background:var(--gold);color:var(--navy);padding:10px 16px;border-radius:999px;font-weight:600;text-decoration:none}
+.fz-skip:focus{top:12px}
+section[id]{scroll-margin-top:12px}
+[hidden]{display:none!important}
+button:disabled,.fz-btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+
+/* rail: groups and sub-links */
+#rail{overflow-y:auto}
+#rail .fz-grp{margin:14px 0 2px 10px;font:italic 500 .82rem var(--head);color:#aab2c8}
+#rail a.sub{padding:4px 10px 4px 38px;font-size:.84rem}
+
+/* buttons */
+.fz-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 22px;border-radius:999px;border:2px solid var(--navy);background:var(--navy);color:var(--ivory);font:600 .95rem var(--body);text-decoration:none;cursor:pointer;transition:background .2s,color .2s}
+.fz-btn:hover:not(:disabled){background:var(--blue);border-color:var(--blue)}
+.fz-btn.ghost{background:transparent;color:var(--navy)}
+.fz-btn.ghost:hover:not(:disabled){background:rgba(20,33,61,.1);border-color:var(--navy);color:var(--navy)}
+.navy .fz-btn{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.navy .fz-btn:hover:not(:disabled){background:#dcb85f;border-color:#dcb85f}
+.navy .fz-btn.ghost{background:transparent;color:var(--ivory);border-color:var(--ivory)}
+.navy .fz-btn.ghost:hover:not(:disabled){background:rgba(255,255,255,.12);color:var(--ivory);border-color:var(--ivory)}
+.fz-mini{border:1px solid rgba(20,33,61,.35);background:transparent;color:var(--navy);border-radius:999px;padding:3px 12px;font:500 .8rem var(--body);cursor:pointer}
+.fz-mini:hover{background:rgba(20,33,61,.1)}
+.fz-actions{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0 6px;position:relative}
+
+/* layout helpers */
+.fz-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px;margin-top:22px;position:relative}
+.fz-sub{margin-top:26px;position:relative}
+.fz-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:0 16px}
+.fz-tscroll{overflow-x:auto}
+
+/* empty states and definition lists */
+.fz-empty{border:1.5px dashed rgba(20,33,61,.3);border-radius:12px;padding:12px 14px;color:var(--mute);font-size:.9rem;list-style:none}
+.navy .fz-empty{border-color:rgba(255,255,255,.28);color:#cfc8b6}
+.fz-empty a{color:var(--blue)}
+.navy .fz-empty a,.fz-hold a{color:var(--gold)}
+.fz-dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 18px;margin:0;font-size:.9rem}
+.fz-dl dt{color:var(--mute)}
+.fz-dl dd{margin:0;font-weight:500;text-align:right;overflow-wrap:anywhere}
+.fz-dl dd.fz-na{color:var(--mute);font-weight:400}
+.navy .fz-dl dt,.navy .fz-dl dd.fz-na{color:#cfc8b6}
+
+/* progress pipeline and readiness checklist */
+.fz-pipe,.fz-check{list-style:none;margin:12px 0 0;padding:0}
+.fz-pipe{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px}
+.fz-pipe li,.fz-check li{border-top:4px solid var(--parch);padding-top:6px;font-size:.88rem;display:flex;flex-direction:column}
+.fz-check{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.fz-pipe li[data-state="active"],.fz-check li[data-state="active"]{border-color:var(--gold)}
+.fz-pipe li[data-state="done"],.fz-check li[data-state="done"]{border-color:var(--teal)}
+.fz-pipe li[data-state="blocked"],.fz-check li[data-state="blocked"]{border-color:#9c4d34}
+.fz-pipe a{color:var(--navy);font-weight:600;text-decoration:none}
+.fz-pipe a:hover{text-decoration:underline}
+progress{width:100%;height:10px;accent-color:var(--teal)}
+.fz-h2{font-size:1.35rem;margin-top:30px;position:relative}
+.fz-qa{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.fz-qa a{display:flex;align-items:center;min-height:48px;padding:8px 14px;border-radius:14px;border:1px solid rgba(20,33,61,.2);background:#fbf6ea;color:var(--navy);font-weight:600;text-decoration:none}
+.fz-qa a:hover{background:var(--parch)}
+
+/* logs */
+.fz-log{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:.86rem;max-height:300px;overflow:auto}
+.fz-log li:not(.fz-empty){display:flex;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px solid rgba(20,33,61,.12)}
+.navy .fz-log li:not(.fz-empty){border-color:rgba(255,255,255,.14)}
+.fz-log time{color:var(--mute);font-variant-numeric:tabular-nums;flex:none}
+.navy .fz-log time{color:#cfc8b6}
+.fz-sev{display:inline-block;padding:1px 10px;border-radius:999px;font-size:.76rem;font-weight:600;color:#fff;background:var(--blue)}
+.fz-sev[data-s="warning"]{background:var(--orange);color:var(--navy)}
+.fz-sev[data-s="critical"]{background:#9c4d34}
+
+/* forms */
+.fz-form{max-width:900px}
+.fz-form fieldset{border:0;margin:0;padding:0;min-width:0}
+.fz-form legend{font:600 1.35rem var(--head);color:var(--navy);padding:0;margin:0 0 14px}
+.fz-field{display:grid;gap:4px;margin:0 0 14px}
+.fz-form legend.lbl{font:500 .9rem var(--body);color:var(--ink);margin:0 0 4px}
+.fz-field>label,.fz-field>span.lbl{font-size:.9rem;font-weight:500}
+.fz-hint{font-size:.8rem;color:var(--mute)}
+.fz-form input[type="text"],.fz-form input[type="number"],.fz-form textarea,.fz-form select{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border:1px solid rgba(20,33,61,.4);background:#fff;color:var(--ink)}
+.fz-form textarea{resize:vertical}
+.fz-form [aria-invalid="true"]{border-color:#9c4d34;outline:2px solid #9c4d34}
+.fz-err{color:#9c4d34;font-size:.88rem;font-weight:600;max-width:90ch}
+.fz-nav{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-top:20px;padding-top:16px;border-top:1px dashed rgba(20,33,61,.25)}
+.fz-count{font-size:.9rem;color:var(--mute)}
+.fz-steps{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:18px 0;padding:0}
+.fz-steps button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid rgba(20,33,61,.3);background:#fbf6ea;color:var(--navy);font:500 .9rem var(--body);cursor:pointer}
+.fz-steps button b{font:600 .95rem var(--head);color:var(--terra)}
+.fz-steps button[aria-current="step"]{background:var(--navy);color:var(--ivory);border-color:var(--navy)}
+.fz-steps button[aria-current="step"] b{color:var(--gold)}
+.fz-tick{color:var(--teal);font-weight:700}
+.fz-steps button[aria-current="step"] .fz-tick{color:var(--gold)}
+.fz-adv{margin:6px 0 0}
+.fz-adv summary{cursor:pointer;font-weight:500;min-height:32px}
+
+/* option cards (radio-backed) */
+.fz-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px;border:0;margin:0 0 16px;padding:0}
+.fz-opt{position:relative;display:block;border:2px solid rgba(20,33,61,.22);border-radius:14px;padding:14px 16px;background:#fbf6ea;cursor:pointer}
+.fz-opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.fz-opt b{display:block;font:600 1.1rem var(--head);color:var(--navy)}
+.fz-opt .src{display:block;margin-top:2px}
+.fz-opt:focus-within{outline:3px solid var(--gold);outline-offset:2px}
+.fz-opt.on,.fz-opt:has(input:checked){border-color:var(--navy);background:#fff;box-shadow:0 0 0 1px var(--navy)}
+.fz-selmark{display:none;margin-top:6px;font-size:.78rem;font-weight:600;color:var(--teal)}
+.fz-opt.on .fz-selmark,.fz-opt:has(input:checked) .fz-selmark{display:block}
+.fz-dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:-1px;border:1px solid rgba(20,33,61,.4)}
+.fz-list{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
+.fz-list li:not(.fz-empty){display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--parch);border-radius:10px;padding:6px 12px;font-size:.9rem}
+
+/* strategy cards */
+.fz-strats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px;border:0;margin:20px 0 0;padding:0;position:relative}
+.fz-strat{padding:18px}
+.fz-strat[data-k="fast"]{border-top:6px solid var(--gold)}
+.fz-strat[data-k="safe"]{border-top:6px solid var(--teal)}
+.fz-strat[data-k="scientific"]{border-top:6px solid var(--blue)}
+.fz-strat .fz-dl{margin-top:12px;padding-top:10px;border-top:1px dashed rgba(20,33,61,.25)}
+.fz-trade{font-size:.88rem;color:var(--mute);margin:0}
+
+/* rehearsal workspace */
+.fz-rh{display:grid;grid-template-columns:minmax(0,2fr) minmax(260px,1fr);gap:20px;margin-top:20px;position:relative}
+.fz-rh-side{display:grid;gap:16px;align-content:start}
+#rehearsal-map{height:min(60vh,520px);border-radius:18px;border:2px solid rgba(255,255,255,.25);background:#0f1a33}
+.fz-hold{position:absolute;inset:0;z-index:450;display:grid;place-content:center;justify-items:center;text-align:center;padding:24px;color:#ece4d0;pointer-events:none}
+.fz-hold a{pointer-events:auto}
+.fz-hold p{max-width:36ch}
+.navy .legend{color:var(--ink)}
+.fz-key{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+.fz-key i{display:inline-block;width:14px;height:14px;margin-right:8px;vertical-align:-2px}
+.k-rover{background:var(--navy);border-radius:50%}
+.k-route{height:4px!important;background:var(--terra);border-radius:2px}
+.k-wp{background:var(--gold);transform:rotate(45deg);width:11px!important;height:11px!important}
+.k-haz{background:var(--orange);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.fz-transport{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:14px}
+.fz-transport input[type="range"]{flex:1 1 200px;min-width:140px;accent-color:var(--gold)}
+.fz-transport output{font-variant-numeric:tabular-nums;min-width:5ch}
+.fz-layers{display:flex;flex-wrap:wrap;gap:6px 18px;border:0;margin:12px 0 0;padding:0;font-size:.9rem}
+.fz-layers label{display:flex;gap:8px;align-items:center;min-height:32px}
+
+@media(max-width:1100px){.fz-rh{grid-template-columns:1fr}}
+@media(max-width:860px){#rail .fz-grp{display:none}section[id]{scroll-margin-top:60px}.fz-dl dd{text-align:left}}
+@media print{.fz-noprint,.fz-skip{display:none!important}}
+</style>
+<link rel="stylesheet" href="fz-space.css">
+<meta name="theme-color" content="#04060B">
+</head>
+<body>
+<a class="fz-skip" href="#main">Skip to content</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <radialGradient id="fzg-base" cx="36%" cy="30%" r="78%"><stop offset="0" stop-color="#3f7fcf"/><stop offset=".32" stop-color="#14396a"/><stop offset=".68" stop-color="#071a34"/><stop offset="1" stop-color="#02060d"/></radialGradient>
+    <radialGradient id="fzg-shade" cx="34%" cy="28%" r="82%"><stop offset=".42" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".9"/></radialGradient>
+    <radialGradient id="fzg-rim" cx="50%" cy="50%" r="50%"><stop offset=".92" stop-color="#7db4ff" stop-opacity="0"/><stop offset=".985" stop-color="#9ccaff" stop-opacity=".5"/><stop offset="1" stop-color="#d5eaff" stop-opacity=".95"/></radialGradient>
+    <clipPath id="fzg-clip"><circle cx="200" cy="200" r="200"/></clipPath>
+    <filter id="fzg-land" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".011 .018" numOctaves="5" seed="7"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 .05  0 0 0 0 .17  0 0 0 0 .15  1.9 0 0 0 -.85"/>
+    </filter>
+    <filter id="fzg-lights" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="3" seed="11" result="c"/>
+      <feColorMatrix in="c" type="matrix" values="0 0 0 0 1  0 0 0 0 .7  0 0 0 0 .3  5 0 0 0 -2.6" result="cm"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".34" numOctaves="2" seed="5" result="d"/>
+      <feColorMatrix in="d" type="matrix" values="0 0 0 0 1  0 0 0 0 .72  0 0 0 0 .3  14 0 0 0 -9.2" result="dm"/>
+      <feComposite in="dm" in2="cm" operator="in"/>
+    </filter>
+    <linearGradient id="fza-suit" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#eceef2"/><stop offset=".6" stop-color="#b3b8c4"/><stop offset="1" stop-color="#6d7384"/></linearGradient>
+    <linearGradient id="fzr-rim" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F6A93B" stop-opacity="0"/><stop offset=".55" stop-color="#F6A93B" stop-opacity=".5"/><stop offset=".8" stop-color="#FFD08A" stop-opacity=".75"/><stop offset="1" stop-color="#F6A93B" stop-opacity="0"/></linearGradient>
+    <symbol id="fz-globe" viewBox="0 0 400 400">
+      <g clip-path="url(#fzg-clip)">
+        <circle cx="200" cy="200" r="200" fill="url(#fzg-base)"/>
+        <rect width="400" height="400" filter="url(#fzg-land)" opacity=".6"/>
+        <circle cx="200" cy="200" r="200" fill="url(#fzg-shade)"/>
+        <rect width="400" height="400" filter="url(#fzg-lights)" opacity=".95"/>
+        <circle cx="200" cy="200" r="200" fill="url(#fzg-rim)"/>
+      </g>
+    </symbol>
+    <symbol id="fz-rover" viewBox="0 0 120 64">
+      <g stroke-linecap="round" stroke-linejoin="round">
+        <path d="M60 30V12M52 12h16" stroke="#E6E0D2" stroke-width="2" fill="none"/>
+        <rect x="55" y="6" width="10" height="6" rx="1.5" fill="#E6E0D2"/>
+        <path d="M30 30h62l8 11H22z" fill="#171D2A" stroke="#E6E0D2" stroke-width="2"/>
+        <path d="M36 30l12-9h26l8 9" fill="#0E131D" stroke="#F6A93B" stroke-width="1.6"/>
+        <path d="M30 41l-10 9M60 41v9M92 41l10 9" stroke="#E6E0D2" stroke-width="2" fill="none"/>
+        <g fill="#0B0F18" stroke="#E6E0D2" stroke-width="2"><circle cx="20" cy="54" r="7.5"/><circle cx="60" cy="54" r="7.5"/><circle cx="102" cy="54" r="7.5"/></g>
+      </g>
+    </symbol>
+    <symbol id="fz-astronaut" viewBox="0 0 60 126">
+      <g stroke-linejoin="round" stroke-linecap="round">
+        <rect x="17" y="68" width="11" height="44" rx="5.5" fill="url(#fza-suit)"/>
+        <rect x="32" y="68" width="11" height="44" rx="5.5" fill="url(#fza-suit)"/>
+        <rect x="14" y="110" width="15" height="9" rx="4" fill="#59606f"/><rect x="31" y="110" width="15" height="9" rx="4" fill="#59606f"/>
+        <rect x="9" y="34" width="9" height="34" rx="4.5" fill="url(#fza-suit)" transform="rotate(5 13 40)"/>
+        <rect x="42" y="34" width="9" height="34" rx="4.5" fill="url(#fza-suit)" transform="rotate(-5 47 40)"/>
+        <rect x="14" y="31" width="32" height="42" rx="11" fill="url(#fza-suit)"/>
+        <rect x="19" y="36" width="22" height="32" rx="5" fill="#cfd3dc"/><rect x="19" y="36" width="22" height="32" rx="5" fill="none" stroke="#7b8191" stroke-width="1"/>
+        <circle cx="30" cy="19" r="14" fill="url(#fza-suit)"/>
+        <circle cx="30" cy="19" r="14" fill="none" stroke="#F6A93B" stroke-opacity=".45" stroke-width="1.2" stroke-dasharray="0 52 30 40"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="boot" role="status"><svg viewBox="0 0 80 80" width="72" aria-hidden="true"><ellipse class="orb" cx="40" cy="40" rx="34" ry="14"/><circle cx="40" cy="40" r="9" fill="#B65F43"/><circle class="moonlet" cx="74" cy="40" r="3" fill="#C9A24A"/></svg><p id="boot-msg">Unrolling the survey map…</p></div>
+
+<nav id="rail" aria-label="Mission chapters">
+  <a class="brand" href="#home" aria-label="FIELD//ZERO home">FIELD<em>//</em>ZERO</a>
+  <div class="fz-pill">
+    <a href="#home" data-ch="home">Home</a>
+    <a href="#explorer" data-ch="explorer">Explore</a>
+    <a href="#builder" data-ch="builder">Mission Builder</a>
+    <a href="#discovery" data-ch="discovery">Analog Intelligence</a>
+    <a href="#strategy" data-ch="strategy">Strategy Optimizer</a>
+    <details class="fz-more" id="fz-more">
+      <summary>More</summary>
+      <div class="fz-menu">
+        <span class="fz-grp">Plan</span>
+        <a href="#control" data-ch="control"><i>I</i>Mission Control</a>
+        <a href="#builder" data-ch="builder"><i>II</i>Mission Builder</a>
+        <span class="fz-grp">Explore</span>
+        <a href="#explorer" data-ch="explorer"><i>III</i>Analog Explorer</a>
+        <a class="sub" href="#discovery" data-ch="discovery">Analog Discovery</a>
+        <a class="sub" href="#notes" data-ch="notes">Field Notes</a>
+        <a class="sub" href="#portfolio" data-ch="portfolio">Mission Portfolio</a>
+        <a class="sub" href="#evidence" data-ch="evidence">Evidence Room</a>
+        <span class="fz-grp">Simulate</span>
+        <a href="#strategy" data-ch="strategy"><i>IV</i>Strategy Comparison</a>
+        <a href="#rehearsal" data-ch="rehearsal"><i>V</i>Virtual Rehearsal</a>
+        <a href="#whatif" data-ch="whatif"><i>VI</i>What-If Lab</a>
+        <a href="#failures" data-ch="failures"><i>VII</i>Failure Analysis</a>
+        <span class="fz-grp">Report</span>
+        <a href="#cost" data-ch="cost"><i>VIII</i>Cost &amp; Resources</a>
+        <a href="#brief" data-ch="brief"><i>IX</i>Mission Dossier</a>
+      </div>
+    </details>
+  </div>
+</nav>
+
+<main id="main" tabindex="-1">
+<noscript><p class="note">FIELD//ZERO needs JavaScript to load terrain data, maps and charts.</p></noscript>
+
+<!-- ============================ 0. HOME: hero, gateways, worlds ============================ -->
+<section id="home" class="fz-hero" aria-labelledby="home-h">
+  <div class="fz-art" aria-hidden="true">
+    <div class="fz-earth-big"><svg viewBox="0 0 400 400" focusable="false"><use href="#fz-globe" width="400" height="400"/></svg></div>
+    <div class="fz-flare"></div>
+    <div class="fz-moon"></div>
+    <svg class="fz-orbit-line" viewBox="0 0 1440 520" preserveAspectRatio="none" focusable="false"><path d="M-20 470C380 330 760 250 1120 150" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="1"/></svg>
+    <svg class="fz-ridges" viewBox="0 0 1440 380" preserveAspectRatio="xMidYMax slice" focusable="false">
+      <defs><linearGradient id="fzr-far" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1a12"/><stop offset="1" stop-color="#0d0807"/></linearGradient>
+      <linearGradient id="fzr-mid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1210"/><stop offset="1" stop-color="#070506"/></linearGradient></defs>
+      <path d="M0 380V262l70-22 58 14 82-34 64 26 90-30 70 20 110-38 76 22 96-8 84 24 120-30 80 18 110-24 90 20 100-16 70 16 100-20V380z" fill="url(#fzr-far)"/>
+      <path d="M0 380V300c90-18 160-8 250-22l90-12c70 6 110 20 190 10l120-26c60-8 120 8 180 6l130-24c70-10 120 4 190-6l90-14V380z" fill="url(#fzr-mid)"/>
+      <path id="fzr-edge" d="M0 300c90-18 160-8 250-22l90-12c70 6 110 20 190 10l120-26c60-8 120 8 180 6l130-24c70-10 120 4 190-6l90-14" fill="none" stroke="url(#fzr-rim)" stroke-width="1.4"/>
+      <path d="M0 380V318c110-14 220 4 330-8l140-14c80 8 150 24 250 6l80-18c90-14 170-24 230-34l42-8 42 2 60 12c90 18 170 36 266 26V380z" fill="#050406"/>
+      <path d="M720 302l80-18c90-14 170-24 230-34l42-8 42 2 60 12c90 18 170 36 266 26" fill="none" stroke="url(#fzr-rim)" stroke-width="1.8"/>
+      <svg x="1018" y="130" width="52" height="124" viewBox="0 0 60 126"><use href="#fz-astronaut" width="60" height="126"/></svg>
+    </svg>
+  </div>
+  <div class="fz-hero-copy">
+    <p class="fz-eyebrow">Planetary terrain intelligence</p>
+    <h1 id="home-h">FIELD<b>//</b>ZERO</h1>
+    <p class="fz-tag">Explore<i>&bull;</i>Analyze<i>&bull;</i>Plan</p>
+    <p class="fz-sub-copy">Bridge Earth and beyond through real terrain data, advanced intelligence, and mission-ready insights.</p>
+    <div class="fz-cta">
+      <a class="fz-btn" href="#builder"><span class="fz-play" aria-hidden="true"><svg viewBox="0 0 12 12" fill="currentColor"><path d="M2 1l9 5-9 5z"/></svg></span>Begin your journey</a>
+      <a class="fz-scroll" href="#suite"><svg viewBox="0 0 26 38" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="1" y="1" width="24" height="36" rx="12"/><path d="M13 9v7" stroke-linecap="round"/></svg>Scroll to explore</a>
+    </div>
+  </div>
+</section>
+
+<div class="fz-ticker" aria-label="FIELD//ZERO data sources and scope"><div class="fz-ticker-track"><ul><li>Earth &middot; Western Desert</li><li>Mars &middot; Jezero Crater</li><li>Moon &middot; Taurus-Littrow</li><li>120 m / 360 m terrain grids</li><li>4 terrain metrics: slope, roughness, variability, TRI</li><li>Terrain analog model &middot; not proof of environmental equivalence</li><li>NASADEM &middot; USGS CTX &middot; LRO LOLA</li></ul><ul aria-hidden="true"><li>Earth &middot; Western Desert</li><li>Mars &middot; Jezero Crater</li><li>Moon &middot; Taurus-Littrow</li><li>120 m / 360 m terrain grids</li><li>4 terrain metrics: slope, roughness, variability, TRI</li><li>Terrain analog model &middot; not proof of environmental equivalence</li><li>NASADEM &middot; USGS CTX &middot; LRO LOLA</li></ul></div></div>
+
+<section id="suite" aria-labelledby="suite-h">
+  <div class="fz-suite-intro">
+    <h2 id="suite-h">Seven gateways. One unified mission.</h2>
+    <p>A complete scientific workflow for planetary exploration and mission planning.</p>
+  </div>
+  <ol class="fz-gates" aria-label="The seven gateways">
+        <li><a class="fz-gate" href="#explorer"><span class="n">01</span><strong>Explore</strong><small>Discover worlds</small><span class="art a-globe" aria-hidden="true"></span><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="fz-gate" href="#builder"><span class="n">02</span><strong>Mission Builder</strong><small>Configure your mission</small><span class="art a-mars" aria-hidden="true"></span><svg class="rover" viewBox="0 0 120 64" aria-hidden="true"><use href="#fz-rover"/></svg><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="fz-gate" href="#discovery"><span class="n">03</span><strong>Analog Intelligence</strong><small>Find terrain analogues</small><span class="art a-dunes" aria-hidden="true"></span><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="fz-gate" href="#strategy"><span class="n">04</span><strong>Strategy Optimizer</strong><small>Plan smarter</small><span class="art a-flow" aria-hidden="true"></span><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="fz-gate" href="#rehearsal"><span class="n">05</span><strong>Virtual Rehearsal</strong><small>Test &amp; refine</small><span class="art a-lab" aria-hidden="true"></span><svg class="rover" viewBox="0 0 120 64" aria-hidden="true"><use href="#fz-rover"/></svg><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="fz-gate" href="#whatif"><span class="n">06</span><strong>What-if Lab</strong><small>Explore scenarios</small><span class="art a-dunes" aria-hidden="true"></span><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+        <li><a class="fz-gate" href="#brief"><span class="n">07</span><strong>Mission Results</strong><small>Analyze outcomes</small><span class="art a-result" aria-hidden="true"></span><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+  </ol>
+</section>
+
+<section id="worlds" aria-labelledby="worlds-h">
+  <ul class="fz-bodies" aria-label="Study regions">
+    <li>Earth<span>Western Desert</span></li>
+    <li>Mars<span>Jezero Crater</span></li>
+    <li>Moon<span>Taurus-Littrow</span></li>
+  </ul>
+  <div class="fz-orb" aria-hidden="true">
+    <svg class="rings" viewBox="0 0 400 400" focusable="false">
+      <ellipse cx="200" cy="200" rx="196" ry="62" transform="rotate(-16 200 200)" fill="none" stroke="rgba(255,255,255,.22)"/>
+      <ellipse cx="200" cy="200" rx="150" ry="194" transform="rotate(24 200 200)" fill="none" stroke="rgba(255,255,255,.14)"/>
+      <circle cx="372" cy="146" r="4" fill="#F6A93B"/><circle cx="48" cy="248" r="3" fill="#E8E3D8"/>
+    </svg>
+    <svg class="globe" viewBox="0 0 400 400" focusable="false"><use href="#fz-globe" width="400" height="400"/></svg>
+  </div>
+  <div class="fz-worlds-copy">
+    <p class="eyebrow">Scientific foundation</p>
+    <h2 id="worlds-h">From Earth to other worlds</h2>
+    <p>Use real terrain data to understand, evaluate and prepare for planetary exploration.</p>
+    <a class="fz-outline" href="#notes">Explore the science</a>
+  </div>
+  <ul class="fz-facts" aria-label="Data at a glance">
+    <li><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 26L12 9l5 8 4-6 8 15z"/></svg><div><b>120 m / 360 m</b><span>Resolution</span></div></li>
+    <li><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><ellipse cx="16" cy="8" rx="10" ry="4"/><path d="M6 8v8c0 2.2 4.5 4 10 4s10-1.8 10-4V8M6 16v8c0 2.2 4.5 4 10 4s10-1.8 10-4v-8"/></svg><div><b>4 terrain metrics</b><span>Slope, roughness, variability, TRI</span></div></li>
+    <li><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="16" cy="16" r="6"/><circle cx="16" cy="16" r="12"/><path d="M16 1v5M16 26v5M1 16h5M26 16h5"/></svg><div><b>3 study regions</b><span>Earth, Mars, Moon</span></div></li>
+  </ul>
+</section>
+
+<!-- ============================ 1. MISSION CONTROL ============================ -->
+<section id="control" class="chapter" aria-labelledby="control-h">
+  <p class="label">Planetary mission planning and rehearsal</p>
+  <h2 class="big" id="control-h">Rehearse the mission before you fly it</h2>
+  <p class="lede">Pick a world, find its Earth analog, plan the route and test what goes wrong.</p>
+  <div class="fz-actions"><a class="fz-btn" href="#builder">Build a mission</a></div>
+
+  <div class="fz-cols">
+    <article class="card" aria-labelledby="mc-cur-h">
+      <h2 id="mc-cur-h">Current mission</h2>
+      <p class="fz-empty" id="mc-cur-empty">No mission yet. <a href="#builder">Start the mission builder</a>.</p>
+      <dl class="fz-dl" id="mc-cur-dl" hidden></dl>
+    </article>
+    <article class="card" aria-labelledby="mc-prog-h">
+      <h2 id="mc-prog-h">Mission progress</h2>
+      <progress id="mc-progress" max="6" value="0" aria-labelledby="mc-prog-h"></progress>
+      <p class="src" id="mc-prog-txt">0 of 6 stages complete</p>
+      <ol class="fz-pipe" id="mc-pipe" aria-label="Mission stages">
+        <li data-stage="setup" data-state="todo"><a href="#builder">Setup</a><span class="src fz-st">Not started</span></li>
+        <li data-stage="strategy" data-state="todo"><a href="#strategy">Strategy</a><span class="src fz-st">Not started</span></li>
+        <li data-stage="rehearsal" data-state="todo"><a href="#rehearsal">Rehearsal</a><span class="src fz-st">Not started</span></li>
+        <li data-stage="whatif" data-state="todo"><a href="#whatif">What-if</a><span class="src fz-st">Not started</span></li>
+        <li data-stage="failures" data-state="todo"><a href="#failures">Failures</a><span class="src fz-st">Not started</span></li>
+        <li data-stage="cost" data-state="todo"><a href="#cost">Cost</a><span class="src fz-st">Not started</span></li>
+      </ol>
+    </article>
+  </div>
+
+  <h2 class="fz-h2" id="mc-metrics-h">Mission metrics</h2>
+  <div class="stats" id="mc-metrics" aria-labelledby="mc-metrics-h" role="group">
+    <div class="stat"><b id="m-duration">—</b><span>Planned duration</span></div>
+    <div class="stat"><b id="m-cost">—</b><span>Estimated cost</span></div>
+    <div class="stat"><b id="m-energy">—</b><span>Energy margin</span></div>
+    <div class="stat"><b id="m-success">—</b><span>Simulated outcome</span></div>
+    <div class="stat"><b id="m-failures">—</b><span>Open failures</span></div>
+  </div>
+  <p class="src">These fill in once the mission engine has planned a route.</p>
+
+  <div class="two">
+    <div><h2>Recent activity</h2>
+      <ol class="fz-log" id="mc-activity" aria-label="Recent activity"><li class="fz-empty" id="mc-act-empty">Nothing yet. Your first action will show up here.</li></ol></div>
+    <div><h2>Quick actions</h2>
+      <nav class="fz-qa" aria-label="Quick actions">
+        <a href="#builder">New mission</a>
+        <a href="#explorer">Explore analog sites</a>
+        <a href="#strategy">Compare strategies</a>
+        <a href="#rehearsal">Start rehearsal</a>
+        <a href="#whatif">Run a what-if</a>
+        <a href="#brief">Open dossier</a>
+      </nav></div>
+  </div>
+
+  <h2 class="fz-h2">Terrain data</h2>
+  <div id="stats" class="stats"></div>
+  <div class="two"><div><h2>Key findings</h2><ul id="findings" class="plain"></ul></div><div><h2>Data status</h2><div id="datastatus"></div></div></div>
+  <p class="note" id="objectives"></p>
+</section>
+
+<!-- ============================ 2. MISSION BUILDER ============================ -->
+<section id="builder" class="chapter" aria-labelledby="builder-h">
+  <h2 class="big" id="builder-h">Mission builder</h2>
+  <p class="lede">Six steps from objective to launch.</p>
+  <ol class="fz-steps" id="mb-steps" aria-label="Builder steps">
+    <li><button type="button" data-goto="1" aria-current="step"><b>1</b>Objective <span class="fz-tick" aria-hidden="true" hidden>✓</span><span class="fz-vh fz-donetxt" hidden>(complete)</span></button></li>
+    <li><button type="button" data-goto="2"><b>2</b>Destination <span class="fz-tick" aria-hidden="true" hidden>✓</span><span class="fz-vh fz-donetxt" hidden>(complete)</span></button></li>
+    <li><button type="button" data-goto="3"><b>3</b>Analog site <span class="fz-tick" aria-hidden="true" hidden>✓</span><span class="fz-vh fz-donetxt" hidden>(complete)</span></button></li>
+    <li><button type="button" data-goto="4"><b>4</b>Rover and equipment <span class="fz-tick" aria-hidden="true" hidden>✓</span><span class="fz-vh fz-donetxt" hidden>(complete)</span></button></li>
+    <li><button type="button" data-goto="5"><b>5</b>Resources and budget <span class="fz-tick" aria-hidden="true" hidden>✓</span><span class="fz-vh fz-donetxt" hidden>(complete)</span></button></li>
+    <li><button type="button" data-goto="6"><b>6</b>Review and launch</button></li>
+  </ol>
+
+  <form id="mb-form" class="card fz-form" novalidate aria-labelledby="builder-h">
+    <p class="fz-vh" id="mb-live" role="status" aria-live="polite"></p>
+
+    <fieldset class="fz-step" id="mb-s1" data-step="1">
+      <legend>Objective</legend>
+      <div class="fz-field"><label for="mb-name">Mission name</label><input type="text" id="mb-name" maxlength="80" autocomplete="off" required></div>
+      <div class="fz-field"><label for="mb-objective">What must this mission achieve?</label><textarea id="mb-objective" rows="3" maxlength="400" required></textarea></div>
+      <div class="fz-grid2">
+        <div class="fz-field"><label for="mb-success">Success criterion</label><input type="text" id="mb-success" maxlength="160" autocomplete="off"><span class="fz-hint">Optional. How you will know it worked.</span></div>
+        <div class="fz-field"><label for="mb-priority">Priority</label><select id="mb-priority"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="fz-step" id="mb-s2" data-step="2" hidden>
+      <legend>Destination</legend>
+      <fieldset class="fz-opts"><legend class="fz-vh">Destination options</legend>
+        <label class="fz-opt"><input type="radio" name="body" id="mb-body-earth" value="earth"><b><span class="fz-dot" style="background:#5E9C9A" aria-hidden="true"></span>Earth</b><span class="src">Western Desert, Egypt</span><span class="fz-selmark">Selected</span></label>
+        <label class="fz-opt"><input type="radio" name="body" id="mb-body-mars" value="mars"><b><span class="fz-dot" style="background:#B65F43" aria-hidden="true"></span>Mars</b><span class="src">Jezero Crater</span><span class="fz-selmark">Selected</span></label>
+        <label class="fz-opt"><input type="radio" name="body" id="mb-body-moon" value="moon"><b><span class="fz-dot" style="background:#EADFC8" aria-hidden="true"></span>Moon</b><span class="src">Taurus-Littrow Valley</span><span class="fz-selmark">Selected</span></label>
+      </fieldset>
+    </fieldset>
+
+    <fieldset class="fz-step" id="mb-s3" data-step="3" hidden>
+      <legend>Analog site</legend>
+      <div class="fz-field"><label for="mb-rh-body">Rehearse on</label><select id="mb-rh-body"><option value="earth" selected>Earth analog terrain (WGS84)</option><option value="dest">Destination terrain (Mars or Moon, local metres)</option></select><span class="fz-hint" id="mb-rh-hint">Earth rehearsal drives an analog route in the Western Desert. Destination rehearsal drives the Mars or Moon terrain grid directly.</span></div>
+      <div id="mb-rh-off" hidden>
+        <p class="fz-hint" id="mb-rh-range">Positions are x and y in metres in the site's local frame (x_m_localTM, y_m_localTM). They are not longitude or latitude.</p>
+        <div class="fz-grid2">
+          <div class="fz-field"><label for="mb-sx">Start x (m)</label><input type="number" id="mb-sx" step="any" inputmode="decimal"></div>
+          <div class="fz-field"><label for="mb-sy">Start y (m)</label><input type="number" id="mb-sy" step="any" inputmode="decimal"></div>
+          <div class="fz-field"><label for="mb-gx">Goal x (m)</label><input type="number" id="mb-gx" step="any" inputmode="decimal"></div>
+          <div class="fz-field"><label for="mb-gy">Goal y (m)</label><input type="number" id="mb-gy" step="any" inputmode="decimal"></div>
+        </div>
+      </div>
+      <div id="mb-earth-site">
+      <p class="fz-hint">The Earth site that stands in for the destination. Coordinates are WGS84.</p>
+      <fieldset class="fz-opts"><legend class="fz-vh">Site source</legend>
+        <label class="fz-opt"><input type="radio" name="site-src" id="mb-src-portfolio" value="portfolio"><b>Site portfolio</b><span class="src">From the portfolio chapter</span><span class="fz-selmark">Selected</span></label>
+        <label class="fz-opt"><input type="radio" name="site-src" id="mb-src-candidate" value="candidate"><b>Ranked candidate</b><span class="src">From analog discovery</span><span class="fz-selmark">Selected</span></label>
+        <label class="fz-opt"><input type="radio" name="site-src" id="mb-src-manual" value="manual"><b>Coordinates</b><span class="src">Enter longitude and latitude</span><span class="fz-selmark">Selected</span></label>
+      </fieldset>
+      <div id="mb-site-pick-wrap" hidden>
+        <div class="fz-field"><label for="mb-site-pick">Site</label><select id="mb-site-pick" aria-describedby="mb-site-hint"><option value="">Choose a site</option></select><span class="fz-hint" id="mb-site-hint"></span></div>
+      </div>
+      <div id="mb-site-manual" class="fz-grid2" hidden>
+        <div class="fz-field"><label for="mb-lon">Longitude (°E)</label><input type="number" id="mb-lon" step="any" min="-180" max="180" inputmode="decimal"></div>
+        <div class="fz-field"><label for="mb-lat">Latitude (°N)</label><input type="number" id="mb-lat" step="any" min="-90" max="90" inputmode="decimal"></div>
+      </div>
+      <p class="fz-hint">Need to look first? <a href="#explorer">Open the explorer</a> or <a href="#discovery">view ranked candidates</a>.</p>
+      </div>
+    </fieldset>
+
+    <fieldset class="fz-step" id="mb-s4" data-step="4" hidden>
+      <legend>Rover and equipment</legend>
+      <div class="fz-field"><label for="mb-v-name">Rover name</label><input type="text" id="mb-v-name" maxlength="60" autocomplete="off"></div>
+      <div class="fz-grid2">
+        <div class="fz-field"><label for="mb-v-mass">Mass (kg)</label><input type="number" id="mb-v-mass" min="0" step="any" inputmode="decimal"></div>
+        <div class="fz-field"><label for="mb-v-slope">Max slope (°)</label><input type="number" id="mb-v-slope" min="0" max="90" step="any" inputmode="decimal"></div>
+        <div class="fz-field"><label for="mb-v-speed">Flat-ground speed (m/s)</label><input type="number" id="mb-v-speed" min="0" step="any" inputmode="decimal"></div>
+        <div class="fz-field"><label for="mb-v-power">Average power draw (W)</label><input type="number" id="mb-v-power" min="0" step="any" inputmode="decimal"></div>
+        <div class="fz-field"><label for="mb-v-battery">Battery capacity (Wh)</label><input type="number" id="mb-v-battery" min="0" step="any" inputmode="decimal"></div>
+      </div>
+      <fieldset class="fz-sub" aria-describedby="mb-eq-err">
+        <legend>Equipment</legend>
+        <div class="fz-grid2">
+          <div class="fz-field"><label for="eq-name">Item</label><input type="text" id="eq-name" maxlength="60" autocomplete="off"></div>
+          <div class="fz-field"><label for="eq-mass">Mass (kg)</label><input type="number" id="eq-mass" min="0" step="any" inputmode="decimal"></div>
+          <div class="fz-field"><label for="eq-power">Power (W)</label><input type="number" id="eq-power" min="0" step="any" inputmode="decimal"></div>
+        </div>
+        <button type="button" class="fz-btn ghost" id="eq-add">Add item</button>
+        <p class="fz-err" id="mb-eq-err" role="alert" hidden></p>
+        <ul class="fz-list" id="mb-equipment" aria-label="Equipment list"></ul>
+        <p class="fz-empty" id="mb-eq-empty">No equipment added. Optional.</p>
+      </fieldset>
+    </fieldset>
+
+    <fieldset class="fz-step" id="mb-s5" data-step="5" hidden>
+      <legend>Resources and budget</legend>
+      <div class="fz-grid2">
+        <div class="fz-field"><label for="mb-budget">Budget limit</label><input type="number" id="mb-budget" min="0" step="any" inputmode="decimal"></div>
+        <div class="fz-field"><label for="mb-currency">Currency</label><input type="text" id="mb-currency" maxlength="8" autocomplete="off"><span class="fz-hint">Optional. Leave blank if unknown.</span></div>
+        <div class="fz-field"><label for="mb-duration">Duration limit (hours)</label><input type="number" id="mb-duration" min="0" step="any" inputmode="decimal"></div>
+        <div class="fz-field"><label for="mb-reserve">Minimum battery reserve (%)</label><input type="number" id="mb-reserve" min="0" max="100" step="any" inputmode="decimal"></div>
+      </div>
+      <details class="fz-adv"><summary>Advanced</summary>
+        <div class="fz-field"><label for="mb-seed">Random seed</label><input type="number" id="mb-seed" step="1" value="1" inputmode="numeric"><span class="fz-hint">The same seed repeats the same rehearsal.</span></div>
+      </details>
+    </fieldset>
+
+    <fieldset class="fz-step" id="mb-s6" data-step="6" hidden>
+      <legend>Review and launch</legend>
+      <dl class="fz-dl" id="mb-review"></dl>
+      <p class="fz-hint">Strategy is chosen in <a href="#strategy">Strategy comparison</a>.</p>
+    </fieldset>
+
+    <p class="fz-err" id="mb-err" role="alert" hidden></p>
+    <div class="fz-nav">
+      <button type="button" class="fz-btn ghost" id="mb-back" disabled>Back</button>
+      <span class="fz-count" id="mb-count">Step 1 of 6</span>
+      <button type="button" class="fz-btn" id="mb-next">Next</button>
+      <button type="submit" class="fz-btn" id="mb-launch" hidden>Launch rehearsal</button>
+    </div>
+    <p id="mb-status" role="status" class="fz-hint"></p>
+  </form>
+</section>
+
+<!-- ============================ 3. ANALOG EXPLORER (existing, preserved) ============================ -->
+<section id="explorer" class="chapter">
+  <h2 class="big">Let's explore the terrain</h2>
+  <p class="lede">Three worlds, three separate coordinate systems. Earth uses WGS84 on a street basemap. Mars and Moon use their own surface coordinates in metres, with no basemap.</p>
+  <div class="bar" id="mapbar">
+    <div class="seg" id="bodyseg"></div>
+    <label>Colour cells by <select id="layersel"></select></label>
+    <label><input type="checkbox" id="candtoggle" checked> Top candidates</label>
+    <label><input type="checkbox" id="porttoggle" checked> Portfolio</label>
+  </div>
+  <div class="mapwrap"><div id="map" role="application" aria-label="Terrain map"></div><div id="maplegend" class="legend"></div><div id="mapnote" class="mapnote" hidden></div></div>
+  <div class="two"><div id="detail" class="card"><h3>A closer look at the surface</h3><p>Click any cell on the map to read its coordinates, terrain metrics and similarity scores.</p></div><div id="pinned" class="card"><h3>Compare pinned cells</h3><p>Pin up to three cells from the detail panel.</p></div></div>
+  <p class="src" id="mapsrc"></p>
+</section>
+
+<section id="discovery" class="chapter">
+  <h2 class="big">Your next mission candidate</h2>
+  <p class="lede">The engine's top-ranked Earth cells, at least 2 km apart. A high score means close terrain shape, not a confirmed analog.</p>
+  <div class="bar"><div class="seg" id="tgtseg"></div><div class="seg" id="scaleseg"></div></div>
+  <div class="two wide"><div class="card scroll"><table id="candtable"></table></div><div id="canddetail" class="card"></div></div>
+</section>
+
+<section id="notes" class="chapter navy">
+  <h2 class="big">Scientific field notes</h2>
+  <p class="lede">A closer look at the surface: distributions, resolution effects and the climate records we actually have.</p>
+  <div id="charts" class="grid"></div>
+</section>
+
+<section id="portfolio" class="chapter">
+  <h2 class="big">A team of sites, not a pile of neighbours</h2>
+  <p class="lede">The optimizer keeps scores high while spreading picks across different terrain and different places.</p>
+  <div class="bar">
+    <div class="seg" id="ptgt"></div>
+    <label>Sites <input type="range" id="pn" min="2" max="10" value="5"><b id="pnv">5</b></label>
+    <label>Min separation <input type="range" id="psep" min="1" max="6" value="2"><b id="psepv">2 km</b></label>
+  </div>
+  <div id="pobj" class="note"></div><div id="pitems" class="grid"></div><div id="pcmp" class="note"></div>
+</section>
+
+<section id="evidence" class="chapter">
+  <h2 class="big">How much do we really know?</h2>
+  <p class="lede">Every good discovery starts with evidence. These are potential gaps, not measurements, and no listed source was accessed by this project.</p>
+  <div id="gapsum" class="stats"></div><div id="gaps" class="grid"></div>
+</section>
+
+<!-- ============================ 4. STRATEGY COMPARISON ============================ -->
+<section id="strategy" class="chapter" aria-labelledby="strategy-h">
+  <h2 class="big" id="strategy-h">Choose a strategy</h2>
+  <p class="lede">Same mission, three ways to fly it. Pick the trade-off you want.</p>
+  <fieldset class="fz-strats">
+    <legend class="fz-vh">Mission strategy</legend>
+    <div class="card fz-opt fz-strat" data-k="fast"><input type="radio" name="strategy" id="st-fast" value="fast" aria-labelledby="st-fast-h" aria-describedby="st-fast-d">
+      <h3 id="st-fast-h">Fast</h3><p class="fz-trade" id="st-fast-d">Shortest time to the objective. Accepts more risk and thinner margins.</p>
+      <dl class="fz-dl">
+        <dt>Duration</dt><dd class="fz-na" id="st-fast-duration">—</dd><dt>Distance</dt><dd class="fz-na" id="st-fast-distance">—</dd><dt>Energy</dt><dd class="fz-na" id="st-fast-energy">—</dd>
+        <dt>Cost</dt><dd class="fz-na" id="st-fast-cost">—</dd><dt>Risk</dt><dd class="fz-na" id="st-fast-risk">—</dd><dt>Rehearsal outcome</dt><dd class="fz-na" id="st-fast-success">—</dd>
+      </dl><span class="fz-selmark">Selected</span></div>
+    <div class="card fz-opt fz-strat" data-k="safe"><input type="radio" name="strategy" id="st-safe" value="safe" aria-labelledby="st-safe-h" aria-describedby="st-safe-d">
+      <h3 id="st-safe-h">Safe</h3><p class="fz-trade" id="st-safe-d">Lowest risk to the rover. Accepts a longer route and more time.</p>
+      <dl class="fz-dl">
+        <dt>Duration</dt><dd class="fz-na" id="st-safe-duration">—</dd><dt>Distance</dt><dd class="fz-na" id="st-safe-distance">—</dd><dt>Energy</dt><dd class="fz-na" id="st-safe-energy">—</dd>
+        <dt>Cost</dt><dd class="fz-na" id="st-safe-cost">—</dd><dt>Risk</dt><dd class="fz-na" id="st-safe-risk">—</dd><dt>Rehearsal outcome</dt><dd class="fz-na" id="st-safe-success">—</dd>
+      </dl><span class="fz-selmark">Selected</span></div>
+    <div class="card fz-opt fz-strat" data-k="scientific"><input type="radio" name="strategy" id="st-scientific" value="scientific" aria-labelledby="st-scientific-h" aria-describedby="st-scientific-d">
+      <h3 id="st-scientific-h">Scientific</h3><p class="fz-trade" id="st-scientific-d">Most science per trip. Accepts more time and energy for sampling stops.</p>
+      <dl class="fz-dl">
+        <dt>Duration</dt><dd class="fz-na" id="st-scientific-duration">—</dd><dt>Distance</dt><dd class="fz-na" id="st-scientific-distance">—</dd><dt>Energy</dt><dd class="fz-na" id="st-scientific-energy">—</dd>
+        <dt>Cost</dt><dd class="fz-na" id="st-scientific-cost">—</dd><dt>Risk</dt><dd class="fz-na" id="st-scientific-risk">—</dd><dt>Rehearsal outcome</dt><dd class="fz-na" id="st-scientific-success">—</dd>
+      </dl><span class="fz-selmark">Selected</span></div>
+  </fieldset>
+  <p class="fz-empty" id="st-empty">The numbers above come from the mission engine. They stay empty until each strategy has been planned.</p>
+</section>
+
+<!-- ============================ 5. VIRTUAL REHEARSAL ============================ -->
+<section id="rehearsal" class="chapter navy" aria-labelledby="rehearsal-h" data-ready="false">
+  <h2 class="big" id="rehearsal-h">Virtual rehearsal</h2>
+  <p class="lede">Drive the route on analog terrain before it counts.</p>
+  <div class="fz-rh">
+    <div class="fz-rh-main">
+      <div class="mapwrap">
+        <div id="rehearsal-map" role="application" aria-label="Rehearsal terrain map with rover, route, waypoints and hazards"></div>
+        <div class="fz-hold" id="rh-hold"><div><p>No mission plan loaded.</p><p><a href="#builder">Build a mission</a> to load terrain, route and rover here.</p></div></div>
+        <div id="rh-legend" class="legend"><b>Layers</b>
+          <ul class="fz-key"><li><i class="k-rover"></i>Rover</li><li><i class="k-route"></i>Route</li><li><i class="k-wp"></i>Waypoint</li><li><i class="k-haz"></i>Hazard</li></ul></div>
+      </div>
+      <div class="fz-transport" role="group" aria-label="Rehearsal controls">
+        <button type="button" class="fz-btn" data-rh="play" disabled>Play</button>
+        <button type="button" class="fz-btn ghost" data-rh="pause" disabled>Pause</button>
+        <button type="button" class="fz-btn ghost" data-rh="reset" disabled>Reset</button>
+        <div class="seg" role="group" aria-label="Playback speed">
+          <button type="button" data-rh="speed" data-speed="0.5" aria-pressed="false" disabled>0.5×</button>
+          <button type="button" data-rh="speed" data-speed="1" class="on" aria-pressed="true" disabled>1×</button>
+          <button type="button" data-rh="speed" data-speed="2" aria-pressed="false" disabled>2×</button>
+          <button type="button" data-rh="speed" data-speed="4" aria-pressed="false" disabled>4×</button>
+          <button type="button" data-rh="speed" data-speed="8" aria-pressed="false" disabled>8×</button>
+        </div>
+      </div>
+      <div class="fz-transport">
+        <label class="fz-vh" for="rh-scrub">Rehearsal time</label>
+        <input type="range" id="rh-scrub" data-rh="scrub" min="0" max="0" value="0" step="1" disabled>
+        <output id="rh-clock" for="rh-scrub">—</output>
+      </div>
+      <fieldset class="fz-layers"><legend class="fz-vh">Map layers</legend>
+        <label><input type="checkbox" data-rh="layer" data-layer="route" checked disabled> Route</label>
+        <label><input type="checkbox" data-rh="layer" data-layer="waypoints" checked disabled> Waypoints</label>
+        <label><input type="checkbox" data-rh="layer" data-layer="hazards" checked disabled> Hazards</label>
+        <label><input type="checkbox" data-rh="layer" data-layer="rover" checked disabled> Rover</label>
+      </fieldset>
+      <p class="src" id="rh-note">Controls unlock when a mission plan is loaded.</p>
+    </div>
+    <aside class="fz-rh-side" aria-label="Rehearsal readouts">
+      <section class="card" aria-labelledby="rh-metrics-h"><h3 id="rh-metrics-h">Live metrics</h3>
+        <dl class="fz-dl">
+          <dt>Elapsed</dt><dd class="fz-na" id="rh-m-elapsed">—</dd>
+          <dt>Distance</dt><dd class="fz-na" id="rh-m-distance">—</dd>
+          <dt>Battery</dt><dd class="fz-na" id="rh-m-battery">—</dd>
+          <dt>Progress</dt><dd class="fz-na" id="rh-m-progress">—</dd>
+          <dt>Rover status</dt><dd class="fz-na" id="rh-m-status">—</dd>
+        </dl></section>
+      <section class="card" aria-labelledby="rh-log-h"><h3 id="rh-log-h">Event log</h3>
+        <ol class="fz-log" id="rh-log" role="log" aria-live="polite" aria-labelledby="rh-log-h"><li class="fz-empty">Events appear here as the rehearsal runs.</li></ol></section>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ 6. WHAT-IF LAB ============================ -->
+<section id="whatif" class="chapter" aria-labelledby="whatif-h">
+  <h2 class="big" id="whatif-h">What-if lab</h2>
+  <p class="lede">Change one thing, rerun, and compare against the baseline.</p>
+  <div class="two wide">
+    <form id="wi-form" class="card fz-form" novalidate aria-labelledby="wi-form-h">
+      <h3 id="wi-form-h">Scenario</h3>
+      <div class="fz-grid2">
+        <div class="fz-field"><label for="wi-name">Name</label><input type="text" id="wi-name" maxlength="60" autocomplete="off"></div>
+        <div class="fz-field"><label for="wi-baseline">Compare against</label><select id="wi-baseline"><option value="nominal">Nominal plan</option></select></div>
+      </div>
+      <fieldset class="fz-field"><legend class="lbl">Trigger</legend>
+        <div class="fz-grid2">
+          <div class="fz-field"><label for="wi-trigger">Trigger type</label><select id="wi-trigger"><option value="time">At a time</option><option value="leg">On a route leg</option><option value="waypoint">At a waypoint</option></select></div>
+          <div class="fz-field"><label for="wi-at">Time (s), leg or waypoint id</label><input type="text" id="wi-at" maxlength="40" autocomplete="off"></div>
+        </div>
+      </fieldset>
+      <div class="fz-grid2">
+        <div class="fz-field"><label for="wi-injection">Event to inject</label><select id="wi-injection" data-wi disabled aria-describedby="wi-cat-hint"><option value="">Waiting for the mission engine</option></select></div>
+        <div class="fz-field"><label for="wi-recovery">Recovery policy</label><select id="wi-recovery" data-wi disabled aria-describedby="wi-cat-hint"><option value="">Waiting for the mission engine</option></select></div>
+        <div class="fz-field"><label for="wi-magnitude">Magnitude</label><input type="number" id="wi-magnitude" step="any" inputmode="decimal"><span class="fz-hint" id="wi-mag-hint">Optional. Blank uses the event's default (an assumed what-if value).</span></div>
+        <div class="fz-field"><label for="wi-prob">Probability (0 to 1)</label><input type="number" id="wi-prob" min="0" max="1" step="any" inputmode="decimal"><span class="fz-hint">Optional. Blank means it always happens.</span></div>
+        <div class="fz-field"><label for="wi-seed">Seed</label><input type="number" id="wi-seed" step="1" inputmode="numeric"><span class="fz-hint">Optional. Blank uses the mission seed.</span></div>
+      </div>
+      <p class="fz-hint" id="wi-cat-hint">Event types and recovery policies are listed by the mission engine.</p>
+      <div class="fz-nav"><span class="fz-count" id="wi-status" role="status"></span><button type="submit" class="fz-btn" id="wi-run" data-wi disabled>Run scenario</button></div>
+    </form>
+    <div class="card" aria-labelledby="wi-cmp-h">
+      <h3 id="wi-cmp-h">Baseline comparison</h3>
+      <div class="fz-tscroll"><table id="wi-compare">
+        <caption class="fz-vh">Baseline against scenario</caption>
+        <thead><tr><th scope="col">Metric</th><th scope="col">Baseline</th><th scope="col">Scenario</th><th scope="col">Change</th></tr></thead>
+        <tbody id="wi-rows">
+          <tr><th scope="row">Duration</th><td>—</td><td>—</td><td>—</td></tr>
+          <tr><th scope="row">Cost</th><td>—</td><td>—</td><td>—</td></tr>
+          <tr><th scope="row">Energy</th><td>—</td><td>—</td><td>—</td></tr>
+          <tr><th scope="row">Risk index</th><td>—</td><td>—</td><td>—</td></tr>
+          <tr><th scope="row">Outcome</th><td>—</td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table></div>
+      <h3 style="margin-top:18px">Scenarios run</h3>
+      <ul class="fz-list" id="wi-list" aria-label="Scenarios run"><li class="fz-empty">No scenarios yet.</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 7. FAILURE ANALYSIS ============================ -->
+<section id="failures" class="chapter" aria-labelledby="failures-h">
+  <h2 class="big" id="failures-h">Failure analysis</h2>
+  <p class="lede">What broke, why, and what could have saved it.</p>
+  <div class="stats" id="fa-summary" role="group" aria-label="Failure summary">
+    <div class="stat"><b id="fa-count">—</b><span>Failures</span></div>
+    <div class="stat"><b id="fa-recovered">—</b><span>Recovered</span></div>
+    <div class="stat"><b id="fa-unrecovered">—</b><span>Not recovered</span></div>
+    <div class="stat"><b id="fa-loss">—</b><span>Cause of mission loss</span></div>
+  </div>
+  <div class="bar"><label>Severity <select id="fa-severity" disabled><option value="all">All</option><option value="info">Info</option><option value="warning">Warning</option><option value="critical">Critical</option></select></label></div>
+  <div class="two wide">
+    <div class="card scroll"><table id="fa-table" class="fz-tbl">
+      <caption class="fz-vh">Failure events</caption>
+      <thead><tr><th scope="col">Time</th><th scope="col">Component</th><th scope="col">Severity</th><th scope="col">Root cause</th><th scope="col">Recovery</th></tr></thead>
+      <tbody id="fa-rows"><tr id="fa-empty"><td colspan="5">No failures recorded. They appear after a rehearsal or a what-if run.</td></tr></tbody>
+    </table></div>
+    <div id="fa-detail" class="card" aria-live="polite">
+      <h3>Selected failure</h3>
+      <p class="fz-empty" id="fa-detail-empty">Select a failure to see its root cause and recovery options.</p>
+      <dl class="fz-dl" id="fa-dl" hidden>
+        <dt>Severity</dt><dd id="fa-sev"></dd><dt>Component</dt><dd id="fa-comp"></dd><dt>Root cause</dt><dd id="fa-cause"></dd><dt>Impact</dt><dd id="fa-impact"></dd>
+      </dl>
+      <h3 style="margin-top:18px">Recovery options</h3>
+      <ol class="fz-list" id="fa-recovery" aria-label="Recovery options"><li class="fz-empty">None to show.</li></ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 8. COST & RESOURCES ============================ -->
+<section id="cost" class="chapter" aria-labelledby="cost-h">
+  <h2 class="big" id="cost-h">Cost and resources</h2>
+  <p class="lede">What the mission uses, against what you set aside.</p>
+  <div class="fz-cols">
+    <article class="card" aria-labelledby="cr-energy-h"><h3 id="cr-energy-h">Energy</h3>
+      <dl class="fz-dl"><dt>Battery capacity</dt><dd id="cr-energy-limit" class="fz-na">—</dd><dt>Planned use</dt><dd id="cr-energy-used" class="fz-na">—</dd></dl></article>
+    <article class="card" aria-labelledby="cr-equip-h"><h3 id="cr-equip-h">Equipment</h3>
+      <dl class="fz-dl"><dt>Items listed</dt><dd id="cr-equip-limit" class="fz-na">—</dd><dt>Used in plan</dt><dd id="cr-equip-used" class="fz-na">—</dd></dl></article>
+    <article class="card" aria-labelledby="cr-dur-h"><h3 id="cr-dur-h">Duration</h3>
+      <dl class="fz-dl"><dt>Limit</dt><dd id="cr-dur-limit" class="fz-na">—</dd><dt>Planned</dt><dd id="cr-dur-used" class="fz-na">—</dd></dl></article>
+    <article class="card" aria-labelledby="cr-cost-h"><h3 id="cr-cost-h">Cost</h3>
+      <dl class="fz-dl"><dt>Budget</dt><dd id="cr-cost-limit" class="fz-na">—</dd><dt>Estimated</dt><dd id="cr-cost-used" class="fz-na">—</dd></dl></article>
+  </div>
+  <div class="two wide">
+    <div class="card" aria-labelledby="cr-bd-h"><h3 id="cr-bd-h">Cost breakdown</h3>
+      <div class="fz-tscroll"><table id="cr-breakdown">
+        <caption class="fz-vh">Cost breakdown by category</caption>
+        <thead><tr><th scope="col">Category</th><th scope="col">Estimated</th><th scope="col">Simulated</th></tr></thead>
+        <tbody id="cr-rows"><tr id="cr-empty"><td colspan="3">No cost estimate yet. It appears after the mission engine plans a route.</td></tr></tbody>
+      </table></div>
+      <p class="src" id="cr-assumptions"></p></div>
+    <div class="card" aria-labelledby="cr-prof-h"><h3 id="cr-prof-h">Resource profile</h3>
+      <div id="cr-profile" role="img" aria-label="Battery and resource use over mission time"><p class="fz-empty">The battery and resource curve appears here after a rehearsal.</p></div></div>
+  </div>
+</section>
+
+<!-- ============================ 9. MISSION DOSSIER (existing #brief section, extended) ============================ -->
+<section id="brief" class="chapter" aria-labelledby="brief-h">
+  <h2 class="big" id="brief-h">Mission dossier</h2>
+  <p class="lede">One report: setup, rehearsal, failures, cost and limits.</p>
+  <div class="fz-noprint">
+    <h3>Report readiness</h3>
+    <ul class="fz-check" id="dos-check" aria-label="Report readiness">
+      <li data-stage="setup" data-state="todo"><span>Mission setup</span><span class="src fz-st">Not started</span></li>
+      <li data-stage="strategy" data-state="todo"><span>Strategy</span><span class="src fz-st">Not started</span></li>
+      <li data-stage="rehearsal" data-state="todo"><span>Rehearsal</span><span class="src fz-st">Not started</span></li>
+      <li data-stage="whatif" data-state="todo"><span>What-if</span><span class="src fz-st">Not started</span></li>
+      <li data-stage="failures" data-state="todo"><span>Failures</span><span class="src fz-st">Not started</span></li>
+      <li data-stage="cost" data-state="todo"><span>Cost</span><span class="src fz-st">Not started</span></li>
+    </ul>
+  </div>
+  <div class="bar"><button id="dlmd">Download brief (.md)</button><button id="dljson">Download data (.json)</button><button id="print">Print or save PDF</button><button id="dlsetup" type="button">Download mission setup (.json)</button></div>
+  <p id="dos-status" class="note fz-noprint" role="status" hidden></p>
+  <h3 class="fz-sub">Mission report</h3>
+  <article class="card paper" id="dos-report"><dl class="fz-dl" id="dos-dl"></dl></article>
+  <h3 class="fz-sub">Analog site brief</h3>
+  <article id="briefbody" class="card paper"></article>
+</section>
+</main>
+<footer>
+  <img class="fz-skyline" src="assets/skyline.svg" alt="" aria-hidden="true" loading="lazy">
+  <div class="fz-foot"><a href="#home"><i aria-hidden="true"></i>FIELD<em>//</em>ZERO</a><p>Explore deeper. Plan smarter. Go further.</p><span class="end">A journey beyond limits</span></div>
+  <p>Terrain analog model. Not proof of environmental equivalence. No location here is a confirmed planetary analog.</p></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="js/data-loader.js"></script>
+<script src="js/similarity-engine.js"></script>
+<script src="js/mission-intelligence.js"></script>
+<script src="js/mission-model.js"></script>
+<script src="js/mission-engine.js"></script>
+<script src="js/route-simulation.js"></script>
+<script src="js/scenario-engine.js"></script>
+<script src="js/failure-analysis.js"></script>
+<script src="js/cost-engine.js"></script>
+<script src="js/mission-results.js"></script>
+<script src="js/mission-integration.js"></script>
+<script src="js/map.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/app.js"></script>
+<script id="fz-shell-js">
+/*! FIELD//ZERO shell (interface only). No scientific calculation happens here.
+ *  What it does: builder wizard + validation, strategy selection, rehearsal and what-if control wiring,
+ *  progress/status display, activity log, mission-setup JSON export.
+ *  What it never does: plan routes, simulate, or produce costs/failures. Those fields stay empty ("—")
+ *  until a mission engine fills them.
+ *
+ *  Public surface (new in this file): window.FZShell
+ *    getSetup()                      current builder values (see shape in collect())
+ *    setStatus(stage, state)         stage: setup|strategy|rehearsal|whatif|failures|cost; state: todo|active|done|blocked
+ *    setReady(section, on)           section: rehearsal|whatif. Unlocks/locks that section's controls
+ *    setOptions(selectId, opts, ph)  fill a <select> from [{value,label}]; enables it when opts is non-empty
+ *    log(message)                    add a line to Recent activity
+ *  Events on document (CustomEvent, detail in brackets):
+ *    fz:setup-change [setup]  fz:mission-launch [setup]  fz:strategy-select [{strategy}]
+ *    fz:rehearsal-control [{action, speed | value | layer, visible}]  fz:whatif-run [scenario form values]
+ */
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var each = function (list, fn) { Array.prototype.forEach.call(list, fn); };
+  var form = $('mb-form');
+  if (!form) return;
+
+  var STAGES = ['setup', 'strategy', 'rehearsal', 'whatif', 'failures', 'cost'];
+  var STAGE_TEXT = { todo: 'Not started', active: 'In progress', done: 'Done', blocked: 'Blocked' };
+  var BODY_NAME = { earth: 'Earth · Western Desert', mars: 'Mars · Jezero Crater', moon: 'Moon · Taurus-Littrow' };
+  var STRAT_NAME = { fast: 'Fast', safe: 'Safe', scientific: 'Scientific' };
+  var STEP_NAME = ['Objective', 'Destination', 'Analog site', 'Rover and equipment', 'Resources and budget', 'Review and launch'];
+  var panels = form.querySelectorAll('fieldset.fz-step');
+  var stepBtns = $('mb-steps').querySelectorAll('button[data-goto]');
+  var st = { step: 1, equipment: [], site: null, lookup: { key: null, hit: null } };
+  var stageState = {}; STAGES.forEach(function (k) { stageState[k] = 'todo'; });
+
+  // ------------------------------------------------------------ small helpers
+  var emit = function (name, detail) { document.dispatchEvent(new CustomEvent(name, { detail: detail })); };
+  var setText = function (el, s) { if (el) el.textContent = s; };
+  var fix = function (v, d) { return v == null || !isFinite(v) ? 'n/a' : (+v).toFixed(d); };
+  function str(id) { var e = $(id); return e ? e.value.trim() : ''; }
+  function num(id) { var s = str(id); if (s === '') return null; var n = Number(s); return isFinite(n) ? n : null; }
+  function checked(name) { var e = document.querySelector('input[name="' + name + '"]:checked'); return e ? e.value : null; }
+  function inRange(n, lo, hi) { return n !== null && n >= lo && n <= hi; }
+  function offEarth() { var e = $('mb-rh-body'); return !!e && e.value === 'dest'; }
+
+  // ------------------------------------------------------------ activity log
+  function log(msg) {
+    var ol = $('mc-activity'); if (!ol) return;
+    var empty = $('mc-act-empty'); if (empty) empty.remove();
+    var li = document.createElement('li'), t = document.createElement('time'), m = document.createElement('span'), d = new Date();
+    t.dateTime = d.toISOString(); t.textContent = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); m.textContent = msg;
+    li.appendChild(t); li.appendChild(m); ol.insertBefore(li, ol.firstChild);
+    while (ol.children.length > 12) ol.removeChild(ol.lastChild);
+  }
+
+  // ------------------------------------------------------------ stage status (pipeline + dossier checklist)
+  function renderStatus() {
+    var n = 0;
+    each(document.querySelectorAll('[data-stage]'), function (el) {
+      var s = stageState[el.getAttribute('data-stage')]; if (!s) return;
+      el.setAttribute('data-state', s);
+      var t = el.querySelector('.fz-st'); if (t) t.textContent = STAGE_TEXT[s];
+    });
+    STAGES.forEach(function (k) { if (stageState[k] === 'done') n++; });
+    var p = $('mc-progress'); if (p) p.value = n;
+    setText($('mc-prog-txt'), n + ' of ' + STAGES.length + ' stages complete');
+  }
+  function setStatus(stage, state) {
+    if (STAGES.indexOf(stage) < 0 || !STAGE_TEXT[state]) return;
+    stageState[stage] = state; renderStatus();
+  }
+
+  // ------------------------------------------------------------ validation (interface rules only)
+  function check(step) {
+    var errs = [];
+    function need(id, ok, msg) { if (!ok) errs.push({ id: id, msg: msg }); }
+    if (step === 1) {
+      need('mb-name', str('mb-name') !== '', 'Give the mission a name.');
+      need('mb-objective', str('mb-objective') !== '', 'State the objective.');
+    } else if (step === 2) {
+      need('mb-body-earth', !!checked('body'), 'Choose a destination.');
+    } else if (step === 3) {
+      if (offEarth()) {
+        need('mb-sx', num('mb-sx') !== null, 'Enter the start x in metres.'); need('mb-sy', num('mb-sy') !== null, 'Enter the start y in metres.');
+        need('mb-gx', num('mb-gx') !== null, 'Enter the goal x in metres.'); need('mb-gy', num('mb-gy') !== null, 'Enter the goal y in metres.');
+      } else {
+      var src = checked('site-src');
+      need('mb-src-portfolio', !!src, 'Choose how to pick the analog site.');
+      if (src === 'portfolio' || src === 'candidate') need('mb-site-pick', !!$('mb-site-pick').value, 'Pick a site from the list.');
+      if (src === 'manual') {
+        need('mb-lon', inRange(num('mb-lon'), -180, 180), 'Longitude must be between -180 and 180.');
+        need('mb-lat', inRange(num('mb-lat'), -90, 90), 'Latitude must be between -90 and 90.');
+      }
+      }
+    } else if (step === 4) {
+      need('mb-v-name', str('mb-v-name') !== '', 'Name the rover.');
+      need('mb-v-mass', num('mb-v-mass') > 0, 'Enter the rover mass above 0 kg.');
+      need('mb-v-slope', num('mb-v-slope') > 0 && num('mb-v-slope') <= 90, 'Max slope must be above 0 and at most 90°.');
+      need('mb-v-speed', num('mb-v-speed') > 0, 'Enter a flat-ground speed above 0 m/s.');
+      need('mb-v-power', num('mb-v-power') > 0, 'Enter an average power draw above 0 W.');
+      need('mb-v-battery', num('mb-v-battery') > 0, 'Enter a battery capacity above 0 Wh.');
+    } else if (step === 5) {
+      need('mb-budget', num('mb-budget') !== null && num('mb-budget') >= 0, 'Enter a budget limit of 0 or more.');
+      need('mb-duration', num('mb-duration') > 0, 'Enter a duration limit above 0 hours.');
+      need('mb-reserve', inRange(num('mb-reserve'), 0, 100), 'Battery reserve must be between 0 and 100 %.');
+      need('mb-seed', str('mb-seed') === '' || (num('mb-seed') !== null && Math.floor(num('mb-seed')) === num('mb-seed')), 'The seed must be a whole number.');
+    }
+    return errs;
+  }
+  function clearErr() {
+    each(form.querySelectorAll('[aria-invalid]'), function (e) { e.removeAttribute('aria-invalid'); });
+    var box = $('mb-err'); box.hidden = true; box.textContent = '';
+  }
+  function showErr(errs) {
+    var box = $('mb-err'); box.textContent = errs.map(function (e) { return e.msg; }).join(' '); box.hidden = false;
+    errs.forEach(function (e) { var el = $(e.id); if (el && el.type !== 'radio') el.setAttribute('aria-invalid', 'true'); });
+    var first = $(errs[0].id); if (first) first.focus();
+  }
+
+  // ------------------------------------------------------------ site options (read from the existing window.FZ, lazily)
+  function rowFor(lon, lat) {
+    var F = window.FZ, key = lon + ',' + lat; if (!F || !F.rows) return null;
+    if (st.lookup.key === key) return st.lookup.hit;
+    var hit = null, r = F.rows;
+    for (var i = 0; i < r.length; i++) if (r[i].lon_deg === lon && r[i].lat_deg === lat) { hit = { i: i, row: r[i] }; break; }
+    st.lookup = { key: key, hit: hit }; return hit;
+  }
+  function buildSiteOptions() {
+    var src = checked('site-src'), sel = $('mb-site-pick'), F = window.FZ, opts = [], hint = '', prev = sel.value;
+    if (src === 'portfolio') {
+      if (F && F.portfolio && F.portfolio.items) F.portfolio.items.forEach(function (it) {
+        opts.push({ key: 'p' + it.pick, label: 'Portfolio site ' + it.pick + ' · score ' + fix(it.score, 1) + ' · ' + fix(it.lat_deg, 4) + '°N, ' + fix(it.lon_deg, 4) + '°E',
+          rec: { csv_row_index: it.csv_row_index, lon_deg: it.lon_deg, lat_deg: it.lat_deg, x_m_localTM: it.x_m_localTM, y_m_localTM: it.y_m_localTM } });
+      });
+      hint = opts.length ? 'Sites from the current portfolio. Change them in the portfolio chapter.' : 'No portfolio yet. Terrain data may still be loading.';
+    } else if (src === 'candidate') {
+      var tg = checked('body') === 'moon' ? 'moon' : 'mars';
+      if (F && F.analysis && F.analysis.candidates && F.analysis.candidates[tg]) F.analysis.candidates[tg].primary.forEach(function (c) {
+        opts.push({ key: 'c' + c.candidate_rank, label: 'Candidate ' + c.candidate_rank + ' · score ' + fix(c.score, 1) + ' · ' + fix(c.lat_deg, 4) + '°N, ' + fix(c.lon_deg, 4) + '°E',
+          rec: { csv_row_index: null, lon_deg: c.lon_deg, lat_deg: c.lat_deg, x_m_localTM: null, y_m_localTM: null } });
+      });
+      hint = opts.length ? 'Top Earth cells ranked against ' + (tg === 'moon' ? 'the Moon' : 'Mars') + ' at 120 m.' : 'No candidates yet. Terrain data may still be loading.';
+    }
+    sel.textContent = '';
+    var ph = document.createElement('option'); ph.value = ''; ph.textContent = 'Choose a site'; sel.appendChild(ph);
+    opts.forEach(function (o) { var op = document.createElement('option'); op.value = o.key; op.textContent = o.label; sel.appendChild(op); });
+    st.siteOpts = opts;
+    if (prev && opts.some(function (o) { return o.key === prev; })) sel.value = prev; else { sel.value = ''; st.site = null; }
+    setText($('mb-site-hint'), hint);
+  }
+  function applySiteSource() {
+    var src = checked('site-src');
+    $('mb-site-pick-wrap').hidden = !(src === 'portfolio' || src === 'candidate');
+    $('mb-site-manual').hidden = src !== 'manual';
+    if (src === 'portfolio' || src === 'candidate') { st.site = null; buildSiteOptions(); } else st.site = null;
+  }
+
+  // ------------------------------------------------------------ setup object (user input only)
+  function collect() {
+    var src = checked('site-src'), site = { source: src, body: 'earth', csv_row_index: null, lon_deg: null, lat_deg: null, x_m_localTM: null, y_m_localTM: null };
+    if (src === 'manual') { site.lon_deg = num('mb-lon'); site.lat_deg = num('mb-lat'); }
+    else if (st.site) { site.lon_deg = st.site.lon_deg; site.lat_deg = st.site.lat_deg; site.csv_row_index = st.site.csv_row_index == null ? null : st.site.csv_row_index; site.x_m_localTM = st.site.x_m_localTM == null ? null : st.site.x_m_localTM; site.y_m_localTM = st.site.y_m_localTM == null ? null : st.site.y_m_localTM; }
+    if (site.lon_deg !== null && site.lat_deg !== null && site.x_m_localTM === null) {
+      var m = rowFor(site.lon_deg, site.lat_deg); if (m) { site.csv_row_index = m.i; site.x_m_localTM = m.row.x_m_localTM; site.y_m_localTM = m.row.y_m_localTM; }
+    }
+    var hrs = num('mb-duration');
+    return {
+      schema: 1, name: str('mb-name'),
+      objective: { text: str('mb-objective'), success_criterion: str('mb-success') || null, priority: $('mb-priority').value },
+      destination: checked('body'), site: site,
+      route: offEarth() ? { body: checked('body'), start: { x_m: num('mb-sx'), y_m: num('mb-sy') }, goal: { x_m: num('mb-gx'), y_m: num('mb-gy') } } : { body: 'earth', start: null, goal: null },
+      vehicle: { name: str('mb-v-name'), mass_kg: num('mb-v-mass'), max_slope_deg: num('mb-v-slope'), speed_mps_flat: num('mb-v-speed'), power_w: num('mb-v-power'), battery_wh: num('mb-v-battery') },
+      equipment: st.equipment.map(function (e) { return { name: e.name, mass_kg: e.mass_kg, power_w: e.power_w }; }),
+      constraints: { max_cost: num('mb-budget'), currency: str('mb-currency') || null, max_duration_s: hrs === null ? null : hrs * 3600, min_battery_pct: num('mb-reserve') },
+      seed: str('mb-seed') === '' ? null : num('mb-seed'),
+      strategy: checked('strategy')
+    };
+  }
+  function allValid() { for (var n = 1; n <= 5; n++) if (check(n).length) return false; return true; }
+
+  // ------------------------------------------------------------ summaries (setup review, current mission, dossier, cost limits)
+  function fillDl(dl, rows) {
+    dl.textContent = '';
+    rows.forEach(function (r) {
+      var dt = document.createElement('dt'), dd = document.createElement('dd');
+      dt.textContent = r[0]; dd.textContent = r[1]; if (r[2]) dd.className = 'fz-na';
+      dl.appendChild(dt); dl.appendChild(dd);
+    });
+  }
+  function siteText(s) {
+    if (s.lon_deg === null || s.lat_deg === null) return null;
+    return fix(s.lat_deg, 4) + '°N, ' + fix(s.lon_deg, 4) + '°E' + (s.source ? ' (' + s.source + ')' : '');
+  }
+  function rows(s, full) {
+    var site = s.route && s.route.body !== 'earth' ? (s.route.start.x_m !== null && s.route.goal.x_m !== null ? 'Start (' + s.route.start.x_m + ', ' + s.route.start.y_m + ') m to goal (' + s.route.goal.x_m + ', ' + s.route.goal.y_m + ') m, ' + s.route.body + ' local frame' : null) : siteText(s.site), v = s.vehicle, c = s.constraints, na = 'Not set';
+    var r = [
+      ['Mission', s.name || na, !s.name],
+      ['Objective', s.objective.text ? s.objective.text + ' (' + s.objective.priority + ' priority)' : na, !s.objective.text],
+      ['Destination', s.destination ? BODY_NAME[s.destination] : na, !s.destination],
+      [s.route && s.route.body !== 'earth' ? 'Rehearsal route' : 'Analog site', site || na, !site],
+      ['Rover', v.name || na, !v.name],
+      ['Equipment', s.equipment.length + ' item' + (s.equipment.length === 1 ? '' : 's'), !s.equipment.length],
+      ['Duration limit', c.max_duration_s === null ? na : (c.max_duration_s / 3600) + ' h', c.max_duration_s === null],
+      ['Budget limit', c.max_cost === null ? na : c.max_cost + (c.currency ? ' ' + c.currency : ''), c.max_cost === null],
+      ['Strategy', s.strategy ? STRAT_NAME[s.strategy] : 'Not chosen', !s.strategy]
+    ];
+    if (full) ['Route and timeline', 'Rehearsal outcome', 'Failures and recovery', 'Cost and resources', 'Limitations'].forEach(function (k) { r.push([k, 'Not generated yet', true]); });
+    return r;
+  }
+  function updateSummaries() {
+    var s = collect(), started = !!(s.name || s.objective.text || s.destination);
+    var cur = $('mc-cur-dl'); $('mc-cur-empty').hidden = started; cur.hidden = !started;
+    if (started) fillDl(cur, [['Name', s.name || 'Not set', !s.name], ['Destination', s.destination ? BODY_NAME[s.destination] : 'Not set', !s.destination], ['Analog site', (s.route && s.route.body !== 'earth' ? 'Destination terrain' : siteText(s.site)) || 'Not set', !(s.route && s.route.body !== 'earth') && !siteText(s.site)], ['Rover', s.vehicle.name || 'Not set', !s.vehicle.name], ['Strategy', s.strategy ? STRAT_NAME[s.strategy] : 'Not chosen', !s.strategy]]);
+    fillDl($('dos-dl'), rows(s, true));
+    if (st.step === 6) fillDl($('mb-review'), rows(s, false));
+    var c = s.constraints, v = s.vehicle;
+    setText($('cr-energy-limit'), v.battery_wh === null ? '—' : v.battery_wh + ' Wh');
+    setText($('cr-equip-limit'), String(s.equipment.length));
+    setText($('cr-dur-limit'), c.max_duration_s === null ? '—' : (c.max_duration_s / 3600) + ' h');
+    setText($('cr-cost-limit'), c.max_cost === null ? '—' : c.max_cost + (c.currency ? ' ' + c.currency : ''));
+    each(['cr-energy-limit', 'cr-equip-limit', 'cr-dur-limit', 'cr-cost-limit'], function (id) { var e = $(id); e.className = e.textContent === '—' || e.textContent === '0' ? 'fz-na' : ''; });
+  }
+  function refresh() {
+    var any = !!(str('mb-name') || str('mb-objective') || checked('body') || checked('site-src') || str('mb-v-name') || st.equipment.length || str('mb-budget') || str('mb-duration')), all = true;
+    each(stepBtns, function (b) {
+      var n = +b.getAttribute('data-goto'); if (n === 6) return;
+      var ok = check(n).length === 0; all = all && ok;
+      var tick = b.querySelector('.fz-tick'), dn = b.querySelector('.fz-donetxt'); if (tick) tick.hidden = !ok; if (dn) dn.hidden = !ok;
+    });
+    var next = all ? 'done' : (any ? 'active' : 'todo');
+    if (stageState.setup !== next) { if (next === 'done') log('Mission setup complete'); setStatus('setup', next); }
+    updateSummaries();
+  }
+
+  // ------------------------------------------------------------ wizard navigation
+  function show(n) {
+    st.step = n;
+    each(panels, function (p) { p.hidden = +p.getAttribute('data-step') !== n; });
+    each(stepBtns, function (b) { if (+b.getAttribute('data-goto') === n) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+    $('mb-back').disabled = n === 1; $('mb-next').hidden = n === 6; $('mb-launch').hidden = n !== 6;
+    setText($('mb-count'), 'Step ' + n + ' of 6');
+    setText($('mb-live'), 'Step ' + n + ' of 6: ' + STEP_NAME[n - 1]);
+    clearErr();
+    if (n === 3) { var src = checked('site-src'); if (src === 'portfolio' || src === 'candidate') buildSiteOptions(); }
+    if (n === 6) fillDl($('mb-review'), rows(collect(), false));
+  }
+  function go(n) {
+    if (n > st.step) {
+      for (var s = st.step; s < n; s++) {
+        var e = check(s);
+        if (e.length) { if (s !== st.step) show(s); showErr(e); return; }
+      }
+    }
+    show(n);
+    var h = form.querySelector('fieldset[data-step="' + n + '"]'); if (h) { var f = h.querySelector('input,select,textarea'); if (f && n !== 6) f.focus(); }
+  }
+  each(stepBtns, function (b) { b.addEventListener('click', function () { go(+b.getAttribute('data-goto')); }); });
+  $('mb-back').addEventListener('click', function () { if (st.step > 1) go(st.step - 1); });
+  $('mb-next').addEventListener('click', function () { if (st.step < 6) go(st.step + 1); });
+  form.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || e.target.tagName !== 'INPUT' || e.target.type === 'radio') return;
+    e.preventDefault();
+    if (e.target.id === 'eq-name' || e.target.id === 'eq-mass' || e.target.id === 'eq-power') addEquipment();
+    else if (st.step < 6) go(st.step + 1);
+  });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    for (var n = 1; n <= 5; n++) { var er = check(n); if (er.length) { show(n); showErr(er); return; } }
+    var s = collect(), box = $('mb-status'); box.textContent = 'Mission setup saved. Planning the three strategies… ';
+    var a = document.createElement('a'); a.href = '#rehearsal'; a.textContent = 'Open rehearsal'; box.appendChild(a);
+    log('Mission “' + s.name + '” ready to launch'); emit('fz:mission-launch', s);
+  });
+  form.addEventListener('input', refresh);
+  form.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.name === 'site-src') applySiteSource();
+    if (t.id === 'mb-rh-body') { var off = offEarth(); $('mb-rh-off').hidden = !off; $('mb-earth-site').hidden = off; log('Rehearsal terrain: ' + (off ? 'destination body (local metres)' : 'Earth analog (WGS84)')); }
+    if (t.name === 'body') { if (checked('site-src') === 'candidate') buildSiteOptions(); log('Destination set: ' + BODY_NAME[t.value]); }
+    if (t.id === 'mb-site-pick') {
+      var o = (st.siteOpts || []).filter(function (x) { return x.key === t.value; })[0];
+      st.site = o ? o.rec : null; if (o) log('Analog site chosen: ' + o.label);
+    }
+    refresh(); emit('fz:setup-change', collect());
+  });
+
+  // ------------------------------------------------------------ equipment list
+  function renderEquipment() {
+    var ul = $('mb-equipment'); ul.textContent = '';
+    st.equipment.forEach(function (it, i) {
+      var li = document.createElement('li'), sp = document.createElement('span'), b = document.createElement('button');
+      sp.textContent = it.name + (it.mass_kg !== null ? ' · ' + it.mass_kg + ' kg' : '') + (it.power_w !== null ? ' · ' + it.power_w + ' W' : '');
+      b.type = 'button'; b.className = 'fz-mini'; b.textContent = 'Remove'; b.setAttribute('aria-label', 'Remove ' + it.name); b.setAttribute('data-i', i);
+      li.appendChild(sp); li.appendChild(b); ul.appendChild(li);
+    });
+    $('mb-eq-empty').hidden = st.equipment.length > 0;
+  }
+  function addEquipment() {
+    var err = $('mb-eq-err'), name = str('eq-name'), mass = num('eq-mass'), pw = num('eq-power'), bad = '';
+    if (!name) bad = 'Name the item.';
+    else if ((str('eq-mass') !== '' && !(mass >= 0)) || (str('eq-power') !== '' && !(pw >= 0))) bad = 'Mass and power must be 0 or more.';
+    if (bad) { err.textContent = bad; err.hidden = false; $('eq-name').focus(); return; }
+    err.hidden = true; err.textContent = '';
+    st.equipment.push({ name: name, mass_kg: mass, power_w: pw });
+    $('eq-name').value = ''; $('eq-mass').value = ''; $('eq-power').value = '';
+    renderEquipment(); log('Equipment added: ' + name); refresh(); $('eq-name').focus();
+  }
+  $('eq-add').addEventListener('click', addEquipment);
+  $('mb-equipment').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-i]'); if (!b) return;
+    var gone = st.equipment.splice(+b.getAttribute('data-i'), 1)[0]; renderEquipment(); refresh(); if (gone) log('Equipment removed: ' + gone.name);
+    $('eq-name').focus();
+  });
+
+  // ------------------------------------------------------------ option cards: selected state
+  document.addEventListener('change', function (e) {
+    var t = e.target; if (!t || t.type !== 'radio') return;
+    each(document.querySelectorAll('input[name="' + t.name + '"]'), function (r) { var l = r.closest('.fz-opt'); if (l) l.classList.toggle('on', r.checked); });
+  });
+
+  // ------------------------------------------------------------ strategy
+  each(document.querySelectorAll('input[name="strategy"]'), function (r) {
+    r.addEventListener('change', function () {
+      setStatus('strategy', 'done'); log('Strategy selected: ' + STRAT_NAME[r.value]);
+      refresh(); emit('fz:strategy-select', { strategy: r.value });
+    });
+  });
+
+  // ------------------------------------------------------------ rehearsal controls (interface wiring only)
+  var rh = $('rehearsal'), speed = 1;
+  rh.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-rh]'); if (!b || b.disabled) return;
+    var a = b.getAttribute('data-rh');
+    if (a === 'speed') {
+      speed = +b.getAttribute('data-speed');
+      each(rh.querySelectorAll('button[data-rh="speed"]'), function (x) { var on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    }
+    emit('fz:rehearsal-control', { action: a, speed: speed });
+  });
+  rh.addEventListener('input', function (e) { if (e.target.id === 'rh-scrub') emit('fz:rehearsal-control', { action: 'seek', value: +e.target.value, speed: speed }); });
+  rh.addEventListener('change', function (e) {
+    var t = e.target; if (t.getAttribute && t.getAttribute('data-rh') === 'layer') emit('fz:rehearsal-control', { action: 'layer', layer: t.getAttribute('data-layer'), visible: t.checked, speed: speed });
+  });
+  function setReady(key, on) {
+    on = !!on;
+    if (key === 'rehearsal') {
+      each(rh.querySelectorAll('[data-rh]'), function (el) { el.disabled = !on; });
+      $('rh-hold').hidden = on; rh.setAttribute('data-ready', on ? 'true' : 'false');
+      setText($('rh-note'), on ? '' : 'Controls unlock when a mission plan is loaded.');
+    } else if (key === 'whatif') {
+      each(document.querySelectorAll('#whatif [data-wi]'), function (el) { el.disabled = !on; });
+    }
+  }
+  function setOptions(selectId, opts, placeholder) {
+    var sel = $(selectId); if (!sel) return;
+    sel.textContent = '';
+    if (placeholder) { var p = document.createElement('option'); p.value = ''; p.textContent = placeholder; sel.appendChild(p); }
+    (opts || []).forEach(function (o) { var op = document.createElement('option'); op.value = o.value; op.textContent = o.label; sel.appendChild(op); });
+    if (sel.hasAttribute('data-wi')) sel.disabled = !(opts && opts.length);
+  }
+
+  // ------------------------------------------------------------ what-if form
+  $('wi-form').addEventListener('submit', function (e) {
+    e.preventDefault(); var run = $('wi-run'); if (run.disabled) return;
+    emit('fz:whatif-run', { name: str('wi-name'), baseline: $('wi-baseline').value, trigger: { kind: $('wi-trigger').value, at: str('wi-at') },
+      injection: $('wi-injection').value, recovery: $('wi-recovery').value, magnitude: num('wi-magnitude'), probability: num('wi-prob'), seed: num('wi-seed') });
+  });
+
+  // ------------------------------------------------------------ dossier export (setup JSON)
+  function download(name, text, type) {
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: type })); a.download = name; a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 500);
+  }
+  $('dlsetup').addEventListener('click', function () {
+    var box = $('dos-status');
+    if (!allValid()) {
+      box.textContent = 'Finish the mission builder before exporting the setup. '; box.hidden = false;
+      var a = document.createElement('a'); a.href = '#builder'; a.textContent = 'Go to the builder'; box.appendChild(a); return;
+    }
+    box.hidden = true; download('fieldzero_mission_setup.json', JSON.stringify(collect(), null, 1), 'application/json'); log('Mission setup exported');
+  });
+
+  // ------------------------------------------------------------ init
+  window.FZShell = { version: '1.0.0', getSetup: collect, setStatus: setStatus, setReady: setReady, setOptions: setOptions, log: log };
+  renderStatus(); renderEquipment(); show(1); updateSummaries();
+})();
+</script>
+<script>
+/* More menu: close on outside click, Escape, or after choosing a chapter */
+(function(){var d=document.getElementById('fz-more');if(!d)return;
+  document.addEventListener('click',function(e){if(d.open&&!d.contains(e.target))d.open=false;else if(d.open&&e.target.closest&&e.target.closest('.fz-menu a'))d.open=false;});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&d.open){d.open=false;d.querySelector('summary').focus();}});
+})();
+</script>
+<script>
+/* depth: hero parallax + gateway tilt. Pointer-only, skipped for reduced motion and touch. */
+(function(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||matchMedia('(pointer: coarse)').matches)return;
+  var h=document.getElementById('home');
+  if(h)h.addEventListener('pointermove',function(e){var r=h.getBoundingClientRect();
+    h.style.setProperty('--mx',((e.clientX-r.left)/r.width-.5).toFixed(3));h.style.setProperty('--my',((e.clientY-r.top)/r.height-.5).toFixed(3));});
+  document.querySelectorAll('.fz-gate').forEach(function(g){
+    g.addEventListener('pointermove',function(e){var r=g.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+      g.style.setProperty('--ry',((x-.5)*10).toFixed(1)+'deg');g.style.setProperty('--rx',((.5-y)*10).toFixed(1)+'deg');
+      g.style.setProperty('--gx',(x*100).toFixed(0)+'%');g.style.setProperty('--gy',(y*100).toFixed(0)+'%');});
+    g.addEventListener('pointerleave',function(){g.style.removeProperty('--rx');g.style.removeProperty('--ry');});
+  });
+})();
+</script>
+<script src="js/mission-ui.js"></script>
+</body>
+</html>
